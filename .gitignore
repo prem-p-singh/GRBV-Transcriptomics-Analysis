@@ -1,7 +1,16 @@
-# Large data files (too big for GitHub)
-counts_matrix.txt
-org.Vvinifera.eg.db
-go-basic.obo
+# Only track Python scripts — ignore all outputs and data
+
+# Output files
+*.png
+*.csv
+*.pdf
+*.pptx
+*.md
+
+# Data files
+*.txt
+*.db
+*.obo
 
 # Python cache
 __pycache__/
