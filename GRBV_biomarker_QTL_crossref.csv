@@ -1,0 +1,71 @@
+gene_id,gene_desc,gene_chr,gene_pos_Mb,biomarker_score,direction,auc_roc,qtl_locus,qtl_category,qtl_start_Mb,qtl_end_Mb,qtl_description,qtl_source,distance_Mb,inside_qtl
+LOC100261077,uncharacterized LOC100261077,1,4.398,0.4283272052571762,DOWN,0.7141053391053391,Flowering_QTL_chr1,developmental,0.5,3.5,Flowering date; near VvFT,V. vinifera,2.398,False
+LOC100261077,uncharacterized LOC100261077,1,4.398,0.4283272052571762,DOWN,0.7141053391053391,Sugar_QTL_chr1,berry_quality,4.0,8.0,Sugar accumulation (Brix) QTL,V. vinifera,1.602,True
+LOC100261077,uncharacterized LOC100261077,1,4.398,0.4283272052571762,DOWN,0.7141053391053391,Berry_weight_chr1,berry_quality,5.0,8.0,Berry weight QTL on chr1,V. vinifera,2.102,False
+LOC100268011,probable RNA-dependent RNA polymerase 1,1,5.581,0.7162204948406254,UP,0.8953523328523328,Sugar_QTL_chr1,berry_quality,4.0,8.0,Sugar accumulation (Brix) QTL,V. vinifera,0.419,True
+LOC100268011,probable RNA-dependent RNA polymerase 1,1,5.581,0.7162204948406254,UP,0.8953523328523328,Berry_weight_chr1,berry_quality,5.0,8.0,Berry weight QTL on chr1,V. vinifera,0.919,True
+LOC100260313,TORTIFOLIA1-like protein 4,1,10.318,0.4056535464258075,UP,0.7458513708513709,Drought_QTL_chr1,abiotic_stress,8.0,12.0,ABA accumulation under drought,V. riparia x V. vinifera,0.318,True
+LOC100260313,TORTIFOLIA1-like protein 4,1,10.318,0.4056535464258075,UP,0.7458513708513709,Anthocyanin_mod_chr1,berry_quality,10.0,14.0,Anthocyanin composition modifier,V. vinifera,1.682,True
+LOC100244332,uncharacterized LOC100244332,2,20.393,0.4146015708739121,DOWN,0.679112554112554,Terpene_QTL_chr2,berry_quality,17.0,20.0,Terpene synthase cluster,V. vinifera,1.893,False
+LOC100260571,heavy metal-associated isoprenylated plant protein 26,3,1.684,0.4067467843667453,DOWN,0.7651515151515151,Budbreak_QTL_chr3,developmental,2.0,5.0,Bud break timing GWAS,V. vinifera,1.816,False
+LOC100263254,probable calcium-binding protein CML41,4,18.994,0.4348759321756708,UP,0.7386964886964887,Rpv4,disease_resistance,14.0,18.0,Downy mildew partial resistance,V. vinifera x V. cinerea,2.994,False
+LOC100263254,probable calcium-binding protein CML41,4,18.994,0.4348759321756708,UP,0.7386964886964887,Heat_tolerance_chr4,abiotic_stress,14.0,18.0,Heat stress; HSP gene region,V. vinifera,2.994,False
+LOC100263254,probable calcium-binding protein CML41,4,18.994,0.4348759321756708,UP,0.7386964886964887,pH_QTL_chr4,berry_quality,15.0,18.0,Berry pH/acidity QTL,V. vinifera,2.494,False
+LOC100263041,pleiotropic drug resistance protein 3,5,2.765,0.6285650365243477,UP,0.8112073112073113,Rpv11,disease_resistance,0.5,3.0,Downy mildew; RGA cluster on chr5,V. riparia,1.015,True
+LOC100263041,pleiotropic drug resistance protein 3,5,2.765,0.6285650365243477,UP,0.8112073112073113,RGA_cluster_chr5,disease_resistance,0.5,3.0,RGA cluster Rpv11 region,V. vinifera,1.015,True
+LOC100263041,pleiotropic drug resistance protein 3,5,2.765,0.6285650365243477,UP,0.8112073112073113,Muscat_DXS,berry_quality,3.0,4.0,DXS gene; Muscat flavor/terpenes,V. vinifera,0.735,False
+LOC100257913,glycine-rich cell wall structural protein 2,5,12.163,0.7054393163550201,DOWN,0.8712121212121212,Rpv14,disease_resistance,10.0,13.0,Downy mildew partial resistance,V. cinerea,0.663,True
+LOC109122558,putative glycine-rich cell wall structural protein 1,5,12.164,0.4050015248436108,DOWN,0.7644300144300143,Rpv14,disease_resistance,10.0,13.0,Downy mildew partial resistance,V. cinerea,0.664,True
+LOXA,lipoxygenase,6,1.926,0.4257621578985546,UP,0.7292568542568542,Ripening_QTL_chr6,developmental,2.0,5.0,Ripening rate/maturity timing,V. vinifera,1.574,False
+LOC100257036,uncharacterized LOC100257036,6,8.326,0.425273856629133,UP,0.7169913419913418,Rpv20,disease_resistance,6.0,9.0,Downy mildew,V. amurensis,0.826,True
+LOC100255485,galactinol synthase 1,7,4.796,0.4881055612603454,DOWN,0.6878306878306878,Rpv7,disease_resistance,5.0,8.0,Downy mildew; chromosome 7 RGA cluster,V. amurensis x Regent,1.704,False
+LOC100255485,galactinol synthase 1,7,4.796,0.4881055612603454,DOWN,0.6878306878306878,Flowering_QTL_chr7,developmental,5.0,8.0,Flowering date,V. vinifera,1.704,False
+LOC100255485,galactinol synthase 1,7,4.796,0.4881055612603454,DOWN,0.6878306878306878,RGA_cluster_chr7,disease_resistance,5.0,9.0,RGA cluster Rpv7/Rpv9,V. vinifera,2.204,False
+LOC100241465,uncharacterized LOC100241465,7,11.201,0.4858761048889324,DOWN,0.7713443963443963,Rpv9,disease_resistance,8.0,11.0,Downy mildew,V. riparia x V. cinerea,1.701,False
+LOC100241465,uncharacterized LOC100241465,7,11.201,0.4858761048889324,DOWN,0.7713443963443963,Ethylene_QTL_chr7,developmental,12.0,15.0,Ethylene ACO/ACS cluster,V. vinifera,2.299,False
+LOC100854844,uncharacterized LOC100854844,7,20.153,0.5070082264676579,DOWN,0.8910533910533911,Drought_QTL_chr7,abiotic_stress,16.0,20.0,Transpiration efficiency,V. vinifera x V. riparia,2.153,False
+LOC100261732,nucleosome assembly protein 1;4,9,2.147,0.4264227237006783,DOWN,0.8779461279461279,Rpv5,disease_resistance,2.0,4.5,Downy mildew; near NB-LRR cluster,V. riparia Gloire de Montpellier,1.103,True
+LOC100261732,nucleosome assembly protein 1;4,9,2.147,0.4264227237006783,DOWN,0.8779461279461279,Ren6,disease_resistance,2.0,5.0,Powdery mildew; near Rpv10,V. piasezkii,1.353,True
+LOC100261732,nucleosome assembly protein 1;4,9,2.147,0.4264227237006783,DOWN,0.8779461279461279,NB-LRR_cluster_chr9,disease_resistance,2.0,5.5,NB-LRR Rpv10/Ren6 region,V. vinifera,1.603,True
+LOC100261732,nucleosome assembly protein 1;4,9,2.147,0.4264227237006783,DOWN,0.8779461279461279,Rpv10,disease_resistance,2.5,5.5,Downy mildew; strong single-locus; TIR-NB-LRR,V. amurensis Ruprecht,1.853,False
+LOC100267000,probable sulfate transporter 3.4,9,4.312,0.4491418785460894,DOWN,0.8002044252044251,Rpv5,disease_resistance,2.0,4.5,Downy mildew; near NB-LRR cluster,V. riparia Gloire de Montpellier,1.062,True
+LOC100267000,probable sulfate transporter 3.4,9,4.312,0.4491418785460894,DOWN,0.8002044252044251,Ren6,disease_resistance,2.0,5.0,Powdery mildew; near Rpv10,V. piasezkii,0.812,True
+LOC100267000,probable sulfate transporter 3.4,9,4.312,0.4491418785460894,DOWN,0.8002044252044251,NB-LRR_cluster_chr9,disease_resistance,2.0,5.5,NB-LRR Rpv10/Ren6 region,V. vinifera,0.562,True
+LOC100267000,probable sulfate transporter 3.4,9,4.312,0.4491418785460894,DOWN,0.8002044252044251,Rpv10,disease_resistance,2.5,5.5,Downy mildew; strong single-locus; TIR-NB-LRR,V. amurensis Ruprecht,0.312,True
+LOC100267000,probable sulfate transporter 3.4,9,4.312,0.4491418785460894,DOWN,0.8002044252044251,Root_depth_chr9,developmental,5.0,9.0,Root architecture/depth,V. berlandieri x V. rupestris,2.688,False
+LOC100258268,late embryogenesis abundant protein 1,9,5.858,0.4541245007170206,DOWN,0.6921296296296297,Ren6,disease_resistance,2.0,5.0,Powdery mildew; near Rpv10,V. piasezkii,2.358,False
+LOC100258268,late embryogenesis abundant protein 1,9,5.858,0.4541245007170206,DOWN,0.6921296296296297,NB-LRR_cluster_chr9,disease_resistance,2.0,5.5,NB-LRR Rpv10/Ren6 region,V. vinifera,2.108,False
+LOC100258268,late embryogenesis abundant protein 1,9,5.858,0.4541245007170206,DOWN,0.6921296296296297,Rpv10,disease_resistance,2.5,5.5,Downy mildew; strong single-locus; TIR-NB-LRR,V. amurensis Ruprecht,1.858,False
+LOC100258268,late embryogenesis abundant protein 1,9,5.858,0.4541245007170206,DOWN,0.6921296296296297,Root_depth_chr9,developmental,5.0,9.0,Root architecture/depth,V. berlandieri x V. rupestris,1.142,True
+LOC100260978,"glucan endo-1,3-beta-glucosidase 8",11,3.649,0.5831717911575848,UP,0.7878487253487254,Cold_QTL_chr11,abiotic_stress,0.5,4.0,Winter hardiness,V. amurensis,1.399,True
+LOC104881139,protein VACUOLELESS GAMETOPHYTES,13,2.989,0.4700506387927522,UP,0.7408008658008659,Phylloxera_Rdv1,disease_resistance,2.0,5.0,Root phylloxera resistance,V. cinerea,0.511,True
+LOC100247751,heavy metal-associated isoprenylated plant protein 36,14,1.738,0.4055570108338012,UP,0.727032227032227,Rpv29,disease_resistance,1.0,3.5,Downy mildew partial resistance,V. cinerea,0.512,True
+LOC100247751,heavy metal-associated isoprenylated plant protein 36,14,1.738,0.4055570108338012,UP,0.727032227032227,Ren5,disease_resistance,1.0,3.5,Powdery mildew partial resistance,V. piasezkii,0.512,True
+LOC100245905,uncharacterized LOC100245905,14,2.08,0.4298840715442941,DOWN,0.6954665704665705,Rpv29,disease_resistance,1.0,3.5,Downy mildew partial resistance,V. cinerea,0.17,True
+LOC100245905,uncharacterized LOC100245905,14,2.08,0.4298840715442941,DOWN,0.6954665704665705,Ren5,disease_resistance,1.0,3.5,Powdery mildew partial resistance,V. piasezkii,0.17,True
+LOC100245905,uncharacterized LOC100245905,14,2.08,0.4298840715442941,DOWN,0.6954665704665705,Rpv19,disease_resistance,3.0,6.0,Downy mildew; different chr14 region,V. rupestris x V. cinerea,2.42,False
+LOC100253147,uncharacterized LOC100253147,14,24.433,0.4096709854014346,UP,0.7762145262145262,Rpv8,disease_resistance,22.0,25.0,Downy mildew; major NB-LRR cluster on chr14,V. amurensis,0.933,True
+LOC100253147,uncharacterized LOC100253147,14,24.433,0.4096709854014346,UP,0.7762145262145262,Ren2,disease_resistance,22.0,26.0,Powdery mildew; NB-LRR cluster chr14,V. cinerea,0.433,True
+LOC100253147,uncharacterized LOC100253147,14,24.433,0.4096709854014346,UP,0.7762145262145262,Rgb2,disease_resistance,22.0,25.0,Black rot resistance; NB-LRR cluster,V. rupestris x V. cinerea,0.933,True
+LOC100253147,uncharacterized LOC100253147,14,24.433,0.4096709854014346,UP,0.7762145262145262,Xylella_PdR1a,disease_resistance,22.0,25.0,Pierce's disease resistance; major locus,V. arizonica,0.933,True
+LOC100253147,uncharacterized LOC100253147,14,24.433,0.4096709854014346,UP,0.7762145262145262,NB-LRR_cluster_chr14,disease_resistance,22.0,27.0,Major CC-NB-LRR cluster,V. vinifera,0.067,True
+LOC100253147,uncharacterized LOC100253147,14,24.433,0.4096709854014346,UP,0.7762145262145262,Xylella_PdR1b,disease_resistance,22.5,25.5,Pierce's disease second haplotype,V. arizonica/girdiana,0.433,True
+LOC100253147,uncharacterized LOC100253147,14,24.433,0.4096709854014346,UP,0.7762145262145262,Rpv12,disease_resistance,23.0,27.0,Downy mildew; major single-gene resistance; NB-LRR,V. amurensis,0.567,True
+LOC100253147,uncharacterized LOC100253147,14,24.433,0.4096709854014346,UP,0.7762145262145262,Ren12,disease_resistance,23.0,26.0,Powdery mildew; overlaps Rpv12,V. amurensis,0.067,True
+LOC100261750,uncharacterized LOC100261750,14,24.44,0.5119112867383351,UP,0.6833213083213083,Rpv8,disease_resistance,22.0,25.0,Downy mildew; major NB-LRR cluster on chr14,V. amurensis,0.94,True
+LOC100261750,uncharacterized LOC100261750,14,24.44,0.5119112867383351,UP,0.6833213083213083,Ren2,disease_resistance,22.0,26.0,Powdery mildew; NB-LRR cluster chr14,V. cinerea,0.44,True
+LOC100261750,uncharacterized LOC100261750,14,24.44,0.5119112867383351,UP,0.6833213083213083,Rgb2,disease_resistance,22.0,25.0,Black rot resistance; NB-LRR cluster,V. rupestris x V. cinerea,0.94,True
+LOC100261750,uncharacterized LOC100261750,14,24.44,0.5119112867383351,UP,0.6833213083213083,Xylella_PdR1a,disease_resistance,22.0,25.0,Pierce's disease resistance; major locus,V. arizonica,0.94,True
+LOC100261750,uncharacterized LOC100261750,14,24.44,0.5119112867383351,UP,0.6833213083213083,NB-LRR_cluster_chr14,disease_resistance,22.0,27.0,Major CC-NB-LRR cluster,V. vinifera,0.06,True
+LOC100261750,uncharacterized LOC100261750,14,24.44,0.5119112867383351,UP,0.6833213083213083,Xylella_PdR1b,disease_resistance,22.5,25.5,Pierce's disease second haplotype,V. arizonica/girdiana,0.44,True
+LOC100261750,uncharacterized LOC100261750,14,24.44,0.5119112867383351,UP,0.6833213083213083,Rpv12,disease_resistance,23.0,27.0,Downy mildew; major single-gene resistance; NB-LRR,V. amurensis,0.56,True
+LOC100261750,uncharacterized LOC100261750,14,24.44,0.5119112867383351,UP,0.6833213083213083,Ren12,disease_resistance,23.0,26.0,Powdery mildew; overlaps Rpv12,V. amurensis,0.06,True
+LOC100255962,oleosin H2,14,27.389,0.4154544020276953,DOWN,0.7318722943722944,NB-LRR_cluster_chr14,disease_resistance,22.0,27.0,Major CC-NB-LRR cluster,V. vinifera,2.889,False
+LOC100255962,oleosin H2,14,27.389,0.4154544020276953,DOWN,0.7318722943722944,Rpv12,disease_resistance,23.0,27.0,Downy mildew; major single-gene resistance; NB-LRR,V. amurensis,2.389,False
+LOC100258655,expansin-A1,17,7.285,0.4194183700107265,UP,0.7472943722943723,Acidity_QTL_chr17,berry_quality,4.0,7.0,Titratable acidity at maturity,V. vinifera (Syrah x Grenache),1.785,False
+LOC100258655,expansin-A1,17,7.285,0.4194183700107265,UP,0.7472943722943723,Berry_weight_chr17,berry_quality,7.0,10.0,Major berry weight QTL,V. vinifera,1.215,True
+LOC100258655,expansin-A1,17,7.285,0.4194183700107265,UP,0.7472943722943723,Botrytis_QTL_chr17,disease_resistance,8.0,12.0,Botrytis resistance QTL,V. vinifera,2.715,False
+LOC100243265,probable pectate lyase 5,17,12.084,0.41975903666164,UP,0.6692520442520442,Botrytis_QTL_chr17,disease_resistance,8.0,12.0,Botrytis resistance QTL,V. vinifera,2.084,False
+LOC100243265,probable pectate lyase 5,17,12.084,0.41975903666164,UP,0.6692520442520442,Phenolics_GWAS_chr17,berry_quality,13.0,16.0,GWAS for total phenolic content,V. vinifera,2.416,False
+LOC100248652,uncharacterized LOC100248652,19,7.456,0.5154982191606347,UP,0.7127525252525252,VvNAC_ripening_chr19,developmental,6.0,8.0,NAC TF cluster; ripening regulation,V. vinifera,0.456,True
+LOC100248652,uncharacterized LOC100248652,19,7.456,0.5154982191606347,UP,0.7127525252525252,Budbreak_QTL_chr19,developmental,8.0,12.0,Bud break date,V. riparia x V. vinifera,2.544,False

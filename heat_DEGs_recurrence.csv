@@ -1,0 +1,86 @@
+Gene,Gene_Name,Category,n_conditions,mean_FC,min_padj
+LOC100855168,late embryogenesis abundant protein D-34,LEA / Dehydrin,5,-1.8237827205388677,1.7086393866560185e-08
+LOC100250883,17.3 kDa class II heat shock protein,GO:0009408 (response to heat),4,-2.035601337497351,5.7529726050939044e-08
+LOC100249153,17.3 kDa class II heat shock protein,GO:0009408 (response to heat),4,-1.847785895665095,3.5563006459774454e-08
+LOC100249153,17.3 kDa class II heat shock protein,sHSP (small heat shock proteins),4,-1.847785895665095,3.5563006459774454e-08
+LOC100249533,18.2 kDa class I heat shock protein,GO:0009408 (response to heat),4,-2.1615385842151262,1.8280060915092762e-07
+LOC100249533,18.2 kDa class I heat shock protein,sHSP (small heat shock proteins),4,-2.1615385842151262,1.8280060915092762e-07
+LOC100255485,galactinol synthase 1,Galactinol synthase,4,-1.9057096349231666,5.382966875982624e-07
+LOC100261109,17.3 kDa class II heat shock protein,sHSP (small heat shock proteins),4,-1.997364436287053,1.810965567195006e-08
+LOC100261109,17.3 kDa class II heat shock protein,GO:0009408 (response to heat),4,-1.997364436287053,1.810965567195006e-08
+LOC100265708,heat shock 70 kDa protein,HSP70 family,4,-1.8200160249721662,1.0360016175923936e-09
+LOC100250883,17.3 kDa class II heat shock protein,sHSP (small heat shock proteins),4,-2.035601337497351,5.7529726050939044e-08
+LOC100263355,18.1 kDa class I heat shock protein,sHSP (small heat shock proteins),4,-1.660102416167806,1.1544991730329037e-07
+LOC100263355,18.1 kDa class I heat shock protein,GO:0009408 (response to heat),4,-1.660102416167806,1.1544991730329037e-07
+LOC100253085,18.1 kDa class I heat shock protein,GO:0009408 (response to heat),4,-0.7971284525213697,2.2689816463991574e-06
+LOC100253085,18.1 kDa class I heat shock protein,sHSP (small heat shock proteins),4,-0.7971284525213697,2.2689816463991574e-06
+LOC100253548,"23.6 kDa heat shock protein, mitochondrial",sHSP (small heat shock proteins),4,-1.3758056733361037,6.347074249791414e-06
+LOC100248906,"small heat shock protein, chloroplastic",sHSP (small heat shock proteins),4,-1.9563215644541827,1.629708657078584e-05
+LOC100265661,heat shock protein 83,HSP90 family,4,-1.8412837899237617,3.882799744604877e-06
+LOC100261497,18.2 kDa class I heat shock protein,GO:0009408 (response to heat),4,-2.2376973262432625,9.21794756539012e-09
+LOC100258268,late embryogenesis abundant protein 1,LEA / Dehydrin,4,-2.507028204448477,1.9152458836160044e-13
+LOC100263791,17.6 kDa class I heat shock protein 3-like,GO:0009408 (response to heat),4,-2.56743528957887,8.566140670153103e-12
+LOC100244609,17.4 kDa class III heat shock protein,sHSP (small heat shock proteins),4,-2.0184758553457387,6.751394171608581e-08
+LOC100244609,17.4 kDa class III heat shock protein,GO:0009408 (response to heat),4,-2.0184758553457387,6.751394171608581e-08
+LOC100244376,18.2 kDa class I heat shock protein,sHSP (small heat shock proteins),4,-2.1072861411240456,3.5288015269814644e-10
+LOC100261497,18.2 kDa class I heat shock protein,sHSP (small heat shock proteins),4,-2.2376973262432625,9.21794756539012e-09
+LOC100244376,18.2 kDa class I heat shock protein,GO:0009408 (response to heat),4,-2.1072861411240456,3.5288015269814644e-10
+LOC100243757,"23.6 kDa heat shock protein, mitochondrial",sHSP (small heat shock proteins),4,-2.0161002426216426,3.998102186914157e-09
+LOC100263791,17.6 kDa class I heat shock protein 3-like,sHSP (small heat shock proteins),4,-2.56743528957887,8.566140670153103e-12
+LOC100268056,17.3 kDa class II heat shock protein,GO:0009408 (response to heat),3,-1.981898019172997,2.676808664897204e-06
+LOC100259051,class I heat shock protein,sHSP (small heat shock proteins),3,-2.0509993580647605,5.827004330968724e-09
+LOC100268056,17.3 kDa class II heat shock protein,sHSP (small heat shock proteins),3,-1.981898019172997,2.676808664897204e-06
+LOC100259051,class I heat shock protein,GO:0009408 (response to heat),3,-2.0509993580647605,5.827004330968724e-09
+LOC100257736,heat shock protein 83,HSP90 family,3,-1.9716923299854674,3.408282605776919e-08
+LOC100261583,18.1 kDa class I heat shock protein,GO:0009408 (response to heat),3,-1.7988075030392014,1.2206856900628858e-05
+LOC100261583,18.1 kDa class I heat shock protein,sHSP (small heat shock proteins),3,-1.7988075030392014,1.2206856900628858e-05
+LOC100254252,17.3 kDa class II heat shock protein,GO:0009408 (response to heat),3,-2.1205157010362368,2.553539491716842e-08
+LOC100254252,17.3 kDa class II heat shock protein,sHSP (small heat shock proteins),3,-2.1205157010362368,2.553539491716842e-08
+LOC100250305,galactinol synthase 2,Galactinol synthase,3,-2.047369488428264,1.1489286887922853e-07
+LOC100249611,18.1 kDa class I heat shock protein,GO:0009408 (response to heat),3,-1.8642035194302402,4.591379849071575e-07
+LOC100246843,heat shock cognate protein 80,HSP90 family,3,-1.3040657304921035,6.192424243180875e-08
+LOC100245950,heat stress transcription factor A-2e,HSF transcription factors,3,-1.6620196647574026,2.5659661380801385e-07
+LOC100245740,heat shock factor protein HSF30,HSF transcription factors,3,-1.8618940640297372,5.1163635212870093e-08
+LOC100242821,18.2 kDa class I heat shock protein,sHSP (small heat shock proteins),3,-2.250246462535433,6.105226388271636e-06
+LOC100242821,18.2 kDa class I heat shock protein,GO:0009408 (response to heat),3,-2.250246462535433,6.105226388271636e-06
+HSP101,heat shock protein 101,HSP100/ClpB,3,-1.3518997357011135,1.3612658817389927e-08
+LOC100249611,18.1 kDa class I heat shock protein,sHSP (small heat shock proteins),3,-1.8642035194302402,4.591379849071575e-07
+LOC100263588,22.0 kDa class IV heat shock protein,GO:0009408 (response to heat),2,-1.9839987717149363,0.0018676280031843103
+LOC100262206,class I heat shock protein,sHSP (small heat shock proteins),2,-0.17725878298226783,0.020408088947307147
+LOC100262206,class I heat shock protein,GO:0009408 (response to heat),2,-0.17725878298226783,0.020408088947307147
+LOC100263588,22.0 kDa class IV heat shock protein,sHSP (small heat shock proteins),2,-1.9839987717149363,0.0018676280031843103
+LOC100264933,16.9 kDa class I heat shock protein 3,GO:0009408 (response to heat),2,-1.6088713292113441,0.0005554315786561068
+LOC100264933,16.9 kDa class I heat shock protein 3,sHSP (small heat shock proteins),2,-1.6088713292113441,0.0005554315786561068
+LOC100268136,17.3 kDa class II heat shock protein,GO:0009408 (response to heat),2,-1.5730258546325233,2.776994965499431e-07
+LOC100241458,late embryogenesis abundant protein Lea14-A,LEA / Dehydrin,2,0.1275618023802081,0.0069477446272385125
+LOC100267630,"small heat shock protein, chloroplastic",GO:0009408 (response to heat),2,-1.7428328468286889,0.00015965006109815809
+LOC100260126,galactinol synthase 2,Galactinol synthase,2,2.2971665481798738,0.0011092864009494556
+LOC100257918,galactinol synthase 2,Galactinol synthase,2,1.2917684081109821,0.00021487206005056368
+LOC100267630,"small heat shock protein, chloroplastic",sHSP (small heat shock proteins),2,-1.7428328468286889,0.00015965006109815809
+LOC100256188,16.9 kDa class I heat shock protein 1,sHSP (small heat shock proteins),2,-1.2219367027143502,0.019761997686476535
+LOC100256188,16.9 kDa class I heat shock protein 1,GO:0009408 (response to heat),2,-1.2219367027143502,0.019761997686476535
+LOC100268136,17.3 kDa class II heat shock protein,sHSP (small heat shock proteins),2,-1.5730258546325233,2.776994965499431e-07
+LOC100252547,ferritin-like catalase Nec2,Antioxidant enzymes,2,1.237982995156428,4.334395441815623e-05
+LOC100248447,"heat shock 70 kDa protein, mitochondrial",HSP70 family,2,-1.1937501244360869,2.3709021217417585e-10
+LOC100854120,17.3 kDa class II heat shock protein,GO:0009408 (response to heat),2,-1.3130100430142218,0.0016344819676164357
+LOC100854120,17.3 kDa class II heat shock protein,sHSP (small heat shock proteins),2,-1.3130100430142218,0.0016344819676164357
+LOC104881029,22.0 kDa class IV heat shock protein,GO:0009408 (response to heat),1,-1.259674182348487,0.031994668461040494
+LOC100266315,17.1 kDa class II heat shock protein,sHSP (small heat shock proteins),1,-1.0971878191831799,9.397208668073804e-05
+LOC100266315,17.1 kDa class II heat shock protein,GO:0009408 (response to heat),1,-1.0971878191831799,9.397208668073804e-05
+APX,cytosolic ascorbate peroxidase,Antioxidant enzymes,1,-1.0745702902295533,0.003427352389433286
+LOC100256486,heat stress transcription factor B-2b,HSF transcription factors,1,-1.0580268240753368,2.5445565509646104e-07
+LOC100265651,heat shock cognate 70 kDa protein 2-like,HSP70 family,1,-1.2609560735885106,7.029434577077735e-09
+LOC100263055,late embryogenesis abundant protein At3g53040,LEA / Dehydrin,1,1.456389094420011,0.010918968188845427
+LOC100261354,"25.3 kDa heat shock protein, chloroplastic-like",sHSP (small heat shock proteins),1,-1.3260669928162887,0.041100158612905675
+LOC100261354,"25.3 kDa heat shock protein, chloroplastic-like",GO:0009408 (response to heat),1,-1.3260669928162887,0.041100158612905675
+LOC100260266,galactinol synthase 1,Galactinol synthase,1,1.5709530628218413,2.3847375351330882e-05
+GCAT,catalase,Antioxidant enzymes,1,1.1242714624259689,0.0005374367603795064
+LOC100255606,late embryogenesis abundant protein,LEA / Dehydrin,1,-1.1490712212305763,0.0030883487341475356
+LOC100254799,"15.7 kDa heat shock protein, peroxisomal-like",sHSP (small heat shock proteins),1,-1.2693342145210247,0.004110670329183809
+LOC100254799,"15.7 kDa heat shock protein, peroxisomal-like",GO:0009408 (response to heat),1,-1.2693342145210247,0.004110670329183809
+LOC100252916,heat shock 70 kDa protein 8,HSP70 family,1,-1.1124973163061957,0.02118277954827713
+LOC100245734,17.3 kDa class II heat shock protein,sHSP (small heat shock proteins),1,-1.5790763612742893,0.0012009479542554131
+LOC100245734,17.3 kDa class II heat shock protein,GO:0009408 (response to heat),1,-1.5790763612742893,0.0012009479542554131
+LOC100244167,galactinol synthase 2,Galactinol synthase,1,1.4570876635039314,0.021429980079914455
+LOC100241000,late embryogenesis abundant protein D-29,LEA / Dehydrin,1,1.653542042323676,0.0002851161801659704
+LOC104881029,22.0 kDa class IV heat shock protein,sHSP (small heat shock proteins),1,-1.259674182348487,0.031994668461040494
