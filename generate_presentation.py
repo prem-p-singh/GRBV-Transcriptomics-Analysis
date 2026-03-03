@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Generate a publication-quality PowerPoint presentation for GRBV Transcriptomics study.
-Embeds all 35 figures with organized section slides, speaker notes, and key findings.
+Embeds all 36 figures with organized section slides, speaker notes, and key findings.
 """
 
 from pptx import Presentation
@@ -235,7 +235,7 @@ print("Building GRBV Transcriptomics Presentation...")
 # ---- SLIDE 1: Title ----
 make_title_slide(
     "Comprehensive Transcriptomic Analysis of\nGrapevine Red Blotch Virus (GRBV) Infection",
-    "A Multi-Dimensional RNA-Seq Study Across Infection Duration,\nMaturity Stages, Seasons, and Environmental Context",
+    "Vitis vinifera cv. Merlot | RNA-Seq Across Infection Duration,\nMaturity Stages, Seasons, and Environmental Context",
     notes="Presenter: [Your Name]\nInstitution: [Your Institution]\nDate: [Date]"
 )
 
@@ -244,7 +244,7 @@ make_key_numbers_slide("Study at a Glance", {
     "327": "Samples (RB+ infected & RB- controls)",
     "14,604": "Genes analyzed after quality filtering",
     "6": "Core research questions addressed",
-    "35": "Publication-quality figures generated",
+    "36": "Publication-quality figures generated",
     "115": "Heat-stress genes characterized",
     "12": "Universal biomarkers identified",
 })
@@ -458,8 +458,20 @@ make_two_figure_slide("Cross-Question Integration & Summary Dashboard",
     "28_Q1Q2_vs_Q3Q4_crossreference.png", "29_comprehensive_summary_dashboard.png",
     notes="Cross-referencing findings across all research questions. 908 universal DEGs confirmed.")
 
+# ======== SECTION: INTEGRATED BIOLOGY DIAGRAM ========
+make_section_slide("Integrated Molecular Model", "10")
+
+make_figure_slide("GRBV Molecular Disruption Cascade", "36_GRBV_biology_diagram.png", [
+    "Data-driven infographic integrating all findings",
+    "DEG counts per season x stage with viral titer overlay",
+    "Phenylpropanoid, flavonoid & stilbenoid pathways suppressed",
+    "sHSP heat-protection network reduced by ~55%",
+    "3-gene diagnostic panel: AUC = 1.000",
+    "60% biomarker-QTL co-localization with berry quality loci",
+], notes="Figure 36: Comprehensive biology diagram synthesizing all analyses into a molecular disruption model.")
+
 # ======== SECTION: CONCLUSIONS ========
-make_section_slide("Conclusions & Future Directions", "10")
+make_section_slide("Conclusions & Future Directions", "11")
 
 slide = prs.slides.add_slide(prs.slide_layouts[6])
 add_background(slide, WHITE)
@@ -481,7 +493,7 @@ add_text_box(slide, Inches(7.0), Inches(1.2), Inches(5.5), Inches(0.5),
 add_bullet_slide_content(slide, Inches(7.0), Inches(1.8), Inches(5.8), Inches(4.5), [
     "RT-qPCR validation of top biomarkers in independent vineyards",
     "Functional validation of sHSP suppression mechanism (e.g., VIGS knockdown)",
-    "Expand to additional cultivars (Cabernet Sauvignon, Merlot, Zinfandel)",
+    "Expand to additional cultivars (Cabernet Sauvignon, Zinfandel, Pinot Noir)",
     "Integrate with metabolomics (anthocyanin, sugar profiling)",
     "Develop field-deployable molecular diagnostic assay",
     "Test biomarker-QTL candidates in breeding populations",
@@ -528,6 +540,8 @@ print("  36. Section: GWAS/QTL")
 print("  37-38. Chromosome map & cross-ref (Figs 24-25)")
 print("  39. Section: Robustness")
 print("  40-41. Pooled vs stratified, summary dashboard (Figs 26-29)")
-print("  42. Section: Conclusions")
-print("  43. Key conclusions & future directions")
-print("  44. Thank you / Q&A")
+print("  42. Section: Integrated Molecular Model")
+print("  43. GRBV biology diagram (Fig 36)")
+print("  44. Section: Conclusions")
+print("  45. Key conclusions & future directions")
+print("  46. Thank you / Q&A")
