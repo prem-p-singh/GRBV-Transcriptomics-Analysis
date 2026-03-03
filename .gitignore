@@ -5,10 +5,14 @@
 *.csv
 *.pdf
 *.pptx
+
+# Markdown (except README)
 *.md
+!README.md
 
 # Data files
 *.txt
+!requirements.txt
 *.db
 *.obo
 
