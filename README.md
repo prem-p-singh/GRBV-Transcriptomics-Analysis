@@ -4,7 +4,7 @@
 ![License](https://img.shields.io/badge/License-MIT-green)
 ![Status](https://img.shields.io/badge/Status-Complete-brightgreen)
 
-A comprehensive RNA-Seq transcriptomics pipeline for studying **Grapevine Red Blotch Virus (GRBV)** effects on *Vitis vinifera* (Cabernet Sauvignon). The analysis covers 327 field samples across 2 growing seasons and 4 maturity stages, producing 36 publication-quality figures, 13+ data tables, and automated reports.
+A comprehensive RNA-Seq transcriptomics pipeline for studying **Grapevine Red Blotch Virus (GRBV)** effects on *Vitis vinifera* (Merlot). The analysis covers 327 field samples across 2 growing seasons and 4 maturity stages, producing 36 publication-quality figures, 13+ data tables, and automated reports.
 
 ---
 
@@ -26,7 +26,7 @@ A comprehensive RNA-Seq transcriptomics pipeline for studying **Grapevine Red Bl
 
 | Parameter | Details |
 |-----------|---------|
-| **Species** | *Vitis vinifera* cv. Cabernet Sauvignon |
+| **Species** | *Vitis vinifera* cv. Merlot |
 | **Pathogen** | Grapevine Red Blotch Virus (GRBV) |
 | **Samples** | 327 total (264 RB+ infected, 63 RB- control) |
 | **Genes** | 28,168 raw &rarr; 14,604 after filtering |
@@ -227,7 +227,7 @@ Each analysis script can be run independently if its required input files are pr
 
 If you use this pipeline or its results, please cite:
 
-> Singh, P.P. (2026). Comprehensive transcriptomic analysis of Grapevine Red Blotch Virus effects on *Vitis vinifera* cv. Cabernet Sauvignon across seasons and maturity stages. *[Journal TBD]*.
+> Singh, P.P. (2026). Comprehensive transcriptomic analysis of Grapevine Red Blotch Virus effects on *Vitis vinifera* cv. Merlot across seasons and maturity stages. *[Journal TBD]*.
 
 ---
 
