@@ -38,15 +38,19 @@ class GRBVReport(FPDF):
         self.set_font('Helvetica', 'B', 24)
         self.set_text_color(44, 62, 80)
         self.multi_cell(0, 12, 'Comprehensive Transcriptomic Analysis of Grapevine Red Blotch Virus (GRBV) Infection', align='C')
-        self.ln(10)
+        self.ln(5)
         self.set_font('Helvetica', '', 14)
         self.set_text_color(52, 73, 94)
-        self.multi_cell(0, 8, 'A Multi-Dimensional RNA-Seq Study Across\nInfection Duration, Maturity Stages, Seasons,\nand Genomic Context', align='C')
-        self.ln(30)
+        self.multi_cell(0, 8, 'Vitis vinifera cv. Merlot', align='C')
+        self.ln(5)
+        self.set_font('Helvetica', '', 12)
+        self.set_text_color(52, 73, 94)
+        self.multi_cell(0, 8, 'A Multi-Dimensional RNA-Seq Study Across\nInfection Duration, Maturity Stages, Seasons,\nand Environmental Context', align='C')
+        self.ln(25)
         self.set_font('Helvetica', '', 11)
         self.set_text_color(100, 100, 100)
         self.cell(0, 8, 'Data: 327 samples | 14,604 genes | 2 seasons | 4 maturity stages', align='C', new_x=XPos.LMARGIN, new_y=YPos.NEXT)
-        self.cell(0, 8, '25 figures | 6 analysis modules | 121 GWAS/QTL loci', align='C', new_x=XPos.LMARGIN, new_y=YPos.NEXT)
+        self.cell(0, 8, '36 figures | 10 analysis modules | 121 GWAS/QTL loci', align='C', new_x=XPos.LMARGIN, new_y=YPos.NEXT)
         self.ln(20)
         self.set_font('Helvetica', 'I', 10)
         self.set_text_color(150, 150, 150)
@@ -193,6 +197,10 @@ toc_items = [
     ('  3.9', 'Seasonal Maturity Progression Analysis'),
     ('  3.10', 'Biomarker Discovery'),
     ('  3.11', 'GWAS/QTL Cross-Reference Analysis'),
+    ('  3.12', 'Analytical Robustness: Pooled vs Stratified'),
+    ('  3.13', 'Environmental Context and Viral Titer Integration'),
+    ('  3.14', 'Heat-Stress Signatures and Virus-Heat Disentanglement'),
+    ('  3.15', 'Integrated Molecular Model'),
     ('4.', 'Discussion'),
     ('5.', 'Conclusions'),
     ('6.', 'Supplementary Files'),
@@ -221,11 +229,12 @@ pdf.body_text(
 
 pdf.body_text(
     'This study presents a comprehensive RNA-Seq transcriptomic analysis of GRBV-infected '
-    '(RB+) versus uninfected (RB-) grapevine leaf tissue, examining the virus-host interaction '
-    'across multiple biological dimensions: infection duration (years since infection), berry '
-    'maturity stages (Pre-veraison through Harvest), sampling seasons (2021 and 2022), and '
-    'environmental context. The analysis further extends to biomarker discovery and cross-referencing '
-    'identified biomarker genes with known grapevine GWAS/QTL loci.'
+    '(RB+) versus uninfected (RB-) Vitis vinifera cv. Merlot leaf tissue, examining the '
+    'virus-host interaction across multiple biological dimensions: infection duration (years '
+    'since infection), berry maturity stages (Pre-veraison through Harvest), sampling seasons '
+    '(2021 and 2022), and environmental context. The analysis further extends to biomarker '
+    'discovery, heat-stress signature characterization, environmental-titer integration, and '
+    'cross-referencing identified biomarker genes with known grapevine GWAS/QTL loci.'
 )
 
 pdf.bold_text('Objectives:')
@@ -618,6 +627,134 @@ pdf.add_figure(f'{OUT}/24_biomarker_QTL_chromosome_map.png',
 pdf.add_figure(f'{OUT}/25_biomarker_QTL_crossref_summary.png',
                'Figure 25: GWAS/QTL cross-reference summary with overlap statistics, category breakdown, and co-localization table.')
 
+# 3.12 Analytical Robustness
+pdf.section_header('3.12', 'Analytical Robustness: Pooled vs Stratified', level=2)
+
+pdf.body_text(
+    'To validate robustness, DE analyses were performed using both pooled (all samples) and '
+    'season-stratified approaches for Q1 and Q2. Comparison of the two approaches confirmed '
+    'strong consistency: the majority of DEGs identified in pooled analysis were recaptured in '
+    'at least one season-stratified analysis, and 908 universal DEGs were confirmed across both '
+    'approaches.'
+)
+
+pdf.highlight_box(
+    '908 universal DEGs were identified as robust across both pooled and stratified analytical '
+    'approaches, demonstrating that key GRBV-responsive genes are reliably detected regardless '
+    'of analytical framework.'
+)
+
+pdf.add_figure(f'{OUT}/26_pooled_vs_stratified_comparison.png',
+               'Figure 26: Pooled vs stratified DE comparison showing DEG overlap, fold change concordance, and approach-specific genes.')
+
+pdf.add_figure(f'{OUT}/27_overlap_connectivity_heatmap.png',
+               'Figure 27: DEG overlap connectivity heatmap across all research questions and conditions.')
+
+pdf.add_figure(f'{OUT}/28_Q1Q2_vs_Q3Q4_crossreference.png',
+               'Figure 28: Cross-question integration showing shared and unique DEGs between Q1-Q2 and Q3-Q4.')
+
+pdf.add_figure(f'{OUT}/29_comprehensive_summary_dashboard.png',
+               'Figure 29: Comprehensive summary dashboard integrating DEG counts, overlaps, and key statistics across all analyses.')
+
+# 3.13 Environmental Context and Viral Titer Integration
+pdf.section_header('3.13', 'Environmental Context and Viral Titer Integration', level=2)
+
+pdf.body_text(
+    'Daily weather data and viral titer measurements were integrated with DEG counts to examine '
+    'how environmental conditions and viral load jointly influence the host transcriptomic response. '
+    'The 2022 growing season was significantly hotter than 2021, with a +7.6 degrees C difference '
+    'at Harvest.'
+)
+
+pdf.add_table(
+    ['Parameter', '2021', '2022', 'Difference'],
+    [
+        ['Mean temp at Harvest', 'Cooler', 'Hotter', '+7.6 C'],
+        ['GDD accumulation', 'Lower', 'Higher', 'Season-dependent'],
+        ['Peak DEG stage', 'Harvest', 'Post-veraison', 'Inverted'],
+        ['Viral titer pattern', 'Increases with stage', 'Peaks mid-season', 'Shifted'],
+    ],
+    col_widths=[45, 35, 35, 45]
+)
+
+pdf.body_text(
+    'Viral titer varied by both maturity stage and season, and correlated with transcriptomic '
+    'magnitude. Temperature-titer-DEG integration revealed that the three variables are coupled: '
+    'higher temperatures shift both viral dynamics and host response timing, explaining the '
+    'inverted seasonal trajectory.'
+)
+
+pdf.add_figure(f'{OUT}/30_weather_overview_sampling.png',
+               'Figure 30: Weather conditions at sampling timepoints across 2021 and 2022 growing seasons.')
+
+pdf.add_figure(f'{OUT}/31_virus_titer_analysis.png',
+               'Figure 31: Viral titer dynamics across maturity stages and seasons.')
+
+pdf.add_figure(f'{OUT}/32_integrated_temp_titer_DEG.png',
+               'Figure 32: Integrated temperature-titer-DEG analysis showing correlations across all conditions.')
+
+pdf.add_figure(f'{OUT}/33_temperature_titer_shift.png',
+               'Figure 33: Temperature-titer shift analysis showing how environmental conditions alter viral dynamics.')
+
+# 3.14 Heat-Stress Signatures
+pdf.section_header('3.14', 'Heat-Stress Signatures and Virus-Heat Disentanglement', level=2)
+
+pdf.body_text(
+    'Given the significant temperature differences between seasons, a dedicated heat-stress gene '
+    'analysis was performed to disentangle viral effects from heat-stress responses. A total of '
+    '115 heat-stress genes spanning 9 functional categories were identified in the expressed gene set.'
+)
+
+pdf.add_table(
+    ['Category', 'Genes Expressed', 'GRBV DEGs', 'Key Finding'],
+    [
+        ['sHSP (small heat-shock)', '36', '29 DOWN', 'Strongest suppression by GRBV'],
+        ['HSP70', '18', '8', 'Moderate effect'],
+        ['HSP90', '7', '3', 'Selective regulation'],
+        ['HSP100/ClpB', '5', '2', 'Minimal effect'],
+        ['HSF (transcription factors)', '15', '6', 'Regulatory hub affected'],
+        ['GolS (galactinol synthase)', '5', '3', 'Osmotic stress link'],
+        ['LEA (late embryogenesis)', '8', '4', 'Desiccation tolerance'],
+        ['Antioxidant', '12', '5', 'ROS defense compromised'],
+        ['GO:heat response', '9', '3', 'General heat response'],
+    ],
+    col_widths=[40, 30, 25, 60]
+)
+
+pdf.highlight_box(
+    'KEY FINDING: GRBV suppresses 29 of 36 small heat-shock proteins (sHSPs) at 2021 Harvest '
+    '(RB+ infected), reducing the sHSP module score by approximately 55% (from +1.64 in healthy '
+    'controls to +0.74 in infected vines). The HSF-sHSP regulatory axis is confirmed with '
+    'r = 0.625 (p = 7.2e-37), suggesting GRBV compromises vine thermal tolerance.'
+)
+
+pdf.body_text(
+    'Disentanglement analysis classified heat-stress DEGs into three categories: (1) virus-only '
+    'genes regulated exclusively by GRBV infection; (2) environment-only genes responding to '
+    'seasonal temperature differences; and (3) dual-regulated genes affected by both virus AND '
+    'environment. At Harvest, 23 genes showed dual regulation, with the virus OPPOSING environmental '
+    'heat induction in most cases.'
+)
+
+pdf.add_figure(f'{OUT}/34_heat_stress_gene_landscape.png',
+               'Figure 34: Heat-stress gene expression landscape showing category breakdown, DEG counts, temperature correlations, and sHSP module scores.')
+
+pdf.add_figure(f'{OUT}/35_heat_vs_virus_disentanglement.png',
+               'Figure 35: Heat vs virus disentanglement showing gene classification, fold change scatter, expression profiles, and HSF-sHSP module correlation.')
+
+# 3.15 Integrated Molecular Model
+pdf.section_header('3.15', 'Integrated Molecular Model', level=2)
+
+pdf.body_text(
+    'A comprehensive data-driven biological diagram was generated integrating all findings into '
+    'a unified molecular disruption model. The diagram synthesizes DEG trajectories, pathway '
+    'disruptions, heat-stress suppression, biomarker performance, and QTL co-localization into '
+    'a single visual representation of GRBV pathobiology in Merlot grapevines.'
+)
+
+pdf.add_figure(f'{OUT}/36_GRBV_biology_diagram.png',
+               'Figure 36: Integrated GRBV molecular disruption cascade diagram combining all analyses into a unified biological model.')
+
 # ---- 4. DISCUSSION ----
 pdf.section_header('4', 'Discussion')
 
@@ -654,7 +791,17 @@ pdf.bullet_point('Sugar metabolism link: Co-localization of the top biomarker wi
 pdf.bullet_point('Breeding potential: Biomarker-QTL overlaps identify candidate genes for marker-assisted selection in breeding programs')
 pdf.bullet_point('Ripening regulation: Co-localization with VvNAC ripening cluster confirms GRBV disrupts NAC-mediated ripening transcription')
 
-pdf.section_header('4.5', 'Limitations', level=2)
+pdf.section_header('4.5', 'Heat-Stress Suppression: A Novel Vulnerability', level=2)
+pdf.body_text(
+    'The discovery that GRBV suppresses 80% of sHSPs represents a novel finding with significant '
+    'agronomic implications. As climate change intensifies heat events in viticultural regions, '
+    'GRBV-infected vines may be doubly vulnerable: compromised by both the direct effects of '
+    'infection and a reduced capacity to mount protective heat-stress responses. The HSF-sHSP '
+    'regulatory axis (r = 0.625) provides a mechanistic framework for understanding this '
+    'suppression: GRBV may interfere with HSF-mediated transcription of the sHSP regulon.'
+)
+
+pdf.section_header('4.6', 'Limitations', level=2)
 pdf.bullet_point('QTL positions are approximate, based on flanking markers mapped to PN40024')
 pdf.bullet_point('Co-localization does not prove causation; functional validation needed')
 pdf.bullet_point('DE analysis uses Welch\'s t-test rather than negative binomial models')
@@ -663,12 +810,14 @@ pdf.bullet_point('DE analysis uses Welch\'s t-test rather than negative binomial
 pdf.section_header('5', 'Conclusions')
 
 conclusions = [
-    'GRBV creates a developmental-stage-dependent, season-modulated, duration-progressive transcriptomic perturbation affecting defense, metabolism, and developmental pathways.',
-    'The viral transcriptomic signature is inverted between seasons: peaking at Harvest in 2021 but at Post-veraison in 2022.',
+    'GRBV creates a developmental-stage-dependent, season-modulated, duration-progressive transcriptomic perturbation affecting defense, metabolism, and developmental pathways in Merlot grapevines.',
+    'The viral transcriptomic signature is inverted between seasons: peaking at Harvest in 2021 but at Post-veraison in 2022, driven by a +7.6 C temperature differential.',
+    'GRBV suppresses 29/36 small heat-shock proteins (sHSPs), reducing the heat-protection module by ~55% and potentially compromising vine thermal tolerance under climate change.',
     '12 universal host biomarkers are consistently significant across seasons, stages, and infection ages. A 3-gene panel achieves perfect classification (AUC = 1.000).',
     '60% of biomarker genes co-localize with known GWAS/QTL loci, with strongest enrichment in disease resistance clusters and berry quality loci.',
     'The top host biomarker (RNA-dependent RNA polymerase 1) maps to the sugar accumulation QTL on chromosome 1, linking antiviral defense with the primary disease symptom.',
     'Multiple biomarker genes map to the chr14 NB-LRR mega-cluster (Rpv8/Rpv12/Ren2/PdR1), suggesting shared innate immune machinery with implications for multi-pathogen resistance breeding.',
+    '908 universal DEGs confirmed across pooled and stratified analytical approaches demonstrate the robustness and reproducibility of the analysis pipeline.',
 ]
 
 for i, c in enumerate(conclusions, 1):
@@ -687,7 +836,14 @@ pdf.add_table(
         ['seasonal_maturity_progression.py', 'Season x Stage stratified analysis'],
         ['biomarker_discovery.py', 'Biomarker scoring and classification'],
         ['gwas_qtl_crossref.py', 'GWAS/QTL cross-referencing (121 loci)'],
+        ['stratified_vs_pooled_comparison.py', 'Pooled vs stratified robustness validation'],
+        ['environment_titer_integration.py', 'Weather, titer, and DEG integration'],
+        ['heat_stress_signatures.py', 'Heat-stress gene analysis (115 genes, 9 categories)'],
         ['analysis_schematic.py', 'Pipeline flowchart'],
+        ['grbv_biology_diagram.py', 'Integrated biology infographic'],
+        ['generate_report_pdf.py', 'PDF report generation'],
+        ['generate_presentation.py', 'PowerPoint presentation generation'],
+        ['generate_workflow_pdf.py', 'Paper-writing workflow PDF'],
     ],
     col_widths=[65, 105]
 )
@@ -700,11 +856,20 @@ pdf.add_table(
         ['sample_metadata.txt', 'Sample metadata (groups, seasons, stages)'],
         ['GRBV_biomarkers_top50.csv', 'Top 50 biomarkers with scores and annotations'],
         ['GRBV_biomarker_QTL_crossref.csv', 'Full biomarker-QTL co-localization table'],
+        ['biomarker_genomic_locations.csv', 'Genomic coordinates for biomarker genes'],
+        ['universal_DEGs_across_approaches.csv', '908 robust consensus DEGs'],
+        ['Q1_pooled_vs_stratified.csv', 'Q1 pooled vs stratified DE comparison'],
+        ['Q2_pooled_vs_stratified.csv', 'Q2 pooled vs stratified DE comparison'],
+        ['integrated_environment_titer_DEG.csv', 'Temperature-titer-DEG integration table'],
+        ['temperature_at_sampling.csv', 'Temperature at sampling timepoints'],
+        ['heat_stress_DEGs_all_conditions.csv', 'Heat gene DE results (all conditions)'],
+        ['heat_gene_temperature_correlations.csv', 'Spearman correlations with temperature'],
+        ['heat_DEGs_recurrence.csv', 'Recurrent heat DEGs across conditions'],
     ],
     col_widths=[65, 105]
 )
 
-pdf.section_header('6.3', 'Figures (25 total)', level=2)
+pdf.section_header('6.3', 'Figures (36 total)', level=2)
 pdf.add_table(
     ['Fig.', 'Filename', 'Description'],
     [
@@ -721,6 +886,10 @@ pdf.add_table(
         ['20-22', '20-22_biomarker_*.png', 'Biomarker discovery'],
         ['23', '23_analysis_schematic.png', 'Analysis pipeline flowchart'],
         ['24-25', '24-25_biomarker_QTL_*.png', 'GWAS/QTL cross-reference'],
+        ['26-29', '26-29_robustness_*.png', 'Pooled vs stratified, summary dashboard'],
+        ['30-33', '30-33_environment_titer_*.png', 'Weather, titer, integration'],
+        ['34-35', '34-35_heat_stress_*.png', 'Heat-stress gene analysis'],
+        ['36', '36_GRBV_biology_diagram.png', 'Integrated biology infographic'],
     ],
     col_widths=[12, 60, 75]
 )
