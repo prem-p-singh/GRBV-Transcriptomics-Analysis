@@ -100,8 +100,8 @@ def get_samples(meta_df, **kwargs):
 
 
 plt.rcParams.update({
-    'figure.dpi': 150, 'font.size': 10, 'axes.titlesize': 11,
-    'axes.labelsize': 10, 'figure.facecolor': 'white'
+    'figure.dpi': 300, 'font.size': 15, 'axes.titlesize': 16,
+    'axes.labelsize': 15, 'figure.facecolor': 'white'
 })
 
 stages = ['Pre_veraison', 'Veraison', 'Post_veraison', 'Harvest']
@@ -664,7 +664,7 @@ ax.set_xticklabels([str(y) for y in ysi_plot])
 ax.set_xlabel("Infection Year Cohort")
 ax.set_ylabel("Number of DEGs")
 ax.set_title("Q1: DEGs by Infection Year\nPooled vs Season-Stratified")
-ax.legend(fontsize=8)
+ax.legend(fontsize=12)
 
 # Add value labels
 for bars in [bars1, bars2, bars3]:
@@ -672,7 +672,7 @@ for bars in [bars1, bars2, bars3]:
         h = bar.get_height()
         if h > 0:
             ax.text(bar.get_x() + bar.get_width()/2, h + 5, str(int(h)),
-                    ha='center', va='bottom', fontsize=7)
+                    ha='center', va='bottom', fontsize=10)
 
 # Panel B: DEG counts comparison for Q2
 ax = axes[0, 1]
@@ -689,18 +689,18 @@ bars3 = ax.bar(x + bar_width, strat_22_vals, bar_width, label='2022-Stratified',
                color='#ff7f0e', alpha=0.85, edgecolor='black', linewidth=0.5)
 
 ax.set_xticks(x)
-ax.set_xticklabels([s.replace('_', '\n') for s in stages], fontsize=8)
+ax.set_xticklabels([s.replace('_', '\n') for s in stages], fontsize=12)
 ax.set_xlabel("Maturity Stage")
 ax.set_ylabel("Number of DEGs")
 ax.set_title("Q2: DEGs by Maturity Stage\nPooled vs Season-Stratified")
-ax.legend(fontsize=8)
+ax.legend(fontsize=12)
 
 for bars in [bars1, bars2, bars3]:
     for bar in bars:
         h = bar.get_height()
         if h > 0:
             ax.text(bar.get_x() + bar.get_width()/2, h + 5, str(int(h)),
-                    ha='center', va='bottom', fontsize=7)
+                    ha='center', va='bottom', fontsize=10)
 
 # Panel C: FC scatter — Pooled vs 2021-Stratified (Q2, all stages combined)
 ax = axes[1, 0]
@@ -722,7 +722,7 @@ ax.set_ylabel("log2FC (2021-Stratified)")
 ax.set_title("Q2: Fold-Change Concordance\nPooled vs 2021-Stratified")
 ax.set_xlim(-6, 6)
 ax.set_ylim(-6, 6)
-ax.legend(fontsize=7, markerscale=5)
+ax.legend(fontsize=10, markerscale=5)
 ax.set_aspect('equal')
 
 # Panel D: FC scatter — Pooled vs 2022-Stratified
@@ -742,12 +742,12 @@ ax.set_ylabel("log2FC (2022-Stratified)")
 ax.set_title("Q2: Fold-Change Concordance\nPooled vs 2022-Stratified")
 ax.set_xlim(-6, 6)
 ax.set_ylim(-6, 6)
-ax.legend(fontsize=7, markerscale=5)
+ax.legend(fontsize=10, markerscale=5)
 ax.set_aspect('equal')
 
-plt.suptitle("Plot 26: Pooled vs Season-Stratified DE Comparison", fontsize=14, y=1.01)
+plt.suptitle("Plot 26: Pooled vs Season-Stratified DE Comparison", fontsize=21, y=1.01)
 plt.tight_layout()
-plt.savefig('26_pooled_vs_stratified_comparison.png', bbox_inches='tight')
+plt.savefig('26_pooled_vs_stratified_comparison.png', dpi=300, bbox_inches='tight')
 plt.close()
 print("Saved: 26_pooled_vs_stratified_comparison.png")
 
@@ -797,7 +797,7 @@ ax.set_xticks(x)
 ax.set_xticklabels(categories)
 ax.set_ylabel("Number of DEGs")
 ax.set_title("Q2: DEG Overlap Categories per Stage\n(Pooled vs 2021-Strat vs 2022-Strat)")
-ax.legend(fontsize=7)
+ax.legend(fontsize=10)
 
 # Panel B: DEG overlap heatmap across key comparisons
 ax = axes[0, 1]
@@ -875,7 +875,7 @@ x = np.arange(len(x_labels))
 ax.bar(x, up_vals_plot, color=colors_up, alpha=0.8, edgecolor='black', linewidth=0.3)
 ax.bar(x, down_vals_plot, color=colors_up, alpha=0.5, edgecolor='black', linewidth=0.3)
 ax.set_xticks(x)
-ax.set_xticklabels(x_labels, fontsize=5, rotation=45, ha='right')
+ax.set_xticklabels(x_labels, fontsize=8, rotation=45, ha='right')
 ax.set_ylabel("Number of DEGs (up/down)")
 ax.set_title("Q2: Up/Down DEGs by Stage and Approach")
 ax.axhline(0, color='black', linewidth=0.5)
@@ -883,7 +883,7 @@ ax.axhline(0, color='black', linewidth=0.5)
 # Custom legend
 from matplotlib.patches import Patch
 legend_patches = [Patch(facecolor=c, label=l) for l, c in approach_colors.items()]
-ax.legend(handles=legend_patches, fontsize=8)
+ax.legend(handles=legend_patches, fontsize=12)
 
 # Panel D: Seasonal consistency of stratified results
 ax = axes[1, 1]
@@ -906,12 +906,12 @@ ax.set_ylabel("log2FC (2022-Stratified)")
 ax.set_title("Season-to-Season Consistency\n(2021-Strat vs 2022-Strat per Stage)")
 ax.set_xlim(-6, 6)
 ax.set_ylim(-6, 6)
-ax.legend(fontsize=7, markerscale=5)
+ax.legend(fontsize=10, markerscale=5)
 ax.set_aspect('equal')
 
-plt.suptitle("Plot 27: Cross-Approach DEG Overlap & Consistency", fontsize=14, y=1.01)
+plt.suptitle("Plot 27: Cross-Approach DEG Overlap & Consistency", fontsize=21, y=1.01)
 plt.tight_layout()
-plt.savefig('27_overlap_connectivity_heatmap.png', bbox_inches='tight')
+plt.savefig('27_overlap_connectivity_heatmap.png', dpi=300, bbox_inches='tight')
 plt.close()
 print("Saved: 27_overlap_connectivity_heatmap.png")
 
@@ -954,7 +954,7 @@ for ysi, c in ysi_colors.items():
                                    markersize=6, label=f'YSI={ysi} (2021)'))
     legend_elements.append(Line2D([0], [0], marker='s', color='w', markerfacecolor=c,
                                    markersize=6, label=f'YSI={ysi} (2022)'))
-ax.legend(handles=legend_elements, fontsize=5, ncol=2)
+ax.legend(handles=legend_elements, fontsize=8, ncol=2)
 
 # Panel B: Cross-comparison Q1-Strat vs Q3
 ax = axes[0, 1]
@@ -1018,10 +1018,10 @@ ax.bar(x, q2q4_df['q2_pooled_only'], w, label='Q2-pooled only', color='#d62728',
 ax.bar(x + w, q2q4_df['q4_only'], w, label='Q4-union only (new from stratification)',
        color='#9467bd', alpha=0.85)
 ax.set_xticks(x)
-ax.set_xticklabels([s.replace('_', '\n') for s in stages], fontsize=8)
+ax.set_xticklabels([s.replace('_', '\n') for s in stages], fontsize=12)
 ax.set_ylabel("Number of DEGs")
 ax.set_title("Q2-Pooled vs Q4 (Season x Stage union)\nNew DEGs revealed by stratification")
-ax.legend(fontsize=7)
+ax.legend(fontsize=10)
 
 # Panel D: Summary: % of pooled DEGs confirmed by stratification
 ax = axes[1, 1]
@@ -1051,22 +1051,22 @@ ax.bar(x - 0.2, pct_confirmed_21, 0.2, label='Confirmed in 2021', color='#1f77b4
 ax.bar(x, pct_confirmed_22, 0.2, label='Confirmed in 2022', color='#ff7f0e', alpha=0.85)
 ax.bar(x + 0.2, pct_confirmed_either, 0.2, label='Confirmed in either', color='#2ca02c', alpha=0.85)
 ax.set_xticks(x)
-ax.set_xticklabels(summary_stages, fontsize=8)
+ax.set_xticklabels(summary_stages, fontsize=12)
 ax.set_ylabel("% of Pooled DEGs Confirmed")
 ax.set_title("Validation: % of Q2-Pooled DEGs\nConfirmed by Season-Stratified Analysis")
-ax.legend(fontsize=8)
+ax.legend(fontsize=12)
 ax.set_ylim(0, 105)
 ax.axhline(100, color='grey', linestyle='--', linewidth=0.5, alpha=0.5)
 
 # Add percentage labels
 for i, (v21, v22, ve) in enumerate(zip(pct_confirmed_21, pct_confirmed_22, pct_confirmed_either)):
-    ax.text(i - 0.2, v21 + 1, f'{v21:.0f}%', ha='center', fontsize=6)
-    ax.text(i, v22 + 1, f'{v22:.0f}%', ha='center', fontsize=6)
-    ax.text(i + 0.2, ve + 1, f'{ve:.0f}%', ha='center', fontsize=6)
+    ax.text(i - 0.2, v21 + 1, f'{v21:.0f}%', ha='center', fontsize=9)
+    ax.text(i, v22 + 1, f'{v22:.0f}%', ha='center', fontsize=9)
+    ax.text(i + 0.2, ve + 1, f'{ve:.0f}%', ha='center', fontsize=9)
 
-plt.suptitle("Plot 28: Q1/Q2 Cross-Reference with Q3/Q4", fontsize=14, y=1.01)
+plt.suptitle("Plot 28: Q1/Q2 Cross-Reference with Q3/Q4", fontsize=21, y=1.01)
 plt.tight_layout()
-plt.savefig('28_Q1Q2_vs_Q3Q4_crossreference.png', bbox_inches='tight')
+plt.savefig('28_Q1Q2_vs_Q3Q4_crossreference.png', dpi=300, bbox_inches='tight')
 plt.close()
 print("Saved: 28_Q1Q2_vs_Q3Q4_crossreference.png")
 
@@ -1145,11 +1145,11 @@ approach_colors_list.append('#9467bd')
 ax.bar(range(len(approach_names)), approach_degs, color=approach_colors_list,
        alpha=0.85, edgecolor='black', linewidth=0.5)
 ax.set_xticks(range(len(approach_names)))
-ax.set_xticklabels(approach_names, fontsize=7)
+ax.set_xticklabels(approach_names, fontsize=10)
 ax.set_ylabel("Total Unique DEGs")
 ax.set_title("Total DEGs per Analysis Approach")
 for i, v in enumerate(approach_degs):
-    ax.text(i, v + 10, str(v), ha='center', fontsize=7, fontweight='bold')
+    ax.text(i, v + 10, str(v), ha='center', fontsize=10, fontweight='bold')
 
 # Panel B: Venn-like: Q1-pooled vs Q1-strat union
 ax = axes[0, 1]
@@ -1164,7 +1164,7 @@ bars = ax.bar(venn_data.keys(), venn_data.values(), color=venn_colors, alpha=0.8
 ax.set_ylabel("Number of DEGs")
 ax.set_title("Q1: Pooled vs Stratified (union)\nDEG Comparison")
 for bar, v in zip(bars, venn_data.values()):
-    ax.text(bar.get_x() + bar.get_width()/2, v + 5, str(v), ha='center', fontsize=9)
+    ax.text(bar.get_x() + bar.get_width()/2, v + 5, str(v), ha='center', fontsize=14)
 
 # Panel C: Same for Q2
 ax = axes[0, 2]
@@ -1178,7 +1178,7 @@ bars = ax.bar(venn_data2.keys(), venn_data2.values(), color=venn_colors, alpha=0
 ax.set_ylabel("Number of DEGs")
 ax.set_title("Q2: Pooled vs Stratified (union)\nDEG Comparison")
 for bar, v in zip(bars, venn_data2.values()):
-    ax.text(bar.get_x() + bar.get_width()/2, v + 5, str(v), ha='center', fontsize=9)
+    ax.text(bar.get_x() + bar.get_width()/2, v + 5, str(v), ha='center', fontsize=14)
 
 # Panel D: Gene detection frequency histogram
 ax = axes[1, 0]
@@ -1214,14 +1214,14 @@ if bias_data:
     ax.bar(x - 0.15, bias_df['r_2021'], 0.3, label='Pooled~2021', color='#1f77b4', alpha=0.85)
     ax.bar(x + 0.15, bias_df['r_2022'], 0.3, label='Pooled~2022', color='#ff7f0e', alpha=0.85)
     ax.set_xticks(x)
-    ax.set_xticklabels([s.replace('_', '\n') for s in bias_df['stage']], fontsize=8)
+    ax.set_xticklabels([s.replace('_', '\n') for s in bias_df['stage']], fontsize=12)
     ax.set_ylabel("Pearson r (FC correlation)")
     ax.set_title("Seasonal Bias of Pooled Results\n(higher r = more similar to that season)")
     ax.legend()
     ax.set_ylim(0.5, 1.05)
     for i, row in bias_df.iterrows():
-        ax.text(i - 0.15, row['r_2021'] + 0.01, f"{row['r_2021']:.3f}", ha='center', fontsize=7)
-        ax.text(i + 0.15, row['r_2022'] + 0.01, f"{row['r_2022']:.3f}", ha='center', fontsize=7)
+        ax.text(i - 0.15, row['r_2021'] + 0.01, f"{row['r_2021']:.3f}", ha='center', fontsize=10)
+        ax.text(i + 0.15, row['r_2022'] + 0.01, f"{row['r_2022']:.3f}", ha='center', fontsize=10)
 
 # Panel F: Impact assessment — what pooling missed vs revealed
 ax = axes[1, 2]
@@ -1236,15 +1236,15 @@ impact_vals = [
 impact_colors = ['#d62728', '#2ca02c', '#d62728', '#2ca02c']
 bars = ax.barh(range(len(impact_labels)), impact_vals, color=impact_colors, alpha=0.85, edgecolor='black')
 ax.set_yticks(range(len(impact_labels)))
-ax.set_yticklabels(impact_labels, fontsize=9)
+ax.set_yticklabels(impact_labels, fontsize=14)
 ax.set_xlabel("Number of genes")
 ax.set_title("Impact: Pooled vs Stratified\n(Red = lost by stratification, Green = gained)")
 for bar, v in zip(bars, impact_vals):
-    ax.text(v + 5, bar.get_y() + bar.get_height()/2, str(v), va='center', fontsize=9)
+    ax.text(v + 5, bar.get_y() + bar.get_height()/2, str(v), va='center', fontsize=14)
 
-plt.suptitle("Plot 29: Comprehensive Pooled vs Stratified Summary Dashboard", fontsize=14, y=1.01)
+plt.suptitle("Plot 29: Comprehensive Pooled vs Stratified Summary Dashboard", fontsize=21, y=1.01)
 plt.tight_layout()
-plt.savefig('29_comprehensive_summary_dashboard.png', bbox_inches='tight')
+plt.savefig('29_comprehensive_summary_dashboard.png', dpi=300, bbox_inches='tight')
 plt.close()
 print("Saved: 29_comprehensive_summary_dashboard.png")
 

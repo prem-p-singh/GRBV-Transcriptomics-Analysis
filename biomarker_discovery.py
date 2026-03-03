@@ -37,8 +37,8 @@ import warnings
 warnings.filterwarnings('ignore')
 
 plt.rcParams.update({
-    'figure.dpi': 150, 'font.size': 9, 'axes.titlesize': 11,
-    'axes.labelsize': 10, 'figure.facecolor': 'white'
+    'figure.dpi': 300, 'font.size': 14, 'axes.titlesize': 16,
+    'axes.labelsize': 15, 'figure.facecolor': 'white'
 })
 
 # ============================================================
@@ -605,7 +605,7 @@ ax.axvline(scores.quantile(0.99), color='darkred', linestyle='--', linewidth=1, 
 ax.set_xlabel("Biomarker Score")
 ax.set_ylabel("Number of Genes")
 ax.set_title("Biomarker Score Distribution\n(genes with ≥1 DE condition)")
-ax.legend(fontsize=8)
+ax.legend(fontsize=12)
 
 # 2. Consistency vs AUC
 ax = fig.add_subplot(gs[0, 1])
@@ -622,7 +622,7 @@ ax.set_title("Consistency vs Discriminatory Power")
 for _, row in bm_df.head(5).iterrows():
     if row['n_conditions_sig'] >= 1:
         ax.annotate(row['gene'], (row['n_conditions_sig'], row['AUC']),
-                    fontsize=6, ha='left', va='bottom')
+                    fontsize=9, ha='left', va='bottom')
 
 # 3. Multi-gene panel AUC
 ax = fig.add_subplot(gs[0, 2])
@@ -637,7 +637,7 @@ ax.errorbar(sizes, rf_means, yerr=rf_stds, marker='s', linewidth=2, capsize=5, l
 ax.set_xlabel("Panel Size (number of genes)")
 ax.set_ylabel("5-fold CV AUC-ROC")
 ax.set_title("Multi-Gene Panel Classifier\n(5-fold CV)")
-ax.legend(fontsize=8)
+ax.legend(fontsize=12)
 ax.set_ylim(0.5, 1.05)
 ax.axhline(0.9, color='grey', linestyle='--', linewidth=0.5)
 ax.set_xticks(sizes)
@@ -659,7 +659,7 @@ ax.plot([0, 1], [0, 1], 'k--', linewidth=0.5)
 ax.set_xlabel("False Positive Rate")
 ax.set_ylabel("True Positive Rate")
 ax.set_title("ROC Curves: Top 5 Biomarker Genes")
-ax.legend(fontsize=6.5, loc='lower right')
+ax.legend(fontsize=10, loc='lower right')
 
 # 5. Season-specific AUC heatmap for top 30
 ax = fig.add_subplot(gs[1, 1])
@@ -747,7 +747,7 @@ for _, row in bm_df.head(8).iterrows():
     if len(gene_de) > 0:
         gr = gene_de.iloc[0]
         ax.annotate(row['gene'], (gr['log2FC'], gr['neg_log10p']),
-                    fontsize=5.5, fontweight='bold', ha='center', va='bottom',
+                    fontsize=8, fontweight='bold', ha='center', va='bottom',
                     xytext=(0, 5), textcoords='offset points',
                     bbox=dict(boxstyle='round,pad=0.2', facecolor='yellow', alpha=0.7))
 
@@ -764,7 +764,7 @@ bars = ax.bar(categories, cat_counts, color=cat_colors, alpha=0.85, edgecolor='b
 ax.set_ylabel("Number of Biomarker Genes")
 ax.set_title("Biomarker Categories")
 for b, v in zip(bars, cat_counts):
-    ax.text(b.get_x() + b.get_width()/2, v + max(cat_counts)*0.02, str(v), ha='center', fontsize=10)
+    ax.text(b.get_x() + b.get_width()/2, v + max(cat_counts)*0.02, str(v), ha='center', fontsize=15)
 
 # 9. Expression boxplots for top 6 biomarkers
 ax = fig.add_subplot(gs[2, 2])
@@ -785,11 +785,11 @@ sns.boxplot(data=box_df, x='Gene', y='Expression', hue='Group',
             palette={'RB(+)': '#e74c3c', 'RB(-)': '#3498db'},
             ax=ax, fliersize=1, linewidth=0.8)
 ax.set_title("Expression of Top 6 Biomarkers\n(RB+ vs RB-)")
-ax.set_xticklabels(ax.get_xticklabels(), rotation=45, ha='right', fontsize=7)
-ax.legend(fontsize=8)
+ax.set_xticklabels(ax.get_xticklabels(), rotation=45, ha='right', fontsize=10)
+ax.legend(fontsize=12)
 
-fig.suptitle("GRBV Biomarker Discovery: Overview", fontsize=15, y=1.02)
-plt.savefig('20_biomarker_overview.png', bbox_inches='tight')
+fig.suptitle("GRBV Biomarker Discovery: Overview", fontsize=22, y=1.02)
+plt.savefig('20_biomarker_overview.png', dpi=300, bbox_inches='tight')
 plt.close()
 print("Saved: 20_biomarker_overview.png")
 
@@ -846,24 +846,24 @@ for idx, (_, bm_row) in enumerate(top16.iterrows()):
         x_pos += 0.5  # gap between seasons
 
     ax.set_xticks(xticks)
-    ax.set_xticklabels(xticklabels, fontsize=5.5, rotation=45)
+    ax.set_xticklabels(xticklabels, fontsize=8, rotation=45)
     ax.axvline(3.75, color='grey', linestyle=':', linewidth=0.5)  # season separator
 
     gene_nm = gene_name_map.get(gene, '')
     gene_nm_short = gene_nm[:30] if gene_nm else ''
     ax.set_title(f"{gene}\n{gene_nm_short}\nAUC={bm_row['AUC']:.3f} | {bm_row['primary_direction']} | "
                  f"Sig in {bm_row['n_conditions_sig']}/{bm_row['n_conditions_tested']} cond.",
-                 fontsize=7)
-    ax.set_ylabel("log2(CPM+1)", fontsize=7)
+                 fontsize=10)
+    ax.set_ylabel("log2(CPM+1)", fontsize=10)
 
     # Add season labels
-    ax.text(1.5, ax.get_ylim()[1]*0.95, "2021", ha='center', fontsize=8, fontweight='bold', color='#2c3e50')
-    ax.text(6, ax.get_ylim()[1]*0.95, "2022", ha='center', fontsize=8, fontweight='bold', color='#2c3e50')
+    ax.text(1.5, ax.get_ylim()[1]*0.95, "2021", ha='center', fontsize=12, fontweight='bold', color='#2c3e50')
+    ax.text(6, ax.get_ylim()[1]*0.95, "2022", ha='center', fontsize=12, fontweight='bold', color='#2c3e50')
 
 fig.suptitle("Top 16 GRBV Biomarkers: Expression Across Season × Stage × Infection\n"
              "(Red = RB+, Blue = RB-; bars = mean ± SEM)",
-             fontsize=14, y=1.02)
-plt.savefig('21_biomarker_profiles.png', bbox_inches='tight')
+             fontsize=21, y=1.02)
+plt.savefig('21_biomarker_profiles.png', dpi=300, bbox_inches='tight')
 plt.close()
 print("Saved: 21_biomarker_profiles.png")
 
@@ -894,7 +894,7 @@ ax.set_title(f"FC Consistency of Top 50 Biomarkers\n(r={r:.3f}, p={p:.2e})")
 
 # Label extreme points
 for i, gene in enumerate(top50_genes[:8]):
-    ax.annotate(gene, (fc21[i], fc22[i]), fontsize=5, ha='left')
+    ax.annotate(gene, (fc21[i], fc22[i]), fontsize=8, ha='left')
 
 # 2. AUC stability: box plot of AUC across conditions
 ax = fig.add_subplot(gs[0, 1])
@@ -920,11 +920,11 @@ ax.barh(x, stab_df['mean_auc'].values, xerr=stab_df['std_auc'].values,
 ax.scatter(stab_df['min_auc'].values, x, color='red', s=20, zorder=5, label='Min AUC')
 ax.set_yticks(x)
 gene_labels_stab = [f"{g} ({gene_name_map.get(g, '')[:18]})" for g in stab_df['gene']]
-ax.set_yticklabels(gene_labels_stab, fontsize=5.5)
+ax.set_yticklabels(gene_labels_stab, fontsize=8)
 ax.set_xlabel("AUC-ROC")
 ax.set_title("AUC Stability: Top 30 Biomarkers\n(bar=mean±std, red=minimum)")
 ax.axvline(0.7, color='grey', linestyle='--', linewidth=0.5)
-ax.legend(fontsize=7)
+ax.legend(fontsize=10)
 ax.invert_yaxis()
 
 # 3. Condition-specific signature: where each biomarker is significant
@@ -1015,14 +1015,14 @@ bars = ax.bar(range(len(v_labels)), v_means, yerr=v_stds, capsize=3,
               color=['#2ecc71', '#3498db', '#e67e22', '#2ca02c', '#ff7f0e', '#d62728', '#9467bd'],
               alpha=0.85, edgecolor='black', linewidth=0.5)
 ax.set_xticks(range(len(v_labels)))
-ax.set_xticklabels(v_labels, rotation=45, ha='right', fontsize=8)
+ax.set_xticklabels(v_labels, rotation=45, ha='right', fontsize=12)
 ax.set_ylabel("5-fold CV AUC")
 ax.set_title("10-Gene Panel Performance\nAcross Conditions")
 ax.set_ylim(0.5, 1.05)
 ax.axhline(0.9, color='grey', linestyle='--', linewidth=0.5)
 
 for b, m in zip(bars, v_means):
-    ax.text(b.get_x() + b.get_width()/2, m + 0.02, f'{m:.3f}', ha='center', fontsize=7)
+    ax.text(b.get_x() + b.get_width()/2, m + 0.02, f'{m:.3f}', ha='center', fontsize=10)
 
 # 5. Feature importance from Random Forest
 ax = fig.add_subplot(gs[1, 1])
@@ -1040,7 +1040,7 @@ imp_df = imp_df.sort_values('importance', ascending=True)
 ax.barh(range(len(imp_df)), imp_df['importance'].values, color='#9b59b6', alpha=0.85)
 ax.set_yticks(range(len(imp_df)))
 gene_labels_imp = [f"{g} ({gene_name_map.get(g, '')[:20]})" for g in imp_df['gene']]
-ax.set_yticklabels(gene_labels_imp, fontsize=6)
+ax.set_yticklabels(gene_labels_imp, fontsize=9)
 ax.set_xlabel("Feature Importance (Random Forest)")
 ax.set_title("RF Feature Importance\n(Top 20 Biomarkers)")
 
@@ -1061,7 +1061,7 @@ ax.plot([0, 1], [0, 1], 'k--', linewidth=0.5)
 ax.set_xlabel("False Positive Rate")
 ax.set_ylabel("True Positive Rate")
 ax.set_title("Panel Classifier ROC Curves\n(Logistic Regression)")
-ax.legend(fontsize=8)
+ax.legend(fontsize=12)
 
 # 7-8-9: Category-specific analysis
 categories_info = [
@@ -1087,7 +1087,7 @@ for c_idx, (cat_name, cat_df, cat_color) in enumerate(categories_info):
     ax.barh(y, aucs_cat, color=cat_color, alpha=0.85)
     ax.set_yticks(y)
     gene_labels_cat = [f"{g} ({gene_name_map.get(g, '')[:22]})" for g in cat_genes]
-    ax.set_yticklabels(gene_labels_cat, fontsize=5.5)
+    ax.set_yticklabels(gene_labels_cat, fontsize=8)
     ax.set_xlabel("AUC-ROC")
     ax.set_title(f"{cat_name}\n(top {len(cat_genes)} genes)")
     ax.axvline(0.7, color='grey', linestyle='--', linewidth=0.5)
@@ -1095,10 +1095,10 @@ for c_idx, (cat_name, cat_df, cat_color) in enumerate(categories_info):
 
     # Add FC annotation
     for i, (a, f) in enumerate(zip(aucs_cat, fcs_cat)):
-        ax.text(a + 0.01, i, f'FC={f:.1f}', va='center', fontsize=5.5)
+        ax.text(a + 0.01, i, f'FC={f:.1f}', va='center', fontsize=8)
 
-fig.suptitle("GRBV Biomarker Robustness & Validation", fontsize=15, y=1.02)
-plt.savefig('22_biomarker_robustness.png', bbox_inches='tight')
+fig.suptitle("GRBV Biomarker Robustness & Validation", fontsize=22, y=1.02)
+plt.savefig('22_biomarker_robustness.png', dpi=300, bbox_inches='tight')
 plt.close()
 print("Saved: 22_biomarker_robustness.png")
 

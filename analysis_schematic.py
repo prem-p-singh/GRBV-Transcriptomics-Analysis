@@ -76,9 +76,9 @@ def section_bg(x, y, w, h, color, alpha=0.12):
 # TITLE
 # ============================================================
 ax.text(50, 119, 'GRBV Transcriptomics Analysis Pipeline', ha='center',
-        fontsize=22, fontweight='bold', color='#111827')
+        fontsize=33, fontweight='bold', color='#111827')
 ax.text(50, 117.5, 'Grapevine Red Blotch Virus  |  Multi-factorial RNA-Seq Study', ha='center',
-        fontsize=12, color='#6b7280', style='italic')
+        fontsize=18, color='#6b7280', style='italic')
 
 # ============================================================
 # STEP 1: INPUT DATA
@@ -115,7 +115,7 @@ arrow(25, 101.2, 25, 100.2)
 
 box(25, 99.8, 26, 1.2, '', [], c_prep, c_prep_b)
 ax.text(25, 99.8, 'CPM normalization  +  log2(CPM + 1)', ha='center', va='center',
-        fontsize=10, fontweight='bold', color=c_prep_b, zorder=3)
+        fontsize=15, fontweight='bold', color=c_prep_b, zorder=3)
 
 # Experimental design side box
 box(78, 103, 30, 6.5, 'Experimental Design',
@@ -165,7 +165,7 @@ arrow(16, 75.3, 16, 74)
 
 box(16, 73, 26, 2, '', [], c_out, c_de_b)
 ax.text(16, 73, 'PCA + Volcano + Heatmaps + Variance partition', ha='center',
-        fontsize=8, fontweight='bold', color=c_de_b, zorder=3)
+        fontsize=12, fontweight='bold', color=c_de_b, zorder=3)
 
 
 # --- TRACK B: Pathway Enrichment ---
@@ -201,7 +201,7 @@ arrow(50, 75.3, 50, 74)
 
 box(50, 73, 28, 2, '', [], c_out, c_pw_b)
 ax.text(50, 73, 'Enrichment bars + Dotplots + Heatmaps', ha='center',
-        fontsize=8, fontweight='bold', color=c_pw_b, zorder=3)
+        fontsize=12, fontweight='bold', color=c_pw_b, zorder=3)
 
 
 # --- TRACK C: Seasonal x Maturity ---
@@ -237,7 +237,7 @@ arrow(84, 75.3, 84, 74)
 
 box(84, 73, 26, 2, '', [], c_out, c_seas_b)
 ax.text(84, 73, 'Season x Stage DEG + pathway grids', ha='center',
-        fontsize=8, fontweight='bold', color=c_seas_b, zorder=3)
+        fontsize=12, fontweight='bold', color=c_seas_b, zorder=3)
 
 
 # ============================================================
@@ -362,9 +362,9 @@ box(50, 17, 80, 4.5, 'Analysis Outputs',
 methods_text = ('Methods: Python 3  |  Welch t-test + BH FDR  |  Fisher exact test  |  '
                 'PCA (sklearn)  |  Logistic Regression + Random Forest  |  '
                 'goatools (GO OBO 2024-06-17)  |  KEGG REST API  |  OrgDb SQLite')
-ax.text(50, 14.8, methods_text, ha='center', va='center', fontsize=7.5,
+ax.text(50, 14.8, methods_text, ha='center', va='center', fontsize=11,
         color='#9ca3af', style='italic')
 
-plt.savefig('23_analysis_schematic.png', bbox_inches='tight', dpi=200, facecolor='white')
+plt.savefig('23_analysis_schematic.png', bbox_inches='tight', dpi=300, facecolor='white')
 plt.close()
 print("Saved: 23_analysis_schematic.png")

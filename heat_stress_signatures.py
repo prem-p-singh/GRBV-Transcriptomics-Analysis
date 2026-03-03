@@ -21,8 +21,8 @@ import warnings
 warnings.filterwarnings('ignore')
 
 plt.rcParams.update({
-    'figure.dpi': 150, 'font.size': 10, 'axes.titlesize': 11,
-    'axes.labelsize': 10, 'figure.facecolor': 'white'
+    'figure.dpi': 300, 'font.size': 15, 'axes.titlesize': 16,
+    'axes.labelsize': 15, 'figure.facecolor': 'white'
 })
 
 # ============================================================
@@ -601,7 +601,7 @@ ax.axvline(0, color='black', linewidth=0.5)
 ax.set_xlabel("Spearman r (expression vs temperature)")
 ax.set_ylabel("Number of genes")
 ax.set_title("Heat Gene-Temperature Correlations\n(in RB- controls)")
-ax.legend(fontsize=7)
+ax.legend(fontsize=10)
 
 # Panel D: sHSP module score across conditions
 ax = axes[1, 1]
@@ -639,15 +639,15 @@ if 'sHSP_score' in meta.columns:
                       medianprops=dict(color='black'), showfliers=False)
 
     ax.set_xticks(range(len(labels_order)))
-    ax.set_xticklabels(labels_order, fontsize=7)
+    ax.set_xticklabels(labels_order, fontsize=10)
     ax.set_ylabel("sHSP Module Score (mean Z)")
     ax.set_title("sHSP Module Score: Season x Stage x Infection")
-    ax.legend([bp1['boxes'][0], bp2['boxes'][0]], ['RB(-)', 'RB(+)'], fontsize=9)
+    ax.legend([bp1['boxes'][0], bp2['boxes'][0]], ['RB(-)', 'RB(+)'], fontsize=14)
     ax.axhline(0, color='grey', linestyle='--', linewidth=0.5)
 
-plt.suptitle("Plot 34: Heat-Stress Gene Expression Landscape", fontsize=14, y=1.01)
+plt.suptitle("Plot 34: Heat-Stress Gene Expression Landscape", fontsize=21, y=1.01)
 plt.tight_layout()
-plt.savefig('34_heat_stress_gene_landscape.png', bbox_inches='tight')
+plt.savefig('34_heat_stress_gene_landscape.png', dpi=300, bbox_inches='tight')
 plt.close()
 print("Saved: 34_heat_stress_gene_landscape.png")
 
@@ -675,10 +675,10 @@ for category, color, label in [
     bottom += vals
 
 ax.set_xticks(x)
-ax.set_xticklabels([s.replace('_', '\n') for s in stages], fontsize=9)
+ax.set_xticklabels([s.replace('_', '\n') for s in stages], fontsize=14)
 ax.set_ylabel("Number of heat-stress genes")
 ax.set_title("Heat Gene Classification:\nVirus vs Environment Effects")
-ax.legend(fontsize=8)
+ax.legend(fontsize=12)
 
 # Panel B: FC scatter — infection effect (x) vs environmental effect (y)
 ax = axes[0, 1]
@@ -704,13 +704,13 @@ ax.axvline(0, color='grey', linewidth=0.5)
 ax.set_xlabel("log2FC (Virus effect: RB+ vs RB-)")
 ax.set_ylabel("log2FC (Environment: 2022 vs 2021 in RB-)")
 ax.set_title("Heat Genes: Virus vs Environmental Effects")
-ax.legend(fontsize=8)
+ax.legend(fontsize=12)
 
 # Quadrant counts
-ax.text(0.95, 0.95, "Virus UP\nHeat UP", transform=ax.transAxes, fontsize=7, ha='right', va='top', color='red')
-ax.text(0.05, 0.95, "Virus DOWN\nHeat UP", transform=ax.transAxes, fontsize=7, ha='left', va='top', color='orange')
-ax.text(0.05, 0.05, "Virus DOWN\nHeat DOWN", transform=ax.transAxes, fontsize=7, ha='left', va='bottom', color='blue')
-ax.text(0.95, 0.05, "Virus UP\nHeat DOWN", transform=ax.transAxes, fontsize=7, ha='right', va='bottom', color='purple')
+ax.text(0.95, 0.95, "Virus UP\nHeat UP", transform=ax.transAxes, fontsize=10, ha='right', va='top', color='red')
+ax.text(0.05, 0.95, "Virus DOWN\nHeat UP", transform=ax.transAxes, fontsize=10, ha='left', va='top', color='orange')
+ax.text(0.05, 0.05, "Virus DOWN\nHeat DOWN", transform=ax.transAxes, fontsize=10, ha='left', va='bottom', color='blue')
+ax.text(0.95, 0.05, "Virus UP\nHeat DOWN", transform=ax.transAxes, fontsize=10, ha='right', va='bottom', color='purple')
 
 # Panel C: Top HSP gene expression profiles
 ax = axes[1, 0]
@@ -735,13 +735,13 @@ if len(top_heat_degs) > 0:
         ax.plot(range(len(profile)), profile, 'o-', label=f'{g} ({gname})', markersize=4, linewidth=1.5)
 
     ax.set_xticks(range(len(cond_labels_plot)))
-    ax.set_xticklabels(cond_labels_plot, fontsize=7)
+    ax.set_xticklabels(cond_labels_plot, fontsize=10)
     ax.set_ylabel("Mean log2(CPM+1) in RB(-)")
     ax.set_title("Top Recurrent Heat DEG Expression\nin Controls Across Conditions")
-    ax.legend(fontsize=5, ncol=2)
+    ax.legend(fontsize=8, ncol=2)
     ax.axvline(3.5, color='grey', linestyle='--', linewidth=0.5, alpha=0.5)  # Season boundary
-    ax.text(1.5, ax.get_ylim()[1] * 0.95, '2021', ha='center', fontsize=10, color='grey')
-    ax.text(5.5, ax.get_ylim()[1] * 0.95, '2022', ha='center', fontsize=10, color='grey')
+    ax.text(1.5, ax.get_ylim()[1] * 0.95, '2021', ha='center', fontsize=15, color='grey')
+    ax.text(5.5, ax.get_ylim()[1] * 0.95, '2022', ha='center', fontsize=15, color='grey')
 
 # Panel D: HSF module vs sHSP module scatter
 ax = axes[1, 1]
@@ -763,15 +763,15 @@ if 'sHSP_score' in meta.columns and 'HSF_score' in meta.columns:
         Line2D([0], [0], marker='o', color='w', markerfacecolor='#d62728', markersize=8, label='RB(+) 2021'),
         Line2D([0], [0], marker='s', color='w', markerfacecolor='#d62728', markersize=8, label='RB(+) 2022'),
     ]
-    ax.legend(handles=legend_elements, fontsize=7)
+    ax.legend(handles=legend_elements, fontsize=10)
 
     # Add correlation
     r, p = pearsonr(meta['HSF_score'].dropna(), meta['sHSP_score'].dropna())
-    ax.text(0.05, 0.95, f'r={r:.3f}, p={p:.2e}', transform=ax.transAxes, fontsize=9, va='top')
+    ax.text(0.05, 0.95, f'r={r:.3f}, p={p:.2e}', transform=ax.transAxes, fontsize=14, va='top')
 
-plt.suptitle("Plot 35: Heat vs Virus Effect Disentanglement", fontsize=14, y=1.01)
+plt.suptitle("Plot 35: Heat vs Virus Effect Disentanglement", fontsize=21, y=1.01)
 plt.tight_layout()
-plt.savefig('35_heat_vs_virus_disentanglement.png', bbox_inches='tight')
+plt.savefig('35_heat_vs_virus_disentanglement.png', dpi=300, bbox_inches='tight')
 plt.close()
 print("Saved: 35_heat_vs_virus_disentanglement.png")
 

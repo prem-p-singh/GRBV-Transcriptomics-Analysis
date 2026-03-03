@@ -23,8 +23,8 @@ import warnings
 warnings.filterwarnings('ignore')
 
 plt.rcParams.update({
-    'figure.dpi': 150, 'font.size': 9, 'axes.titlesize': 11,
-    'axes.labelsize': 10, 'figure.facecolor': 'white'
+    'figure.dpi': 300, 'font.size': 14, 'axes.titlesize': 16,
+    'axes.labelsize': 15, 'figure.facecolor': 'white'
 })
 
 # ============================================================
@@ -317,15 +317,15 @@ def plot_enrichment_bars(enrichment_dict, ax, title="", n=10, padj_thresh=0.05):
     y = np.arange(len(combined))
     bars = ax.barh(y, -np.log10(combined['padj'].clip(lower=1e-30).values), color=colors, alpha=0.8)
     ax.set_yticks(y)
-    ax.set_yticklabels(labels, fontsize=7)
+    ax.set_yticklabels(labels, fontsize=10)
     ax.set_xlabel('-log10(padj)')
-    ax.set_title(title, fontsize=10)
+    ax.set_title(title, fontsize=15)
     ax.invert_yaxis()
     ax.axvline(-np.log10(0.05), color='grey', linestyle='--', linewidth=0.5)
 
     # Add overlap info
     for i, (_, row) in enumerate(combined.iterrows()):
-        ax.text(0.2, i, f" {int(row['overlap'])}/{int(row['term_size'])}", va='center', fontsize=6, color='white', fontweight='bold')
+        ax.text(0.2, i, f" {int(row['overlap'])}/{int(row['term_size'])}", va='center', fontsize=9, color='white', fontweight='bold')
 
 
 def plot_enrichment_dotplot(enrichment_dict, ax, title="", n=12, padj_thresh=0.05):
@@ -349,9 +349,9 @@ def plot_enrichment_dotplot(enrichment_dict, ax, title="", n=12, padj_thresh=0.0
 
     labels = [textwrap.fill(str(row['term_name'])[:45], 30) for _, row in combined.iterrows()]
     ax.set_yticks(y)
-    ax.set_yticklabels(labels, fontsize=7)
+    ax.set_yticklabels(labels, fontsize=10)
     ax.set_xlabel('Fold Enrichment')
-    ax.set_title(title, fontsize=10)
+    ax.set_title(title, fontsize=15)
     ax.invert_yaxis()
     plt.colorbar(sc, ax=ax, label='-log10(padj)', shrink=0.7)
 
@@ -432,8 +432,8 @@ for idx, ysi in enumerate([2016, 2019, 2021]):
     enr = q1_enrichments.get((ysi, 'down'), {})
     plot_enrichment_bars(enr, ax, f"YSI={ysi} Downregulated", n=8)
 
-fig.suptitle("Q1: Pathway Enrichment by Infection Year (vs Controls)", fontsize=14, y=1.01)
-plt.savefig('08_Q1_pathway_enrichment.png', bbox_inches='tight')
+fig.suptitle("Q1: Pathway Enrichment by Infection Year (vs Controls)", fontsize=21, y=1.01)
+plt.savefig('08_Q1_pathway_enrichment.png', dpi=300, bbox_inches='tight')
 plt.close()
 print("\nSaved: 08_Q1_pathway_enrichment.png")
 
@@ -528,8 +528,8 @@ if all_terms_q2:
     ax.set_title("Pathway enrichment landscape across maturity stages")
     ax.tick_params(axis='y', labelsize=7)
 
-fig.suptitle("Q2: Pathway Enrichment by Maturity Stage (RB+ vs RB-)", fontsize=14, y=1.01)
-plt.savefig('09_Q2_pathway_enrichment.png', bbox_inches='tight')
+fig.suptitle("Q2: Pathway Enrichment by Maturity Stage (RB+ vs RB-)", fontsize=21, y=1.01)
+plt.savefig('09_Q2_pathway_enrichment.png', dpi=300, bbox_inches='tight')
 plt.close()
 print("\nSaved: 09_Q2_pathway_enrichment.png")
 
@@ -638,8 +638,8 @@ if all_terms_q3:
     ax.set_title("Season × Stage pathway enrichment landscape")
     ax.tick_params(axis='y', labelsize=7)
 
-fig.suptitle("Q3: Seasonal Effects — Pathway Enrichment", fontsize=14, y=1.01)
-plt.savefig('10_Q3_pathway_enrichment.png', bbox_inches='tight')
+fig.suptitle("Q3: Seasonal Effects — Pathway Enrichment", fontsize=21, y=1.01)
+plt.savefig('10_Q3_pathway_enrichment.png', dpi=300, bbox_inches='tight')
 plt.close()
 print("\nSaved: 10_Q3_pathway_enrichment.png")
 
@@ -708,8 +708,8 @@ for idx, stage in enumerate(stages):
     enr = q4_env.get(('neg', stage, 'up'), {})
     plot_enrichment_bars(enr, ax, f"RB(-) {stage}\nUP in 2022", n=8)
 
-fig.suptitle("Q4: Environmental Effects — Pathway Enrichment (2022 vs 2021)", fontsize=14, y=1.01)
-plt.savefig('11_Q4_pathway_enrichment.png', bbox_inches='tight')
+fig.suptitle("Q4: Environmental Effects — Pathway Enrichment (2022 vs 2021)", fontsize=21, y=1.01)
+plt.savefig('11_Q4_pathway_enrichment.png', dpi=300, bbox_inches='tight')
 plt.close()
 print("\nSaved: 11_Q4_pathway_enrichment.png")
 
@@ -815,8 +815,8 @@ if dev_terms:
     ax.set_title("Developmental pathways\n(healthy grapevines)")
     ax.tick_params(axis='y', labelsize=6)
 
-fig.suptitle("Q5: Environmental Changes in Uninfected Grapevines — Pathway Enrichment", fontsize=14, y=1.01)
-plt.savefig('12_Q5_pathway_enrichment.png', bbox_inches='tight')
+fig.suptitle("Q5: Environmental Changes in Uninfected Grapevines — Pathway Enrichment", fontsize=21, y=1.01)
+plt.savefig('12_Q5_pathway_enrichment.png', dpi=300, bbox_inches='tight')
 plt.close()
 print("\nSaved: 12_Q5_pathway_enrichment.png")
 
@@ -915,8 +915,8 @@ if all_terms_q6:
     ax.tick_params(axis='y', labelsize=7)
     ax.set_xlabel("Infection Age")
 
-fig.suptitle("Q6: Host Transcriptome Trajectory — Pathway Enrichment", fontsize=14, y=1.01)
-plt.savefig('13_Q6_pathway_enrichment.png', bbox_inches='tight')
+fig.suptitle("Q6: Host Transcriptome Trajectory — Pathway Enrichment", fontsize=21, y=1.01)
+plt.savefig('13_Q6_pathway_enrichment.png', dpi=300, bbox_inches='tight')
 plt.close()
 print("\nSaved: 13_Q6_pathway_enrichment.png")
 
@@ -959,11 +959,11 @@ if summary_terms:
                 cbar_kws={'label': 'Signed -log10(padj): +Red=UP in RB(+), -Blue=DOWN in RB(+)'},
                 linewidths=0.5)
     ax.set_title("Master Pathway Landscape: GRBV Response Across Maturity Stages\n"
-                 "(GO Biological Process, Molecular Function, KEGG)", fontsize=13)
+                 "(GO Biological Process, Molecular Function, KEGG)", fontsize=20)
     ax.tick_params(axis='y', labelsize=7)
 
 plt.tight_layout()
-plt.savefig('14_master_pathway_landscape.png', bbox_inches='tight')
+plt.savefig('14_master_pathway_landscape.png', dpi=300, bbox_inches='tight')
 plt.close()
 print("Saved: 14_master_pathway_landscape.png")
 

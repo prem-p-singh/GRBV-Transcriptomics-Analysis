@@ -127,10 +127,10 @@ def get_samples(meta_df, **kwargs):
 
 # Set up figure style
 plt.rcParams.update({
-    'figure.dpi': 150,
-    'font.size': 10,
-    'axes.titlesize': 12,
-    'axes.labelsize': 11,
+    'figure.dpi': 300,
+    'font.size': 15,
+    'axes.titlesize': 18,
+    'axes.labelsize': 16,
     'figure.facecolor': 'white'
 })
 
@@ -196,11 +196,11 @@ for i, ysi in enumerate(ysi_vals):
 axes[1,1].set_xlabel(f"PC1 ({pca.explained_variance_ratio_[0]:.1%})")
 axes[1,1].set_ylabel(f"PC2 ({pca.explained_variance_ratio_[1]:.1%})")
 axes[1,1].set_title("PCA: Years Since Infection")
-axes[1,1].legend(fontsize=8)
+axes[1,1].legend(fontsize=12)
 
-plt.suptitle("Global PCA Overview — Top 2000 Variable Genes", fontsize=14, y=1.01)
+plt.suptitle("Global PCA Overview — Top 2000 Variable Genes", fontsize=21, y=1.01)
 plt.tight_layout()
-plt.savefig('01_global_pca_overview.png', bbox_inches='tight')
+plt.savefig('01_global_pca_overview.png', dpi=300, bbox_inches='tight')
 plt.close()
 print("Saved: 01_global_pca_overview.png")
 
@@ -325,9 +325,9 @@ axes[1,1].set_ylabel("Number of genes")
 axes[1,1].set_title("Gene expression correlation with infection age")
 axes[1,1].legend()
 
-plt.suptitle("Q1: How does GRBV infection change with years of infection?", fontsize=14, y=1.01)
+plt.suptitle("Q1: How does GRBV infection change with years of infection?", fontsize=21, y=1.01)
 plt.tight_layout()
-plt.savefig('02_Q1_infection_years.png', bbox_inches='tight')
+plt.savefig('02_Q1_infection_years.png', dpi=300, bbox_inches='tight')
 plt.close()
 print("Saved: 02_Q1_infection_years.png")
 
@@ -448,7 +448,7 @@ legend_elements = [Line2D([0], [0], marker='o', color='w', markerfacecolor=stage
                            markersize=8, label=f'RB(+) {s}') for s in stages]
 legend_elements += [Line2D([0], [0], marker='s', color='w', markerfacecolor=stage_colors[s],
                             markersize=8, label=f'RB(-) {s}') for s in stages]
-axes[1,0].legend(handles=legend_elements, fontsize=7, ncol=2)
+axes[1,0].legend(handles=legend_elements, fontsize=10, ncol=2)
 axes[1,0].set_xlabel(f"PC1 ({pca.explained_variance_ratio_[0]:.1%})")
 axes[1,0].set_ylabel(f"PC2 ({pca.explained_variance_ratio_[1]:.1%})")
 axes[1,0].set_title("PCA: Stage x Infection interaction")
@@ -466,9 +466,9 @@ sns.heatmap(pd.DataFrame(overlap_data, index=stages, columns=stages), ax=axes[1,
             annot=True, fmt='.0f', cmap='YlOrRd', cbar_kws={'label': 'Gene count'})
 axes[1,1].set_title("DEG overlap matrix between stages")
 
-plt.suptitle("Q2: Berry maturity stages influence on GRBV infection", fontsize=14, y=1.01)
+plt.suptitle("Q2: Berry maturity stages influence on GRBV infection", fontsize=21, y=1.01)
 plt.tight_layout()
-plt.savefig('03_Q2_maturity_stages.png', bbox_inches='tight')
+plt.savefig('03_Q2_maturity_stages.png', dpi=300, bbox_inches='tight')
 plt.close()
 print("Saved: 03_Q2_maturity_stages.png")
 
@@ -542,7 +542,7 @@ x = np.arange(len(categories))
 axes[0,1].bar(x, up_vals, color='firebrick', alpha=0.8, width=0.6, label='Up')
 axes[0,1].bar(x, down_vals, color='steelblue', alpha=0.8, width=0.6, label='Down')
 axes[0,1].set_xticks(x)
-axes[0,1].set_xticklabels(categories, fontsize=7, rotation=45, ha='right')
+axes[0,1].set_xticklabels(categories, fontsize=10, rotation=45, ha='right')
 axes[0,1].set_ylabel("Number of DEGs")
 axes[0,1].set_title("DEGs by Season x Stage")
 axes[0,1].legend()
@@ -560,7 +560,7 @@ legend_elements = [
     Line2D([0], [0], marker='o', color='w', markerfacecolor='blue', markersize=8, label='RB(-) 2021'),
     Line2D([0], [0], marker='s', color='w', markerfacecolor='blue', markersize=8, label='RB(-) 2022'),
 ]
-axes[1,0].legend(handles=legend_elements, fontsize=8)
+axes[1,0].legend(handles=legend_elements, fontsize=12)
 axes[1,0].set_xlabel(f"PC1 ({pca.explained_variance_ratio_[0]:.1%})")
 axes[1,0].set_ylabel(f"PC2 ({pca.explained_variance_ratio_[1]:.1%})")
 axes[1,0].set_title("PCA: Season x Infection")
@@ -588,9 +588,9 @@ axes[1,1].set_title(f"Seasonal consistency of GRBV response\nPearson r={r_season
 axes[1,1].set_xlim(-5, 5)
 axes[1,1].set_ylim(-5, 5)
 
-plt.suptitle("Q3: Seasonal effects on GRBV infection and response", fontsize=14, y=1.01)
+plt.suptitle("Q3: Seasonal effects on GRBV infection and response", fontsize=21, y=1.01)
 plt.tight_layout()
-plt.savefig('04_Q3_seasonal_effects.png', bbox_inches='tight')
+plt.savefig('04_Q3_seasonal_effects.png', dpi=300, bbox_inches='tight')
 plt.close()
 print(f"\nSeasonal consistency: Pearson r = {r_season:.4f} (p = {p_season:.2e})")
 print("Saved: 04_Q3_seasonal_effects.png")
@@ -700,7 +700,7 @@ axes[0,0].set_ylabel("Pseudo R² (%)")
 axes[0,0].set_title("Variance explained by each factor\n(distance-based)")
 for bar, val in zip(bars, r2_vals):
     axes[0,0].text(bar.get_x() + bar.get_width()/2, bar.get_height() + 0.3,
-                    f'{val*100:.1f}%', ha='center', fontsize=10)
+                    f'{val*100:.1f}%', ha='center', fontsize=15)
 
 # Environmental modulation: FC correlation per stage
 if env_modulation:
@@ -720,7 +720,7 @@ for (season, grp), row in group_means.iterrows():
     marker = 'o' if season == 2021 else 's'
     axes[1,0].scatter(row['PC1'], row['PC2'], c=color, marker=marker, s=200, edgecolors='black',
                        linewidth=2, zorder=5)
-    axes[1,0].annotate(f'{grp}\n{season}', (row['PC1'], row['PC2']), fontsize=8,
+    axes[1,0].annotate(f'{grp}\n{season}', (row['PC1'], row['PC2']), fontsize=12,
                         ha='center', va='bottom', xytext=(0, 10), textcoords='offset points')
 
 # Also show all points faintly
@@ -741,9 +741,9 @@ sns.boxplot(data=plot_data, x='Season', y='Library_Size', hue='Infection', ax=ax
 axes[1,1].set_title("Library sizes by Season x Infection\n(proxy for transcriptional activity)")
 axes[1,1].set_ylabel("Total read counts")
 
-plt.suptitle("Q4: Environmental effects on GRBV infection and response", fontsize=14, y=1.01)
+plt.suptitle("Q4: Environmental effects on GRBV infection and response", fontsize=21, y=1.01)
 plt.tight_layout()
-plt.savefig('05_Q4_environmental_effects.png', bbox_inches='tight')
+plt.savefig('05_Q4_environmental_effects.png', dpi=300, bbox_inches='tight')
 plt.close()
 print("Saved: 05_Q4_environmental_effects.png")
 
@@ -848,7 +848,7 @@ axes[1,0].bar(labels, vals, color=colors_bar, alpha=0.8)
 axes[1,0].set_ylabel("Number of genes")
 axes[1,0].set_title("Environmental vs GRBV response DEGs overlap")
 for i, (l, v) in enumerate(zip(labels, vals)):
-    axes[1,0].text(i, v + max(vals)*0.02, str(v), ha='center', fontsize=10)
+    axes[1,0].text(i, v + max(vals)*0.02, str(v), ha='center', fontsize=15)
 
 # Seasonal DEGs per stage in RB(-)
 if q5_stage_season:
@@ -865,9 +865,9 @@ if q5_stage_season:
     axes[1,1].legend()
     axes[1,1].axhline(0, color='black', linewidth=0.5)
 
-plt.suptitle("Q5: Environmental changes in uninfected grapevines", fontsize=14, y=1.01)
+plt.suptitle("Q5: Environmental changes in uninfected grapevines", fontsize=21, y=1.01)
 plt.tight_layout()
-plt.savefig('06_Q5_uninfected_environment.png', bbox_inches='tight')
+plt.savefig('06_Q5_uninfected_environment.png', dpi=300, bbox_inches='tight')
 plt.close()
 print("Saved: 06_Q5_uninfected_environment.png")
 
@@ -995,7 +995,7 @@ centroids = infected_pca_df.groupby('Age')[['PC1', 'PC2']].mean()
 axes[0,1].plot(centroids['PC1'], centroids['PC2'], 'k-o', markersize=10, linewidth=2, zorder=5)
 for age in centroids.index:
     axes[0,1].annotate(f'{age}yr', (centroids.loc[age, 'PC1'], centroids.loc[age, 'PC2']),
-                        fontsize=9, fontweight='bold', ha='center', va='bottom',
+                        fontsize=14, fontweight='bold', ha='center', va='bottom',
                         xytext=(0, 8), textcoords='offset points')
 axes[0,1].set_xlabel(f"PC1 ({pca_infected.explained_variance_ratio_[0]:.1%})")
 axes[0,1].set_ylabel(f"PC2 ({pca_infected.explained_variance_ratio_[1]:.1%})")
@@ -1017,7 +1017,7 @@ if len(any_deg) > 10:
     axes[1,0].set_xlabel("Infection Age (years)")
     axes[1,0].set_ylabel("Mean log2FC vs controls")
     axes[1,0].set_title("Gene expression clusters over infection course")
-    axes[1,0].legend(fontsize=8)
+    axes[1,0].legend(fontsize=12)
     axes[1,0].axhline(0, color='grey', linestyle='--', linewidth=0.5)
 
 # Heatmap: top progressive genes across ages
@@ -1045,9 +1045,9 @@ if len(trend_genes_list) > 0:
 else:
     axes[1,1].text(0.5, 0.5, "No significant trend genes found", ha='center', va='center')
 
-plt.suptitle("Q6: Host transcriptome changes over GRBV infection course", fontsize=14, y=1.01)
+plt.suptitle("Q6: Host transcriptome changes over GRBV infection course", fontsize=21, y=1.01)
 plt.tight_layout()
-plt.savefig('07_Q6_transcriptome_trajectory.png', bbox_inches='tight')
+plt.savefig('07_Q6_transcriptome_trajectory.png', dpi=300, bbox_inches='tight')
 plt.close()
 print("Saved: 07_Q6_transcriptome_trajectory.png")
 

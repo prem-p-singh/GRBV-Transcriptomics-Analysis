@@ -18,8 +18,8 @@ import warnings
 warnings.filterwarnings('ignore')
 
 plt.rcParams.update({
-    'figure.dpi': 150, 'font.size': 10, 'axes.titlesize': 11,
-    'axes.labelsize': 10, 'figure.facecolor': 'white'
+    'figure.dpi': 300, 'font.size': 15, 'axes.titlesize': 16,
+    'axes.labelsize': 15, 'figure.facecolor': 'white'
 })
 
 # ============================================================
@@ -579,7 +579,7 @@ for season, wx, color, ls in [(2021, weather_2021, '#1f77b4', '-'),
 ax.set_xlabel("Day of Year")
 ax.set_ylabel("Air Temperature (C)")
 ax.set_title("Daily Temperature Profile with Sampling Dates")
-ax.legend(fontsize=8)
+ax.legend(fontsize=12)
 
 # Add stage labels
 from matplotlib.lines import Line2D
@@ -587,7 +587,7 @@ stage_legend = [Line2D([0], [0], marker='o', color='w', markerfacecolor=c, marke
                 for s, c in stage_colors.items()]
 ax2 = ax.twinx()
 ax2.set_yticks([])
-ax2.legend(handles=stage_legend, fontsize=7, loc='upper left')
+ax2.legend(handles=stage_legend, fontsize=10, loc='upper left')
 
 # Panel B: GDD accumulation
 ax = axes[0, 1]
@@ -603,13 +603,13 @@ for season, wx, color in [(2021, weather_2021, '#1f77b4'), (2022, weather_2022, 
                 color=stage_colors[stage], markersize=10, zorder=5,
                 markeredgecolor='black', markeredgewidth=1)
         ax.annotate(f'{gdd_at:.0f}', (sd_doy, gdd_at),
-                    fontsize=7, ha='left', va='bottom',
+                    fontsize=10, ha='left', va='bottom',
                     xytext=(3, 3), textcoords='offset points')
 
 ax.set_xlabel("Day of Year")
 ax.set_ylabel("Cumulative GDD (base 10C)")
 ax.set_title("Growing Degree Day Accumulation")
-ax.legend(fontsize=9)
+ax.legend(fontsize=14)
 
 # Panel C: 7-day Avg Temperature comparison by stage
 ax = axes[1, 0]
@@ -628,16 +628,16 @@ ax.bar(x + 1.5*w, tmax_22, w, label='2022 Tmax', color='#ff7f0e', alpha=0.4,
        edgecolor='#ff7f0e', linewidth=1)
 
 ax.set_xticks(x)
-ax.set_xticklabels([s.replace('_', '\n') for s in stages], fontsize=8)
+ax.set_xticklabels([s.replace('_', '\n') for s in stages], fontsize=12)
 ax.set_ylabel("Temperature (C) - 7-day window")
 ax.set_title("7-day Average Temperature at Sampling")
-ax.legend(fontsize=7)
+ax.legend(fontsize=10)
 
 # Add delta labels
 for i in range(len(stages)):
     dt = tavg_22[i] - tavg_21[i]
     ax.text(i, max(tmax_21[i], tmax_22[i]) + 0.5, f'{dt:+.1f}C',
-            ha='center', fontsize=8, fontweight='bold',
+            ha='center', fontsize=12, fontweight='bold',
             color='red' if dt > 0 else 'blue')
 
 # Panel D: Heat stress days comparison
@@ -648,18 +648,18 @@ hs_22 = [int_df[(int_df['Season'] == 2022) & (int_df['Stage'] == s)]['HeatStress
 ax.bar(x - 0.15, hs_21, 0.3, label='2021', color='#1f77b4', alpha=0.85)
 ax.bar(x + 0.15, hs_22, 0.3, label='2022', color='#ff7f0e', alpha=0.85)
 ax.set_xticks(x)
-ax.set_xticklabels([s.replace('_', '\n') for s in stages], fontsize=8)
+ax.set_xticklabels([s.replace('_', '\n') for s in stages], fontsize=12)
 ax.set_ylabel("Days with Tmax > 35C (7-day window)")
 ax.set_title("Heat Stress Days at Sampling")
 ax.legend()
 
 for i in range(len(stages)):
-    ax.text(i - 0.15, hs_21[i] + 0.1, str(int(hs_21[i])), ha='center', fontsize=9)
-    ax.text(i + 0.15, hs_22[i] + 0.1, str(int(hs_22[i])), ha='center', fontsize=9)
+    ax.text(i - 0.15, hs_21[i] + 0.1, str(int(hs_21[i])), ha='center', fontsize=14)
+    ax.text(i + 0.15, hs_22[i] + 0.1, str(int(hs_22[i])), ha='center', fontsize=14)
 
-plt.suptitle("Plot 30: Atmospheric Conditions During GRBV Sampling", fontsize=14, y=1.01)
+plt.suptitle("Plot 30: Atmospheric Conditions During GRBV Sampling", fontsize=21, y=1.01)
 plt.tight_layout()
-plt.savefig('30_weather_overview_sampling.png', bbox_inches='tight')
+plt.savefig('30_weather_overview_sampling.png', dpi=300, bbox_inches='tight')
 plt.close()
 print("Saved: 30_weather_overview_sampling.png")
 
@@ -691,10 +691,10 @@ bp2 = ax.boxplot([titer_long[(titer_long['Season'] == 2022) & (titer_long['Stage
                   medianprops=dict(color='black', linewidth=2))
 
 ax.set_xticks([1, 2, 3, 4])
-ax.set_xticklabels([s.replace('_', '\n') for s in stages], fontsize=8)
+ax.set_xticklabels([s.replace('_', '\n') for s in stages], fontsize=12)
 ax.set_ylabel("log10(Virus Titer)")
 ax.set_title("Virus Titer by Stage and Season")
-ax.legend([bp1["boxes"][0], bp2["boxes"][0]], ['2021', '2022'], fontsize=9)
+ax.legend([bp1["boxes"][0], bp2["boxes"][0]], ['2021', '2022'], fontsize=14)
 
 # Panel B: Titer by infection year (grouped)
 ax = axes[0, 1]
@@ -722,7 +722,7 @@ for season, color, marker in [(2021, '#1f77b4', 'o'), (2022, '#ff7f0e', 's')]:
                 color=color, linewidth=2, markersize=8, capsize=5, label=str(season))
 
 ax.set_xticks(range(len(stages)))
-ax.set_xticklabels([s.replace('_', '\n') for s in stages], fontsize=8)
+ax.set_xticklabels([s.replace('_', '\n') for s in stages], fontsize=12)
 ax.set_ylabel("Mean log10(Virus Titer) +/- SEM")
 ax.set_title("Titer Progression Across Maturity")
 ax.legend()
@@ -737,9 +737,9 @@ sns.heatmap(hm_pivot, ax=ax, cmap='YlOrRd', annot=True, fmt='.2f',
 ax.set_title("Virus Titer Heatmap\n(Season x Infection Year x Stage)")
 ax.set_ylabel("Season / Infection Year")
 
-plt.suptitle("Plot 31: Virus Titer Dynamics", fontsize=14, y=1.01)
+plt.suptitle("Plot 31: Virus Titer Dynamics", fontsize=21, y=1.01)
 plt.tight_layout()
-plt.savefig('31_virus_titer_analysis.png', bbox_inches='tight')
+plt.savefig('31_virus_titer_analysis.png', dpi=300, bbox_inches='tight')
 plt.close()
 print("Saved: 31_virus_titer_analysis.png")
 
@@ -757,7 +757,7 @@ for season, color, marker in [(2021, '#1f77b4', 'o'), (2022, '#ff7f0e', 's')]:
         ax.scatter(row['Tavg_7d'], row['Log10_Titer'], c=stage_colors[row['Stage']],
                    marker=marker, s=120, edgecolors='black', linewidth=1, zorder=5)
         ax.annotate(f"{row['Stage'][:4]}\n{season}", (row['Tavg_7d'], row['Log10_Titer']),
-                    fontsize=6, ha='center', va='bottom', xytext=(0, 6),
+                    fontsize=9, ha='center', va='bottom', xytext=(0, 6),
                     textcoords='offset points')
 
 r, p = pearsonr(int_df['Tavg_7d'], int_df['Log10_Titer'])
@@ -777,7 +777,7 @@ for season, marker in [(2021, 'o'), (2022, 's')]:
         ax.scatter(row['Log10_Titer'], row['n_DEGs'], c=stage_colors[row['Stage']],
                    marker=marker, s=120, edgecolors='black', linewidth=1, zorder=5)
         ax.annotate(f"{row['Stage'][:4]}\n{season}", (row['Log10_Titer'], row['n_DEGs']),
-                    fontsize=6, ha='left', va='bottom', xytext=(4, 4),
+                    fontsize=9, ha='left', va='bottom', xytext=(4, 4),
                     textcoords='offset points')
 
 r, p = pearsonr(int_df['Log10_Titer'], int_df['n_DEGs'])
@@ -811,7 +811,7 @@ season_handles = [Line2D([0], [0], marker='o', color='w', markerfacecolor='grey'
                           markersize=8, label='2021'),
                   Line2D([0], [0], marker='s', color='w', markerfacecolor='grey',
                           markersize=8, label='2022')]
-ax.legend(handles=stage_handles + season_handles, fontsize=6, ncol=2)
+ax.legend(handles=stage_handles + season_handles, fontsize=9, ncol=2)
 
 # Panel D: Temp vs DEGs
 ax = axes[1, 0]
@@ -847,7 +847,7 @@ ax.set_title("Bubble Plot: Temp x Titer x DEGs\n(bubble size = # DEGs)")
 for nd in [50, 200, 500, 1000]:
     ax.scatter([], [], s=nd*0.5, c='grey', alpha=0.5, edgecolors='black',
                label=f'{nd} DEGs')
-ax.legend(fontsize=7, loc='upper left')
+ax.legend(fontsize=10, loc='upper left')
 
 # Panel F: Correlation matrix
 ax = axes[1, 2]
@@ -863,9 +863,9 @@ sns.heatmap(corr_matrix, ax=ax, cmap='RdBu_r', center=0, annot=True, fmt='.2f',
             annot_kws={'fontsize': 7})
 ax.set_title("Correlation Matrix\n(Spearman)")
 
-plt.suptitle("Plot 32: Integrated Temperature x Virus Titer x Transcriptome", fontsize=14, y=1.01)
+plt.suptitle("Plot 32: Integrated Temperature x Virus Titer x Transcriptome", fontsize=21, y=1.01)
 plt.tight_layout()
-plt.savefig('32_integrated_temp_titer_DEG.png', bbox_inches='tight')
+plt.savefig('32_integrated_temp_titer_DEG.png', dpi=300, bbox_inches='tight')
 plt.close()
 print("Saved: 32_integrated_temp_titer_DEG.png")
 
@@ -892,7 +892,7 @@ ax.axhline(35, color='red', linestyle='--', linewidth=1, alpha=0.5, label='Heat 
 ax.set_xlabel("Day of Year")
 ax.set_ylabel("Max Air Temperature (C)")
 ax.set_title("Daily Tmax: 2021 vs 2022\nwith Sampling Dates")
-ax.legend(fontsize=7)
+ax.legend(fontsize=10)
 
 # Panel B: 2022 was hotter - cumulative heat stress
 ax = axes[0, 1]
@@ -933,7 +933,7 @@ for stage in stages:
 
     ax.scatter(dt, dtiter, c=stage_colors[stage], s=200, edgecolors='black',
                linewidth=2, zorder=5)
-    ax.annotate(stage.replace('_', '\n'), (dt, dtiter), fontsize=8,
+    ax.annotate(stage.replace('_', '\n'), (dt, dtiter), fontsize=12,
                 ha='center', va='bottom', xytext=(0, 8), textcoords='offset points')
 
 # Regression
@@ -966,7 +966,7 @@ for stage in stages:
 
     ax.scatter(dt, ddeg, c=stage_colors[stage], s=200, edgecolors='black',
                linewidth=2, zorder=5)
-    ax.annotate(stage.replace('_', '\n'), (dt, ddeg), fontsize=8,
+    ax.annotate(stage.replace('_', '\n'), (dt, ddeg), fontsize=12,
                 ha='center', va='bottom', xytext=(0, 8), textcoords='offset points')
 
 if len(dt_vals2) >= 3:
@@ -981,9 +981,9 @@ ax.axvline(0, color='grey', linestyle='-', linewidth=0.5, alpha=0.5)
 ax.set_xlabel("Change in 7-day Avg Temp (C): 2022-2021")
 ax.set_ylabel("Change in # DEGs: 2022-2021")
 
-plt.suptitle("Plot 33: Temperature-Titer-DEG Seasonal Shift Analysis", fontsize=14, y=1.01)
+plt.suptitle("Plot 33: Temperature-Titer-DEG Seasonal Shift Analysis", fontsize=21, y=1.01)
 plt.tight_layout()
-plt.savefig('33_temperature_titer_shift.png', bbox_inches='tight')
+plt.savefig('33_temperature_titer_shift.png', dpi=300, bbox_inches='tight')
 plt.close()
 print("Saved: 33_temperature_titer_shift.png")
 

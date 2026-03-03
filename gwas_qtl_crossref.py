@@ -404,10 +404,10 @@ for i, c in enumerate(range(1, 20)):
                                 boxstyle="round,pad=0.1",
                                 facecolor='#ECF0F1', edgecolor='#95A5A6',
                                 linewidth=1.2, zorder=1))
-    ax.text(-0.8, y, f'chr{c}', ha='right', va='center', fontsize=9,
+    ax.text(-0.8, y, f'chr{c}', ha='right', va='center', fontsize=14,
             fontweight='bold', color='#2C3E50')
     ax.text(size + 0.3, y, f'{size:.1f}Mb', ha='left', va='center',
-            fontsize=7, color='#7F8C8D')
+            fontsize=10, color='#7F8C8D')
 
 # Draw QTL regions as colored rectangles below chromosomes
 for _, qtl in qtl_df.iterrows():
@@ -467,21 +467,21 @@ legend_elements = [
     plt.Line2D([0], [0], marker='*', color='w', markerfacecolor='gold',
                markersize=12, label='Key QTL overlap', markeredgecolor='#F39C12', markeredgewidth=0.8),
 ]
-ax.legend(handles=legend_elements, loc='lower right', fontsize=9, framealpha=0.9,
+ax.legend(handles=legend_elements, loc='lower right', fontsize=14, framealpha=0.9,
           ncol=2, columnspacing=1)
 
 ax.set_xlim(-3, 40)
 ax.set_ylim(-0.3, 13)
-ax.set_xlabel('Position (Mb)', fontsize=12)
+ax.set_xlabel('Position (Mb)', fontsize=18)
 ax.set_title('GRBV Biomarker Genes Mapped to Grapevine GWAS/QTL Loci\n'
-             '(Vitis vinifera PN40024 genome)', fontsize=14, fontweight='bold')
+             '(Vitis vinifera PN40024 genome)', fontsize=21, fontweight='bold')
 ax.spines['top'].set_visible(False)
 ax.spines['right'].set_visible(False)
 ax.spines['left'].set_visible(False)
 ax.set_yticks([])
 
 plt.tight_layout()
-plt.savefig(f'{OUT}/24_biomarker_QTL_chromosome_map.png', dpi=200, bbox_inches='tight')
+plt.savefig(f'{OUT}/24_biomarker_QTL_chromosome_map.png', dpi=300, bbox_inches='tight')
 plt.close()
 print("  Saved: 24_biomarker_QTL_chromosome_map.png")
 
@@ -514,9 +514,9 @@ colors_bar = {'Inside QTL': '#E74C3C', 'Near QTL (<1Mb)': '#F39C12', 'No nearby 
 bars = ax1.barh(range(len(status_counts)), status_counts.values,
                 color=[colors_bar.get(s, '#BDC3C7') for s in status_counts.index])
 ax1.set_yticks(range(len(status_counts)))
-ax1.set_yticklabels(status_counts.index, fontsize=10)
+ax1.set_yticklabels(status_counts.index, fontsize=15)
 for i, v in enumerate(status_counts.values):
-    ax1.text(v + 0.3, i, f'{v} ({100*v/len(BIOMARKER_POSITIONS):.0f}%)', va='center', fontsize=10)
+    ax1.text(v + 0.3, i, f'{v} ({100*v/len(BIOMARKER_POSITIONS):.0f}%)', va='center', fontsize=15)
 ax1.set_xlabel('Number of biomarker genes')
 ax1.set_title('A. Biomarker-QTL Overlap Status', fontweight='bold')
 
@@ -530,9 +530,9 @@ if len(xref) > 0:
     labels = [c.replace('_', ' ').title() for c in cat_gene_counts.index]
     ax2.barh(range(len(cat_gene_counts)), cat_gene_counts.values, color=cat_colors_list)
     ax2.set_yticks(range(len(cat_gene_counts)))
-    ax2.set_yticklabels(labels, fontsize=10)
+    ax2.set_yticklabels(labels, fontsize=15)
     for i, v in enumerate(cat_gene_counts.values):
-        ax2.text(v + 0.2, i, str(v), va='center', fontsize=10, fontweight='bold')
+        ax2.text(v + 0.2, i, str(v), va='center', fontsize=15, fontweight='bold')
 ax2.set_xlabel('Number of biomarker genes')
 ax2.set_title('B. Overlaps by QTL Category', fontweight='bold')
 
@@ -554,10 +554,10 @@ bars1 = ax3.bar(x - width/2, [chr_bio_counts.get(c, 0) for c in chroms], width,
 bars2 = ax3.bar(x + width/2, [chr_qtl_counts.get(c, 0) for c in chroms], width,
                 label='QTL loci', color='#E74C3C', alpha=0.6)
 ax3.set_xticks(x)
-ax3.set_xticklabels([str(c) for c in chroms], fontsize=8)
+ax3.set_xticklabels([str(c) for c in chroms], fontsize=12)
 ax3.set_xlabel('Chromosome')
 ax3.set_ylabel('Count')
-ax3.legend(fontsize=9)
+ax3.legend(fontsize=14)
 ax3.set_title('C. Distribution Across Chromosomes', fontweight='bold')
 
 # --- Panel D: Top co-localizations table ---
@@ -607,7 +607,7 @@ if len(inside_summary) > 0:
             table[i+1, j].set_facecolor(bg_color)
 
 ax4.set_title('D. Key Biomarker-QTL Co-localizations (inside QTL intervals)',
-              fontweight='bold', fontsize=12, pad=10)
+              fontweight='bold', fontsize=18, pad=10)
 
 # --- Panel E: Biological interpretation ---
 ax5 = fig.add_subplot(gs[2, :])
@@ -677,14 +677,14 @@ interpretation_lines.append(
 
 # Render as text box
 text = '\n'.join(interpretation_lines)
-ax5.text(0.02, 0.95, text, transform=ax5.transAxes, fontsize=9.5,
+ax5.text(0.02, 0.95, text, transform=ax5.transAxes, fontsize=14,
          verticalalignment='top', fontfamily='monospace',
          bbox=dict(boxstyle='round,pad=0.5', facecolor='#F8F9FA', edgecolor='#BDC3C7'))
 
 fig.suptitle('GRBV Biomarker x Grapevine GWAS/QTL Cross-Reference Analysis',
-             fontsize=15, fontweight='bold', y=0.98)
+             fontsize=22, fontweight='bold', y=0.98)
 
-plt.savefig(f'{OUT}/25_biomarker_QTL_crossref_summary.png', dpi=200, bbox_inches='tight')
+plt.savefig(f'{OUT}/25_biomarker_QTL_crossref_summary.png', dpi=300, bbox_inches='tight')
 plt.close()
 print("  Saved: 25_biomarker_QTL_crossref_summary.png")
 

@@ -23,8 +23,8 @@ import warnings
 warnings.filterwarnings('ignore')
 
 plt.rcParams.update({
-    'figure.dpi': 150, 'font.size': 9, 'axes.titlesize': 11,
-    'axes.labelsize': 10, 'figure.facecolor': 'white'
+    'figure.dpi': 300, 'font.size': 14, 'axes.titlesize': 16,
+    'axes.labelsize': 15, 'figure.facecolor': 'white'
 })
 
 # ============================================================
@@ -397,18 +397,18 @@ for s_idx, season in enumerate(seasons):
     ax.bar(x, ups, color='firebrick', alpha=0.85, label='Upregulated', width=0.6)
     ax.bar(x, downs, color='steelblue', alpha=0.85, label='Downregulated', width=0.6)
     ax.set_xticks(x)
-    ax.set_xticklabels([s.replace('_', '\n') for s in stages], fontsize=8)
+    ax.set_xticklabels([s.replace('_', '\n') for s in stages], fontsize=12)
     ax.set_ylabel("Number of DEGs")
-    ax.set_title(f"Season {season}\nDEGs: RB(+) vs RB(-)", fontsize=11)
+    ax.set_title(f"Season {season}\nDEGs: RB(+) vs RB(-)", fontsize=16)
     ax.axhline(0, color='black', linewidth=0.5)
-    ax.legend(fontsize=8)
+    ax.legend(fontsize=12)
 
     # Annotate counts
     for i, (u, d) in enumerate(zip(ups, downs)):
         if u > 0:
-            ax.text(i, u + 5, str(u), ha='center', fontsize=7, color='firebrick')
+            ax.text(i, u + 5, str(u), ha='center', fontsize=10, color='firebrick')
         if d < 0:
-            ax.text(i, d - 15, str(abs(d)), ha='center', fontsize=7, color='steelblue')
+            ax.text(i, d - 15, str(abs(d)), ha='center', fontsize=10, color='steelblue')
 
 # Row 0, Col 2: DEG comparison grouped bars
 ax = fig.add_subplot(gs[0, 2])
@@ -419,9 +419,9 @@ totals_22 = [deg_counts.get((2022, st), {}).get('total', 0) for st in stages]
 ax.bar(x - width/2, totals_21, width, color='#3498db', alpha=0.85, label='2021')
 ax.bar(x + width/2, totals_22, width, color='#e67e22', alpha=0.85, label='2022')
 ax.set_xticks(x)
-ax.set_xticklabels([s.replace('_', '\n') for s in stages], fontsize=8)
+ax.set_xticklabels([s.replace('_', '\n') for s in stages], fontsize=12)
 ax.set_ylabel("Total DEGs")
-ax.set_title("Total DEGs: 2021 vs 2022", fontsize=11)
+ax.set_title("Total DEGs: 2021 vs 2022", fontsize=16)
 ax.legend()
 
 # Row 0, Col 3: FC correlation between seasons
@@ -431,13 +431,13 @@ r_vals = [fc_correlations[st]['r'] for st in stage_labels]
 bars = ax.bar(range(len(stage_labels)), r_vals,
               color=[stage_colors[st] for st in stage_labels], alpha=0.85)
 ax.set_xticks(range(len(stage_labels)))
-ax.set_xticklabels([s.replace('_', '\n') for s in stage_labels], fontsize=8)
+ax.set_xticklabels([s.replace('_', '\n') for s in stage_labels], fontsize=12)
 ax.set_ylabel("Pearson r")
-ax.set_title("FC Consistency\n(2021 vs 2022 per stage)", fontsize=11)
+ax.set_title("FC Consistency\n(2021 vs 2022 per stage)", fontsize=16)
 ax.set_ylim(0, 1)
 ax.axhline(0.8, color='grey', linestyle='--', linewidth=0.5)
 for i, r in enumerate(r_vals):
-    ax.text(i, r + 0.02, f'{r:.3f}', ha='center', fontsize=8)
+    ax.text(i, r + 0.02, f'{r:.3f}', ha='center', fontsize=12)
 
 # Row 1: DEG Overlap Venn-like plots per stage (2021 vs 2022)
 for idx, stage in enumerate(stages):
@@ -457,13 +457,13 @@ for idx, stage in enumerate(stages):
 
     bars = ax.bar(range(len(categories)), values, color=colors, edgecolor='black', linewidth=0.5, alpha=0.85)
     ax.set_xticks(range(len(categories)))
-    ax.set_xticklabels(categories, fontsize=6.5)
+    ax.set_xticklabels(categories, fontsize=10)
     ax.set_ylabel("Gene count")
-    ax.set_title(f"{stage}\nDEG Overlap 2021 vs 2022", fontsize=10)
+    ax.set_title(f"{stage}\nDEG Overlap 2021 vs 2022", fontsize=15)
 
     for i, v in enumerate(values):
         if v > 0:
-            ax.text(i, v + max(values)*0.03, str(v), ha='center', fontsize=7)
+            ax.text(i, v + max(values)*0.03, str(v), ha='center', fontsize=10)
 
 # Row 2: FC scatter plots (2021 vs 2022) for each stage
 for idx, stage in enumerate(stages):
@@ -504,14 +504,14 @@ for idx, stage in enumerate(stages):
     r = fc_correlations.get(stage, {}).get('r', 0)
     ax.set_xlabel("log2FC (2021)")
     ax.set_ylabel("log2FC (2022)")
-    ax.set_title(f"{stage}\nr = {r:.3f}", fontsize=10)
+    ax.set_title(f"{stage}\nr = {r:.3f}", fontsize=15)
     ax.set_xlim(-6, 6)
     ax.set_ylim(-6, 6)
 
 fig.suptitle("GRBV Infection Response Across Maturity Stages: 2021 vs 2022\n"
              "(DEGs = RB+ vs RB- at each Season × Stage combination)",
-             fontsize=14, y=1.02)
-plt.savefig('15_seasonal_maturity_DEG_comparison.png', bbox_inches='tight')
+             fontsize=21, y=1.02)
+plt.savefig('15_seasonal_maturity_DEG_comparison.png', dpi=300, bbox_inches='tight')
 plt.close()
 print("Saved: 15_seasonal_maturity_DEG_comparison.png")
 
@@ -529,8 +529,8 @@ def plot_enrichment_bars(enrichment_dict, ax, title="", n=10, padj_thresh=0.05):
     combined = get_combined_top(enrichment_dict, n_per_cat=4, padj_thresh=padj_thresh)
     if len(combined) == 0:
         ax.text(0.5, 0.5, 'No significant\nenrichment', ha='center', va='center',
-                transform=ax.transAxes, fontsize=9, color='grey')
-        ax.set_title(title, fontsize=9)
+                transform=ax.transAxes, fontsize=14, color='grey')
+        ax.set_title(title, fontsize=14)
         return
 
     combined = combined.head(n)
@@ -540,15 +540,15 @@ def plot_enrichment_bars(enrichment_dict, ax, title="", n=10, padj_thresh=0.05):
 
     ax.barh(y, -np.log10(combined['padj'].clip(lower=1e-30).values), color=colors, alpha=0.85)
     ax.set_yticks(y)
-    ax.set_yticklabels(labels, fontsize=6.5)
-    ax.set_xlabel('-log10(padj)', fontsize=8)
-    ax.set_title(title, fontsize=9)
+    ax.set_yticklabels(labels, fontsize=10)
+    ax.set_xlabel('-log10(padj)', fontsize=12)
+    ax.set_title(title, fontsize=14)
     ax.invert_yaxis()
     ax.axvline(-np.log10(0.05), color='grey', linestyle='--', linewidth=0.5)
 
     for i, (_, row) in enumerate(combined.iterrows()):
         ax.text(0.2, i, f" {int(row['overlap'])}/{int(row['term_size'])}",
-                va='center', fontsize=5.5, color='white', fontweight='bold')
+                va='center', fontsize=8, color='white', fontweight='bold')
 
 # 2021 UP (Row 0)
 for idx, stage in enumerate(stages):
@@ -577,8 +577,8 @@ for idx, stage in enumerate(stages):
 fig.suptitle("Pathway Enrichment: GRBV Response Progression Through Maturity Stages\n"
              "Top: 2021 Season | Bottom: 2022 Season\n"
              "(Red=GO:BP, Blue=GO:MF, Green=GO:CC, Purple=KEGG)",
-             fontsize=14, y=1.02)
-plt.savefig('16_seasonal_maturity_pathway_enrichment.png', bbox_inches='tight')
+             fontsize=21, y=1.02)
+plt.savefig('16_seasonal_maturity_pathway_enrichment.png', dpi=300, bbox_inches='tight')
 plt.close()
 print("Saved: 16_seasonal_maturity_pathway_enrichment.png")
 
@@ -608,7 +608,7 @@ for s_idx, season in enumerate(seasons):
                     cbar_kws={'label': 'Signed -log10(padj)\n(+Up in RB+, -Down)', 'shrink': 0.8},
                     linewidths=0.5)
         ax.tick_params(axis='y', labelsize=6.5)
-    ax.set_title(f"Season {season}: Pathway Landscape\n(RB+ vs RB- across maturity stages)", fontsize=11)
+    ax.set_title(f"Season {season}: Pathway Landscape\n(RB+ vs RB- across maturity stages)", fontsize=16)
 
 # Bottom: Combined heatmap with both seasons side by side
 ax = fig.add_subplot(gs[1, :])
@@ -643,11 +643,11 @@ if len(combined_matrix) > 0:
     ax.tick_params(axis='y', labelsize=6)
     # Add separator line between seasons
     ax.axvline(x=4, color='black', linewidth=2)
-    ax.set_title("Combined Pathway Landscape: 2021 vs 2022 Across Maturity Stages", fontsize=12)
+    ax.set_title("Combined Pathway Landscape: 2021 vs 2022 Across Maturity Stages", fontsize=18)
 
 fig.suptitle("Pathway Enrichment Landscape: Season-Specific Maturity Progression",
-             fontsize=14, y=1.01)
-plt.savefig('17_seasonal_maturity_pathway_landscape.png', bbox_inches='tight')
+             fontsize=21, y=1.01)
+plt.savefig('17_seasonal_maturity_pathway_landscape.png', dpi=300, bbox_inches='tight')
 plt.close()
 print("Saved: 17_seasonal_maturity_pathway_landscape.png")
 
@@ -682,8 +682,8 @@ for s_idx, season in enumerate(seasons):
 
         ax.set_xlabel(f"PC1 ({pca_s.explained_variance_ratio_[0]:.1%})")
         ax.set_ylabel(f"PC2 ({pca_s.explained_variance_ratio_[1]:.1%})")
-        ax.set_title(f"{season} RB(+)\nby Maturity Stage", fontsize=10)
-        ax.legend(fontsize=7)
+        ax.set_title(f"{season} RB(+)\nby Maturity Stage", fontsize=15)
+        ax.legend(fontsize=10)
 
     # Same for controls
     ax2 = fig.add_subplot(gs[0, s_idx*2 + 1])
@@ -705,8 +705,8 @@ for s_idx, season in enumerate(seasons):
 
         ax2.set_xlabel(f"PC1 ({pca_n.explained_variance_ratio_[0]:.1%})")
         ax2.set_ylabel(f"PC2 ({pca_n.explained_variance_ratio_[1]:.1%})")
-        ax2.set_title(f"{season} RB(-)\nby Maturity Stage", fontsize=10)
-        ax2.legend(fontsize=7)
+        ax2.set_title(f"{season} RB(-)\nby Maturity Stage", fontsize=15)
+        ax2.legend(fontsize=10)
 
 # Row 1: Stage transition — change in GRBV effect
 transitions = [f'{stages[i]} → {stages[i+1]}' for i in range(len(stages)-1)]
@@ -721,11 +721,11 @@ for s_idx, season in enumerate(seasons):
     ax.bar(x, intens, color='#e74c3c', alpha=0.85, label='Effect intensifying')
     ax.bar(x, weak, color='#3498db', alpha=0.85, label='Effect weakening')
     ax.set_xticks(x)
-    ax.set_xticklabels([t.replace(' → ', '\n→\n') for t in transitions], fontsize=8)
+    ax.set_xticklabels([t.replace(' → ', '\n→\n') for t in transitions], fontsize=12)
     ax.set_ylabel("Number of genes")
-    ax.set_title(f"Season {season}\nChange in GRBV Effect Across Stages", fontsize=10)
+    ax.set_title(f"Season {season}\nChange in GRBV Effect Across Stages", fontsize=15)
     ax.axhline(0, color='black', linewidth=0.5)
-    ax.legend(fontsize=7)
+    ax.legend(fontsize=10)
 
 # Row 1, Col 2-3: Transition enrichment comparison
 for s_idx, season in enumerate(seasons):
@@ -758,11 +758,11 @@ for s_idx, season in enumerate(seasons):
                     cbar_kws={'label': 'Signed -log10(padj)', 'shrink': 0.7},
                     linewidths=0.5)
         ax.tick_params(axis='y', labelsize=6)
-        ax.set_title(f"{season}: Transition Pathways\n(+Red=intensifying, -Blue=weakening)", fontsize=9)
+        ax.set_title(f"{season}: Transition Pathways\n(+Red=intensifying, -Blue=weakening)", fontsize=14)
     else:
         ax.text(0.5, 0.5, 'No significant\ntransition pathways', ha='center', va='center',
                 transform=ax.transAxes)
-        ax.set_title(f"{season}: Transition Pathways", fontsize=9)
+        ax.set_title(f"{season}: Transition Pathways", fontsize=14)
 
 # Row 2: Season-specific unique DEGs at each stage — what's different between 2021 and 2022?
 # Build a summary: per stage, which pathways are unique to each season
@@ -801,16 +801,16 @@ for idx, stage in enumerate(stages):
                   color=['#2ecc71', '#3498db', '#e67e22'], alpha=0.85, edgecolor='black', linewidth=0.5)
 
     ax.set_ylabel("Number of DEGs")
-    ax.set_title(f"{stage}\nSeason-specific DEGs", fontsize=10)
+    ax.set_title(f"{stage}\nSeason-specific DEGs", fontsize=15)
 
     for b, v in zip(bars, [shared_total, only21_total, only22_total]):
         if v > 0:
             ax.text(b.get_x() + b.get_width()/2, v + max(shared_total, only21_total, only22_total)*0.03,
-                    str(v), ha='center', fontsize=8)
+                    str(v), ha='center', fontsize=12)
 
 fig.suptitle("GRBV Response: Stage Transitions & Season-Specific Patterns",
-             fontsize=14, y=1.02)
-plt.savefig('18_seasonal_maturity_transitions_PCA.png', bbox_inches='tight')
+             fontsize=21, y=1.02)
+plt.savefig('18_seasonal_maturity_transitions_PCA.png', dpi=300, bbox_inches='tight')
 plt.close()
 print("Saved: 18_seasonal_maturity_transitions_PCA.png")
 
@@ -856,7 +856,7 @@ for idx, stage in enumerate(stages):
                         linewidths=0.5, annot=True, fmt='.1f', annot_kws={'fontsize': 7})
             ax.tick_params(axis='y', labelsize=6.5)
 
-    ax.set_title(f"{stage}: Pathway Enrichment 2021 vs 2022\n(+Red=Up in RB+, -Blue=Down in RB+)", fontsize=10)
+    ax.set_title(f"{stage}: Pathway Enrichment 2021 vs 2022\n(+Red=Up in RB+, -Blue=Down in RB+)", fontsize=15)
 
     # Right column: season-specific pathway enrichment
     ax2 = fig.add_subplot(gs[idx, 1])
@@ -886,20 +886,20 @@ for idx, stage in enumerate(stages):
         ax2.barh(y - 0.15, diff_df['2021'].values, height=0.3, color='#3498db', alpha=0.85, label='2021')
         ax2.barh(y + 0.15, diff_df['2022'].values, height=0.3, color='#e67e22', alpha=0.85, label='2022')
         ax2.set_yticks(y)
-        ax2.set_yticklabels([textwrap.fill(str(t)[:40], 30) for t in diff_df.index], fontsize=6.5)
+        ax2.set_yticklabels([textwrap.fill(str(t)[:40], 30) for t in diff_df.index], fontsize=10)
         ax2.set_xlabel("Signed Fold Enrichment\n(+Up in RB+, -Down in RB+)")
-        ax2.set_title(f"{stage}: Season Comparison\n(Fold Enrichment)", fontsize=10)
-        ax2.legend(fontsize=8)
+        ax2.set_title(f"{stage}: Season Comparison\n(Fold Enrichment)", fontsize=15)
+        ax2.legend(fontsize=12)
         ax2.axvline(0, color='black', linewidth=0.5)
         ax2.invert_yaxis()
     else:
         ax2.text(0.5, 0.5, 'No terms to compare', ha='center', va='center', transform=ax2.transAxes)
-        ax2.set_title(f"{stage}: Season Comparison", fontsize=10)
+        ax2.set_title(f"{stage}: Season Comparison", fontsize=15)
 
 fig.suptitle("Stage-by-Stage Pathway Comparison: 2021 vs 2022\n"
              "How does the pathway signature of GRBV change across seasons?",
-             fontsize=14, y=1.01)
-plt.savefig('19_seasonal_maturity_pathway_detail.png', bbox_inches='tight')
+             fontsize=21, y=1.01)
+plt.savefig('19_seasonal_maturity_pathway_detail.png', dpi=300, bbox_inches='tight')
 plt.close()
 print("Saved: 19_seasonal_maturity_pathway_detail.png")
 
