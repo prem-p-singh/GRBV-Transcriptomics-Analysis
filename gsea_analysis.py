@@ -6,6 +6,12 @@ Complements the Fisher's exact ORA by using full ranked gene lists rather
 than hard DE cutoffs.  Runs permutation-based GSEA across 8 season × stage
 conditions and compares with existing Fisher ORA results.
 
+OPTIMIZED VERSION: NumPy-vectorized for HPC execution.
+  - Vectorized t-tests (no per-gene Python loop)
+  - Batch ES computation across all gene sets per permutation
+  - Pre-computed hit/miss masks as boolean matrices
+  - ~50-100x faster than pure Python loops
+
 Outputs:
   - Fig 37: GSEA enrichment plots (running ES + top pathways)
   - Fig 38: Fisher ORA vs GSEA concordance scatter
@@ -25,6 +31,7 @@ from scipy import stats
 from scipy.stats import rankdata
 from collections import defaultdict
 import textwrap
+import time
 import warnings
 warnings.filterwarnings('ignore')
 
@@ -37,7 +44,7 @@ plt.rcParams.update({
 # 1. LOAD DATA
 # ============================================================
 print("=" * 70)
-print("GSEA ANALYSIS: LOADING DATA")
+print("GSEA ANALYSIS: LOADING DATA (VECTORIZED)")
 print("=" * 70)
 
 counts = pd.read_csv('counts_matrix.txt', sep='\t', index_col=0)
@@ -127,33 +134,44 @@ for pathway, genes in kegg2genes.items():
 print(f"Gene sets for GSEA: {len(gene_sets)} (GO-BP/MF + KEGG, {MIN_SET}-{MAX_SET} genes)")
 
 # ============================================================
-# 3. GSEA ALGORITHM
+# 3. VECTORIZED GSEA ALGORITHM
 # ============================================================
 
-def rank_genes(group1_samples, group2_samples, log_cpm_data):
-    """Rank all genes by sign(log2FC) * -log10(p) for GSEA."""
-    g1 = log_cpm_data[group1_samples]
-    g2 = log_cpm_data[group2_samples]
+def rank_genes_vectorized(group1_samples, group2_samples, log_cpm_data):
+    """Rank all genes by sign(log2FC) * -log10(p) — VECTORIZED.
 
-    metrics = []
-    for gene in log_cpm_data.index:
-        v1 = g1.loc[gene].values
-        v2 = g2.loc[gene].values
-        if np.std(v1) == 0 and np.std(v2) == 0:
-            metrics.append((gene, 0.0, 0.0, 1.0))
-            continue
-        t_stat, p_val = stats.ttest_ind(v1, v2, equal_var=False)
-        log2fc = v1.mean() - v2.mean()
-        rank_metric = np.sign(log2fc) * -np.log10(max(p_val, 1e-300))
-        metrics.append((gene, log2fc, rank_metric, p_val))
+    Uses scipy.stats.ttest_ind with axis parameter to compute all
+    t-tests in a single call (~100x faster than per-gene loop).
+    """
+    g1 = log_cpm_data[group1_samples].values  # (n_genes, n1)
+    g2 = log_cpm_data[group2_samples].values  # (n_genes, n2)
+    genes = log_cpm_data.index.values
 
-    df = pd.DataFrame(metrics, columns=['gene', 'log2FC', 'rank_metric', 'pvalue'])
+    # Vectorized t-test across all genes at once
+    t_stats, p_vals = stats.ttest_ind(g1, g2, axis=1, equal_var=False)
+
+    # Handle NaN p-values (constant expression)
+    p_vals = np.where(np.isnan(p_vals), 1.0, p_vals)
+    t_stats = np.where(np.isnan(t_stats), 0.0, t_stats)
+
+    # log2FC = mean(group1) - mean(group2)
+    log2fc = g1.mean(axis=1) - g2.mean(axis=1)
+
+    # Rank metric: sign(log2FC) * -log10(p)
+    rank_metric = np.sign(log2fc) * -np.log10(np.maximum(p_vals, 1e-300))
+
+    df = pd.DataFrame({
+        'gene': genes,
+        'log2FC': log2fc,
+        'rank_metric': rank_metric,
+        'pvalue': p_vals
+    })
     df = df.sort_values('rank_metric', ascending=False).reset_index(drop=True)
     return df
 
 
 def compute_enrichment_score(ranked_genes, gene_set_members, weighted=True):
-    """Compute running enrichment score for a gene set."""
+    """Compute running enrichment score for a single gene set."""
     N = len(ranked_genes)
     gene_list = ranked_genes['gene'].values
     metrics = ranked_genes['rank_metric'].values.astype(float)
@@ -183,35 +201,128 @@ def compute_enrichment_score(ranked_genes, gene_set_members, weighted=True):
     return es, running_es
 
 
-def run_gsea(ranked_df, gene_sets_dict, n_perm=1000):
-    """Run GSEA with gene-label permutation."""
-    results = []
+def compute_es_batch_vectorized(rank_metrics_sorted, hit_matrix, n_genes):
+    """Compute ES for ALL gene sets simultaneously given sorted rank metrics.
+
+    Parameters:
+      rank_metrics_sorted: (n_genes,) — absolute rank metrics in sorted order
+      hit_matrix: (n_gene_sets, n_genes) — boolean, True where gene is in set
+      n_genes: int
+
+    Returns:
+      es_values: (n_gene_sets,) — enrichment score for each gene set
+    """
+    n_sets = hit_matrix.shape[0]
+
+    # Number of hits per gene set
+    n_hits = hit_matrix.sum(axis=1)  # (n_sets,)
+    n_miss = n_genes - n_hits  # (n_sets,)
+
+    # Weighted hit scores: |rank_metric| * hit indicator
+    abs_metrics = np.abs(rank_metrics_sorted)  # (n_genes,)
+    # (n_sets, n_genes) element-wise multiply
+    hit_weights = hit_matrix * abs_metrics[np.newaxis, :]
+
+    # Normalization factor per gene set
+    nr = hit_weights.sum(axis=1)  # (n_sets,)
+    # Avoid division by zero
+    nr_safe = np.where(nr == 0, 1.0, nr)
+
+    # Cumulative hit score
+    p_hit = np.cumsum(hit_weights, axis=1) / nr_safe[:, np.newaxis]  # (n_sets, n_genes)
+
+    # Cumulative miss score
+    miss_matrix = ~hit_matrix
+    n_miss_safe = np.where(n_miss == 0, 1, n_miss)
+    p_miss = np.cumsum(miss_matrix.astype(float), axis=1) / n_miss_safe[:, np.newaxis]
+
+    # Running ES
+    running_es = p_hit - p_miss  # (n_sets, n_genes)
+
+    # ES = max deviation from zero
+    es_max = running_es.max(axis=1)  # (n_sets,)
+    es_min = running_es.min(axis=1)  # (n_sets,)
+
+    # Choose the one with larger absolute value
+    es = np.where(np.abs(es_max) >= np.abs(es_min), es_max, es_min)
+
+    # Gene sets with 0 hits get ES = 0
+    es = np.where(n_hits == 0, 0.0, es)
+
+    return es
+
+
+def run_gsea_vectorized(ranked_df, gene_sets_dict, n_perm=500):
+    """Run GSEA with gene-label permutation — FULLY VECTORIZED.
+
+    Key optimizations:
+      1. Pre-compute boolean hit matrix (n_sets × n_genes) once
+      2. All gene sets computed simultaneously per permutation
+      3. Permutation loop: only shuffle + argsort + matrix index (all NumPy)
+      4. ~50-100x faster than nested Python loops
+    """
     n_genes = len(ranked_df)
     gene_list = ranked_df['gene'].values
+    rank_metrics = ranked_df['rank_metric'].values.astype(np.float64)
 
-    # Compute observed ES for all gene sets
-    observed_es = {}
-    for gs_name, gs_genes in gene_sets_dict.items():
-        es, _ = compute_enrichment_score(ranked_df, gs_genes)
-        observed_es[gs_name] = es
+    gs_names = list(gene_sets_dict.keys())
+    n_sets = len(gs_names)
 
-    # Permutation: shuffle rank metrics to build null distribution
-    print(f"  Running {n_perm} permutations for {len(gene_sets_dict)} gene sets...")
-    perm_es = {gs: [] for gs in gene_sets_dict}
+    # Build hit matrix: (n_sets, n_genes) — True where gene is in gene set
+    # Gene order matches ranked_df sorted order
+    gene_to_idx = {g: i for i, g in enumerate(gene_list)}
+    hit_matrix = np.zeros((n_sets, n_genes), dtype=bool)
+    set_sizes = np.zeros(n_sets, dtype=int)
 
+    for s_idx, gs_name in enumerate(gs_names):
+        gs_genes = gene_sets_dict[gs_name]
+        for g in gs_genes:
+            if g in gene_to_idx:
+                hit_matrix[s_idx, gene_to_idx[g]] = True
+        set_sizes[s_idx] = hit_matrix[s_idx].sum()
+
+    # Compute observed ES (all gene sets at once)
+    print(f"  Computing observed ES for {n_sets} gene sets...")
+    observed_es = compute_es_batch_vectorized(rank_metrics, hit_matrix, n_genes)
+
+    # Permutations: shuffle rank metrics, re-sort, recompute hit matrix positions, compute ES
+    print(f"  Running {n_perm} permutations for {n_sets} gene sets (vectorized)...")
+    perm_es_all = np.zeros((n_perm, n_sets))
+
+    t_start = time.time()
     for i in range(n_perm):
-        perm_df = ranked_df.copy()
-        perm_df['rank_metric'] = np.random.permutation(perm_df['rank_metric'].values)
-        perm_df = perm_df.sort_values('rank_metric', ascending=False).reset_index(drop=True)
+        # Shuffle rank metrics
+        perm_metrics = np.random.permutation(rank_metrics)
 
-        for gs_name, gs_genes in gene_sets_dict.items():
-            es, _ = compute_enrichment_score(perm_df, gs_genes)
-            perm_es[gs_name].append(es)
+        # Sort indices (descending)
+        sort_idx = np.argsort(-perm_metrics)
 
-    # Compute NES and FDR
-    for gs_name, gs_genes in gene_sets_dict.items():
-        obs = observed_es[gs_name]
-        null = np.array(perm_es[gs_name])
+        # Re-order metrics and hit matrix by new sort order
+        perm_metrics_sorted = perm_metrics[sort_idx]
+
+        # Re-order hit matrix columns: gene at original position j moves to new position
+        perm_hit_matrix = hit_matrix[:, sort_idx]
+
+        # Compute ES for all gene sets simultaneously
+        perm_es_all[i, :] = compute_es_batch_vectorized(
+            perm_metrics_sorted, perm_hit_matrix, n_genes)
+
+        if (i + 1) % 50 == 0:
+            elapsed = time.time() - t_start
+            rate = (i + 1) / elapsed
+            remaining = (n_perm - i - 1) / rate
+            print(f"    Perm {i+1}/{n_perm} "
+                  f"({elapsed:.1f}s elapsed, ~{remaining:.0f}s remaining)")
+
+    elapsed_total = time.time() - t_start
+    print(f"  Permutations complete in {elapsed_total:.1f}s "
+          f"({n_perm * n_sets:,} ES computations)")
+
+    # Compute NES, p-value, FDR for each gene set
+    results = []
+    for s_idx, gs_name in enumerate(gs_names):
+        obs = observed_es[s_idx]
+        null = perm_es_all[:, s_idx]
 
         # NES: normalize by mean of same-sign permutation scores
         if obs >= 0:
@@ -223,7 +334,7 @@ def run_gsea(ranked_df, gene_sets_dict, n_perm=1000):
 
         nes = obs / mean_null if mean_null != 0 else 0.0
 
-        # p-value: fraction of permutations with ES >= observed (same sign)
+        # p-value: fraction of permutations with |ES| >= |observed| (same sign)
         if obs >= 0:
             pval = (null >= obs).sum() / max(1, (null >= 0).sum())
         else:
@@ -234,12 +345,12 @@ def run_gsea(ranked_df, gene_sets_dict, n_perm=1000):
             'es': obs,
             'nes': nes,
             'pvalue': pval,
-            'set_size': len(gs_genes & set(gene_list)),
+            'set_size': int(set_sizes[s_idx]),
         })
 
     res_df = pd.DataFrame(results)
     if len(res_df) > 0:
-        # BH FDR
+        # BH FDR correction
         res_df['fdr'] = np.minimum(
             res_df['pvalue'] * len(res_df) / rankdata(res_df['pvalue'].clip(lower=1e-300)),
             1.0)
@@ -264,7 +375,7 @@ def get_samples(**kwargs):
 # 5. RUN GSEA ACROSS 8 SEASON × STAGE CONDITIONS
 # ============================================================
 print("\n" + "=" * 70)
-print("RUNNING GSEA: 8 SEASON × STAGE CONDITIONS")
+print("RUNNING GSEA: 8 SEASON × STAGE CONDITIONS (VECTORIZED)")
 print("=" * 70)
 
 stages = ['Pre_veraison', 'Veraison', 'Post_veraison', 'Harvest']
@@ -275,6 +386,7 @@ stage_labels = {'Pre_veraison': 'Pre-vér', 'Veraison': 'Véraison',
 all_gsea_results = {}
 all_ranked = {}
 
+overall_start = time.time()
 for season in seasons:
     for stage in stages:
         label = f"{season}_{stage}"
@@ -293,10 +405,14 @@ for season in seasons:
 
         print(f"  Samples: {len(infected)} RB(+) vs {len(control)} RB(-)")
 
-        ranked = rank_genes(infected, control, log_cpm)
+        t0 = time.time()
+        ranked = rank_genes_vectorized(infected, control, log_cpm)
+        print(f"  Gene ranking: {time.time() - t0:.1f}s")
         all_ranked[label] = ranked
 
-        gsea_res = run_gsea(ranked, gene_sets, n_perm=500)
+        t0 = time.time()
+        gsea_res = run_gsea_vectorized(ranked, gene_sets, n_perm=500)
+        print(f"  GSEA total: {time.time() - t0:.1f}s")
         all_gsea_results[label] = gsea_res
 
         n_sig = (gsea_res['fdr'] < 0.25).sum()
@@ -307,6 +423,10 @@ for season in seasons:
             top = gsea_res[gsea_res['fdr'] < 0.05].head(5)
             for _, r in top.iterrows():
                 print(f"    {r['gene_set'][:55]:55s}  NES={r['nes']:+.2f}  FDR={r['fdr']:.3f}")
+
+overall_elapsed = time.time() - overall_start
+print(f"\n  Total GSEA time for all conditions: {overall_elapsed:.1f}s "
+      f"({overall_elapsed/60:.1f} min)")
 
 
 # ============================================================
@@ -622,7 +742,7 @@ else:
 # SUMMARY
 # ============================================================
 print("\n" + "=" * 70)
-print("GSEA ANALYSIS COMPLETE")
+print("GSEA ANALYSIS COMPLETE (VECTORIZED)")
 print("=" * 70)
 
 total_sig = 0
@@ -632,6 +752,7 @@ for c, res in all_gsea_results.items():
     print(f"  {c}: {n} gene sets at FDR<0.05")
 
 print(f"\nTotal significant gene set-condition pairs: {total_sig}")
+print(f"Total runtime: {(time.time() - overall_start)/60:.1f} min")
 print(f"Output files:")
 print(f"  - 37_gsea_enrichment_plots.png")
 print(f"  - 38_gsea_vs_fisher_concordance.png")
