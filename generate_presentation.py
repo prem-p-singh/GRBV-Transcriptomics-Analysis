@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Generate a publication-quality PowerPoint presentation for GRBV Transcriptomics study.
-Embeds all 36 figures with organized section slides, speaker notes, and key findings.
+Embeds all 55 figures with organized section slides, speaker notes, and key findings.
 """
 
 from pptx import Presentation
@@ -244,8 +244,8 @@ make_key_numbers_slide("Study at a Glance", {
     "327": "Samples (RB+ infected & RB- controls)",
     "14,604": "Genes analyzed after quality filtering",
     "6": "Core research questions addressed",
-    "36": "Publication-quality figures generated",
-    "115": "Heat-stress genes characterized",
+    "55": "Publication-quality figures generated",
+    "20": "Analysis scripts in pipeline",
     "12": "Universal biomarkers identified",
 })
 
@@ -470,8 +470,93 @@ make_figure_slide("GRBV Molecular Disruption Cascade", "36_GRBV_biology_diagram.
     "60% biomarker-QTL co-localization with berry quality loci",
 ], notes="Figure 36: Comprehensive biology diagram synthesizing all analyses into a molecular disruption model.")
 
+# ======== SECTION: GSEA ========
+make_section_slide("Gene Set Enrichment Analysis (GSEA)", "11")
+
+make_figure_slide("GSEA Enrichment Scores", "37_gsea_enrichment_plots.png", [
+    "Permutation-based GSEA (500 permutations)",
+    "Full ranked gene list — no threshold cutoff",
+    "Captures subtle but coordinated pathway shifts",
+    "Run across 8 season x stage conditions",
+], notes="GSEA running enrichment scores for top gene sets across conditions.")
+
+make_two_figure_slide("GSEA vs Fisher Concordance & NES Heatmap",
+    "38_gsea_vs_fisher_concordance.png", "39_gsea_nes_heatmap.png",
+    notes="Left: concordance between GSEA and Fisher ORA. Right: NES heatmap across conditions.")
+
+# ======== SECTION: MULTI-FACTOR ANOVA ========
+make_section_slide("Multi-Factor Interaction Model", "12")
+
+make_figure_slide("Variance Decomposition (ANOVA)", "40_variance_decomposition.png", [
+    "Per-gene ANOVA: expr ~ Infection * Season * Stage",
+    "Stage dominates: eta-sq = 0.426",
+    "773 Infection x Season interaction genes",
+    "4,146 three-way interaction genes",
+    "Formally confirms inverted seasonal trajectory",
+], notes="Type II ANOVA with eta-squared variance decomposition across 14,604 genes.")
+
+make_two_figure_slide("Interaction Gene Sets & Expression Profiles",
+    "41_interaction_gene_sets.png", "42_interaction_profiles.png",
+    notes="Left: gene counts per interaction category. Right: expression profiles of top interaction genes.")
+
+# ======== SECTION: TF FAMILY ========
+make_section_slide("Transcription Factor Family Analysis", "13")
+
+make_figure_slide("TF Family Disruption Heatmap", "43_tf_family_heatmap.png", [
+    "267 TF genes across 6 families profiled",
+    "ERF/AP2 (79 genes): most disrupted family",
+    "HSF (13 genes): most consistently affected",
+    "MYB/bHLH: anthocyanin regulation impacted",
+    "WRKY/NAC: defense and ripening pathways",
+], notes="Six TF families queried from annotation DB and profiled across all DE conditions.")
+
+make_two_figure_slide("TF Enrichment & Expression",
+    "44_tf_enrichment_balloon.png", "45_tf_expression_boxplots.png",
+    notes="Left: DEG enrichment balloon plot. Right: expression boxplots for top TF genes.")
+
+# ======== SECTION: ADVANCED ML ========
+make_section_slide("Advanced ML Biomarker Comparison", "14")
+
+make_figure_slide("Multi-Method AUC Comparison", "46_ml_method_comparison.png", [
+    "5 ML methods: LR, LASSO, SVM-RBF, RF, GBM",
+    "ALL methods achieve AUC = 1.000",
+    "Class-weight balanced (264:63 imbalance)",
+    "Viral genome genes (N761_gp1-3) dominate",
+    "Perfect discrimination across all classifiers",
+], notes="5-fold stratified CV with class_weight='balanced' for all methods.")
+
+make_two_figure_slide("Stability Selection & Consensus Panel",
+    "47_stability_selection.png", "48_consensus_panel.png",
+    notes="Left: LASSO stability selection (100 subsamples). Right: consensus panel from cross-method agreement.")
+
+# ======== SECTION: MEDIATION & CHROMOSOMES ========
+make_section_slide("Causal Mediation & Chromosomal Analysis", "15")
+
+make_two_figure_slide("Causal Mediation: Temperature -> Titer -> Expression",
+    "49_mediation_diagrams.png", "50_direct_vs_indirect_effects.png",
+    notes="Mediation analysis decomposing temperature effects into direct and titer-mediated components.")
+
+make_two_figure_slide("Chromosome DEG Distribution & Hotspots",
+    "51_chromosome_deg_ideogram.png", "52_deg_manhattan_plot.png",
+    notes="Genome-wide DEG density across 19 grapevine chromosomes with QTL overlay.")
+
+# ======== SECTION: WGCNA ========
+make_section_slide("Co-Expression Network Analysis (WGCNA)", "16")
+
+make_figure_slide("Module-Trait Correlations", "53_module_trait_correlations.png", [
+    "13 co-expression modules (10,221 genes)",
+    "Maturity Stage dominates correlations",
+    "Turquoise module: r = 0.941 with Stage",
+    "Black module: most infection-correlated (r=0.126, p=0.022)",
+    "130 hub genes identified (top 10/module by kME)",
+], notes="WGCNA module-trait Pearson correlations for Infection, Season, and Maturity Stage.")
+
+make_two_figure_slide("Module Eigengene Profiles & Hub Gene Heatmaps",
+    "54_module_eigengene_profiles.png", "55_hub_gene_heatmaps.png",
+    notes="Left: module eigengene expression patterns. Right: hub gene heatmaps showing coordinated expression.")
+
 # ======== SECTION: CONCLUSIONS ========
-make_section_slide("Conclusions & Future Directions", "11")
+make_section_slide("Conclusions & Future Directions", "17")
 
 slide = prs.slides.add_slide(prs.slide_layouts[6])
 add_background(slide, WHITE)
@@ -480,12 +565,13 @@ add_text_box(slide, Inches(0.5), Inches(0.12), Inches(12), Inches(0.7),
              "Key Conclusions", font_size=22, color=WHITE, bold=True)
 add_bullet_slide_content(slide, Inches(0.5), Inches(1.2), Inches(6.0), Inches(5.8), [
     "1. GRBV effects are profoundly stage-dependent, peaking at Post-veraison and Harvest",
-    "2. Seasonal response trajectory is INVERTED: 2021 peaks at Harvest, 2022 peaks at Post-veraison",
-    "3. GRBV suppresses heat-stress genes (sHSPs), potentially compromising vine thermal tolerance",
-    "4. 12 universal biomarkers + 3-gene panel (AUC=1.0) enable robust diagnostics",
-    "5. 60% of biomarkers co-localize with known disease-resistance and berry-quality QTLs",
-    "6. Sugar accumulation QTL link explains primary GRBV symptom (delayed ripening, reduced Brix)",
-], font_size=16, spacing=Pt(10))
+    "2. Seasonal trajectory is INVERTED: 2021 peaks at Harvest, 2022 at Post-veraison",
+    "3. GRBV suppresses 29/36 sHSPs, compromising vine thermal tolerance",
+    "4. 12 universal biomarkers + 3-gene panel (AUC=1.0) enable diagnostics",
+    "5. All 5 ML methods achieve AUC=1.000; 130 WGCNA hub genes identified",
+    "6. 773 Infection x Season interaction genes formally confirm environmental modulation",
+    "7. 60% biomarker-QTL co-localization links defense to berry quality loci",
+], font_size=15, spacing=Pt(8))
 
 # Right side: future directions
 add_text_box(slide, Inches(7.0), Inches(1.2), Inches(5.5), Inches(0.5),
@@ -522,26 +608,20 @@ print("  1. Title slide")
 print("  2. Study at a glance (key numbers)")
 print("  3. Study objectives")
 print("  4. Analysis pipeline (Fig 23)")
-print("  5. Section: Global Overview")
-print("  6. Global PCA (Fig 1)")
-print("  7. Section: Core Questions Q1-Q6")
-print("  8-13. Q1-Q6 figures with key findings")
-print("  14. Section: Inverted Seasonal Trajectory")
-print("  15-18. Seasonal maturity progression (Figs 15-19)")
-print("  19. Section: Pathway Analysis")
-print("  20-22. Pathway enrichment (Figs 10-14)")
-print("  23. Section: Environment & Titer")
-print("  24-27. Weather, titer, integration (Figs 30-33)")
-print("  28. Section: Heat-Stress")
-print("  29-31. Heat-stress key numbers & figures (Figs 34-35)")
-print("  32. Section: Biomarkers")
-print("  33-35. Biomarker scoring, profiles, robustness (Figs 20-22)")
-print("  36. Section: GWAS/QTL")
-print("  37-38. Chromosome map & cross-ref (Figs 24-25)")
-print("  39. Section: Robustness")
-print("  40-41. Pooled vs stratified, summary dashboard (Figs 26-29)")
-print("  42. Section: Integrated Molecular Model")
-print("  43. GRBV biology diagram (Fig 36)")
-print("  44. Section: Conclusions")
-print("  45. Key conclusions & future directions")
-print("  46. Thank you / Q&A")
+print("  5-6. Global Overview & PCA (Fig 1)")
+print("  7-13. Core Questions Q1-Q6 (Figs 2-7, 8-9)")
+print("  14-18. Inverted Seasonal Trajectory (Figs 15-19)")
+print("  19-22. Pathway Analysis (Figs 10-14)")
+print("  23-27. Environment & Titer (Figs 30-33)")
+print("  28-31. Heat-Stress Analysis (Figs 34-35)")
+print("  32-35. Biomarker Discovery (Figs 20-22)")
+print("  36-38. GWAS/QTL Cross-Reference (Figs 24-25)")
+print("  39-41. Analytical Robustness (Figs 26-29)")
+print("  42-43. Integrated Molecular Model (Fig 36)")
+print("  44-46. GSEA Analysis (Figs 37-39)")
+print("  47-49. Multi-Factor ANOVA (Figs 40-42)")
+print("  50-52. TF Family Analysis (Figs 43-45)")
+print("  53-55. Advanced ML Biomarkers (Figs 46-48)")
+print("  56-58. Mediation & Chromosomal Analysis (Figs 49-52)")
+print("  59-61. WGCNA Co-Expression (Figs 53-55)")
+print("  62-64. Conclusions, Future Directions, Thank You")

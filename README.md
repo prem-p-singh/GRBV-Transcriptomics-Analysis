@@ -4,7 +4,7 @@
 ![License](https://img.shields.io/badge/License-MIT-green)
 ![Status](https://img.shields.io/badge/Status-Complete-brightgreen)
 
-A comprehensive RNA-Seq transcriptomics pipeline for studying **Grapevine Red Blotch Virus (GRBV)** effects on *Vitis vinifera* (Merlot). The analysis covers 327 field samples across 2 growing seasons and 4 maturity stages, producing 36 publication-quality figures, 13+ data tables, and automated reports.
+A comprehensive RNA-Seq transcriptomics pipeline for studying **Grapevine Red Blotch Virus (GRBV)** effects on *Vitis vinifera* (Merlot). The analysis covers 327 field samples across 2 growing seasons and 4 maturity stages, producing 55 publication-quality figures, 26+ data tables, and automated reports.
 
 ---
 
@@ -60,15 +60,27 @@ The pipeline addresses six core research questions:
 | 7 | `environment_titer_integration.py` | Integrates weather data, viral titer, and DEGs across seasons/stages |
 | 8 | `heat_stress_signatures.py` | Heat-stress gene analysis (115 genes, 9 categories); sHSP suppression by GRBV |
 
-### Visualization & Reporting Scripts
+### Extended Analysis Scripts
 
 | # | Script | Description |
 |---|--------|-------------|
 | 9 | `analysis_schematic.py` | Publication-quality pipeline flowchart diagram |
-| 10 | `generate_report_pdf.py` | Automated PDF report with embedded figures and discussion |
-| 11 | `generate_presentation.py` | 44-slide PowerPoint deck with all figures and speaker notes |
-| 12 | `generate_workflow_pdf.py` | Paper-writing workflow guide (6 phases, journal targets) |
-| 13 | `grbv_biology_diagram.py` | Data-driven biological infographic of molecular disruption cascade |
+| 10 | `grbv_biology_diagram.py` | Data-driven biological infographic of molecular disruption cascade |
+| 11 | `gsea_analysis.py` | Permutation-based GSEA (500 perm) across 8 season × stage conditions |
+| 12 | `multifactor_interaction_model.py` | Infection × Season × Stage ANOVA with variance decomposition |
+| 13 | `tf_family_analysis.py` | Transcription factor family profiling (WRKY, MYB, NAC, bHLH, ERF/AP2, HSF) |
+| 14 | `advanced_ml_biomarkers.py` | Multi-method ML comparison (LR, RF, LASSO, SVM, GBM) + stability selection |
+| 15 | `causal_mediation_analysis.py` | Temperature → Titer → Gene expression mediation analysis |
+| 16 | `chromosome_deg_hotspots.py` | Genome-wide DEG density and chromosomal hotspot analysis |
+| 17 | `coexpression_network.py` | WGCNA co-expression module analysis (Python wrapper for R outputs) |
+
+### Report Generation Scripts
+
+| # | Script | Description |
+|---|--------|-------------|
+| 18 | `generate_report_pdf.py` | Automated PDF report with embedded figures and discussion |
+| 19 | `generate_presentation.py` | Conference PowerPoint deck with all figures |
+| 20 | `generate_workflow_pdf.py` | Paper-writing workflow guide (6 phases, journal targets) |
 
 ---
 
@@ -85,6 +97,8 @@ The following files are required in the working directory but are **not included
 | `daily_2021.csv` | Daily weather data for 2021 growing season | - |
 | `daily_2022.csv` | Daily weather data for 2022 growing season | - |
 | `Virus titer.txt` | Viral titer measurements across seasons and stages | ~4 KB |
+| `MEs.csv` | WGCNA module eigengenes (from R analysis) | - |
+| `Module_genes.xlsx` | WGCNA module gene assignments (14 sheets) | - |
 
 ---
 
@@ -119,6 +133,7 @@ pip install -r requirements.txt
 | goatools | Gene Ontology enrichment analysis |
 | fpdf2 | PDF report generation |
 | python-pptx | PowerPoint presentation generation |
+| openpyxl | Reading Excel files (WGCNA module gene lists) |
 
 ---
 
@@ -153,14 +168,35 @@ python environment_titer_integration.py
 # Step 8: Heat-stress analysis (produces plots 34-35)
 python heat_stress_signatures.py
 
-# Step 9: Pipeline schematic (produces plot 23)
+# Step 9: Pipeline schematic + biology diagram (produces plots 23, 36)
 python analysis_schematic.py
+python grbv_biology_diagram.py
 
-# Step 10: Generate outputs
+# Step 10: GSEA analysis (produces plots 37-39)
+python gsea_analysis.py
+
+# Step 11: Multi-factor ANOVA (produces plots 40-42)
+python multifactor_interaction_model.py
+
+# Step 12: TF family analysis (produces plots 43-45)
+python tf_family_analysis.py
+
+# Step 13: Advanced ML biomarkers (produces plots 46-48)
+python advanced_ml_biomarkers.py
+
+# Step 14: Causal mediation (produces plots 49-50)
+python causal_mediation_analysis.py
+
+# Step 15: Chromosome DEG hotspots (produces plots 51-52)
+python chromosome_deg_hotspots.py
+
+# Step 16: Co-expression network (produces plots 53-55)
+python coexpression_network.py
+
+# Step 17: Generate outputs
 python generate_report_pdf.py        # PDF report
 python generate_presentation.py      # PowerPoint deck
 python generate_workflow_pdf.py      # Paper-writing guide
-python grbv_biology_diagram.py       # Biology infographic (plot 36)
 ```
 
 ### Individual Script Execution
@@ -171,7 +207,7 @@ Each analysis script can be run independently if its required input files are pr
 
 ## Output Files
 
-### Figures (36 PNGs)
+### Figures (55 PNGs)
 
 | Plots | Source Script | Content |
 |-------|--------------|---------|
@@ -185,8 +221,15 @@ Each analysis script can be run independently if its required input files are pr
 | 30-33 | `environment_titer_integration.py` | Weather, titer dynamics, integrated multi-parameter plots |
 | 34-35 | `heat_stress_signatures.py` | Heat-stress gene landscape, heat vs virus disentanglement |
 | 36 | `grbv_biology_diagram.py` | Data-driven molecular disruption infographic |
+| 37-39 | `gsea_analysis.py` | GSEA enrichment scores, Fisher concordance, NES heatmap |
+| 40-42 | `multifactor_interaction_model.py` | Variance decomposition, interaction sets, expression profiles |
+| 43-45 | `tf_family_analysis.py` | TF family heatmap, enrichment balloon, expression boxplots |
+| 46-48 | `advanced_ml_biomarkers.py` | ML AUC comparison, stability selection, consensus panel |
+| 49-50 | `causal_mediation_analysis.py` | Mediation diagrams, direct vs indirect effects |
+| 51-52 | `chromosome_deg_hotspots.py` | Chromosome ideogram DEG density, Manhattan plot |
+| 53-55 | `coexpression_network.py` | Module-trait correlations, eigengene profiles, hub gene heatmaps |
 
-### Data Tables (13+ CSVs)
+### Data Tables (26+ CSVs)
 
 | File | Content |
 |------|---------|
@@ -220,6 +263,7 @@ Each analysis script can be run independently if its required input files are pr
 - **Diagnostic biomarkers**: A 3-gene panel achieves AUC = 1.000 across 5-fold cross-validation; 12 universal biomarkers significant in all conditions
 - **Genomic validation**: 60% of biomarker genes co-localize within 1 Mb of known GWAS/QTL loci for berry quality traits
 - **Pathway disruption**: Consistent downregulation of phenylpropanoid, flavonoid, and stilbenoid biosynthesis across seasons and stages
+- **13 co-expression modules**: WGCNA identifies stage-dominated networks; black module most infection-correlated (r=+0.126, p=0.022); 130 hub genes
 
 ---
 

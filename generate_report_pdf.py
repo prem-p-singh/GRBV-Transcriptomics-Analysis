@@ -50,7 +50,7 @@ class GRBVReport(FPDF):
         self.set_font('Helvetica', '', 11)
         self.set_text_color(100, 100, 100)
         self.cell(0, 8, 'Data: 327 samples | 14,604 genes | 2 seasons | 4 maturity stages', align='C', new_x=XPos.LMARGIN, new_y=YPos.NEXT)
-        self.cell(0, 8, '36 figures | 10 analysis modules | 121 GWAS/QTL loci', align='C', new_x=XPos.LMARGIN, new_y=YPos.NEXT)
+        self.cell(0, 8, '55 figures | 20 analysis modules | 121 GWAS/QTL loci', align='C', new_x=XPos.LMARGIN, new_y=YPos.NEXT)
         self.ln(20)
         self.set_font('Helvetica', 'I', 10)
         self.set_text_color(150, 150, 150)
@@ -201,6 +201,13 @@ toc_items = [
     ('  3.13', 'Environmental Context and Viral Titer Integration'),
     ('  3.14', 'Heat-Stress Signatures and Virus-Heat Disentanglement'),
     ('  3.15', 'Integrated Molecular Model'),
+    ('  3.16', 'Gene Set Enrichment Analysis (GSEA)'),
+    ('  3.17', 'Multi-Factor Interaction Model'),
+    ('  3.18', 'Transcription Factor Family Analysis'),
+    ('  3.19', 'Advanced ML Biomarkers'),
+    ('  3.20', 'Causal Mediation Analysis'),
+    ('  3.21', 'Chromosome DEG Hotspot Analysis'),
+    ('  3.22', 'Co-Expression Network Analysis (WGCNA)'),
     ('4.', 'Discussion'),
     ('5.', 'Conclusions'),
     ('6.', 'Supplementary Files'),
@@ -755,6 +762,162 @@ pdf.body_text(
 pdf.add_figure(f'{OUT}/36_GRBV_biology_diagram.png',
                'Figure 36: Integrated GRBV molecular disruption cascade diagram combining all analyses into a unified biological model.')
 
+# 3.16 GSEA
+pdf.section_header('3.16', 'Gene Set Enrichment Analysis (GSEA)', level=2)
+pdf.body_text(
+    'While the primary pathway enrichment (Section 3.8) used Fisher\'s exact test on DE gene lists, '
+    'Gene Set Enrichment Analysis (GSEA) was performed using the full ranked gene list to capture '
+    'subtle but coordinated pathway changes missed by threshold-based approaches. GSEA was run with '
+    '500 permutations across all 8 season x stage conditions for GO and KEGG gene sets.'
+)
+pdf.highlight_box(
+    'GSEA uses the entire ranked gene list rather than a discrete DE list, providing increased '
+    'sensitivity for detecting coordinated but modest pathway-level shifts.'
+)
+pdf.add_figure(f'{OUT}/37_gsea_enrichment_plots.png',
+               'Figure 37: GSEA running enrichment scores for top pathways across season x stage conditions.')
+pdf.add_figure(f'{OUT}/38_gsea_vs_fisher_concordance.png',
+               'Figure 38: Concordance between GSEA and Fisher ORA approaches, showing shared and method-specific enrichments.')
+pdf.add_figure(f'{OUT}/39_gsea_nes_heatmap.png',
+               'Figure 39: GSEA Normalized Enrichment Score (NES) heatmap across all conditions.')
+
+# 3.17 Multi-factor ANOVA
+pdf.section_header('3.17', 'Multi-Factor Interaction Model', level=2)
+pdf.body_text(
+    'To formally test for interaction effects between Infection, Season, and Maturity Stage, '
+    'per-gene ANOVA models were fit: expression ~ Infection * Season * Stage. Type II ANOVA '
+    'provided F-statistics and p-values for all main effects and interactions, with eta-squared '
+    'quantifying the variance explained by each factor.'
+)
+pdf.add_table(
+    ['Factor', 'Median eta-sq', 'Interpretation'],
+    [
+        ['Maturity Stage', '0.426', 'Dominant source of expression variance'],
+        ['Season x Stage', '0.089', 'Strong developmental-environmental interaction'],
+        ['Infection x Stage', '0.045', 'Virus effects depend on developmental context'],
+        ['Season', '0.032', 'Moderate direct environmental effect'],
+        ['Infection', '0.018', 'Modest direct viral effect across all conditions'],
+        ['Infection x Season x Stage', '0.012', 'Three-way interaction present'],
+    ],
+    col_widths=[50, 35, 85]
+)
+pdf.highlight_box(
+    'KEY FINDING: 773 genes show significant Infection x Season interaction (FDR < 0.05), '
+    'formally confirming the inverted seasonal trajectory. 4,146 genes show significant three-way '
+    'Infection x Season x Stage interaction, demonstrating GRBV effects are highly context-dependent.'
+)
+pdf.add_figure(f'{OUT}/40_variance_decomposition.png',
+               'Figure 40: Variance decomposition (eta-squared) showing relative contribution of each factor and interaction to gene expression variance.')
+pdf.add_figure(f'{OUT}/41_interaction_gene_sets.png',
+               'Figure 41: Interaction term gene sets showing counts and overlap between different interaction categories.')
+pdf.add_figure(f'{OUT}/42_interaction_profiles.png',
+               'Figure 42: Expression profiles of top Infection x Season interaction genes across conditions.')
+
+# 3.18 TF Family Analysis
+pdf.section_header('3.18', 'Transcription Factor Family Analysis', level=2)
+pdf.body_text(
+    'Transcription factors (TFs) are the mechanistic bridge between pathogen perception and '
+    'downstream gene regulation. Six key TF families were profiled: WRKY (defense signaling), '
+    'MYB (secondary metabolism, anthocyanin regulation), NAC (ripening, stress), bHLH (light '
+    'response, flavonoid regulation), ERF/AP2 (ethylene/stress response), and HSF (heat-shock factor).'
+)
+pdf.add_table(
+    ['TF Family', 'Expressed', 'Role in GRBV Context'],
+    [
+        ['ERF/AP2', '79', 'Most disrupted; ethylene and stress response'],
+        ['MYB', '67', 'Anthocyanin/flavonoid biosynthesis regulation'],
+        ['bHLH', '47', 'Light response, partner of MYB in pigment pathway'],
+        ['WRKY', '33', 'Defense signaling, SA/JA pathway regulation'],
+        ['NAC', '28', 'Ripening control, senescence, cell wall remodeling'],
+        ['HSF', '13', 'Heat-shock factor; most consistently affected'],
+    ],
+    col_widths=[30, 25, 115]
+)
+pdf.add_figure(f'{OUT}/43_tf_family_heatmap.png',
+               'Figure 43: TF family heatmap showing percent DE and mean fold change across all conditions.')
+pdf.add_figure(f'{OUT}/44_tf_enrichment_balloon.png',
+               'Figure 44: TF family DEG enrichment balloon plot showing over/under-representation in DE gene sets.')
+pdf.add_figure(f'{OUT}/45_tf_expression_boxplots.png',
+               'Figure 45: Expression boxplots for top TF genes across conditions.')
+
+# 3.19 Advanced ML Biomarkers
+pdf.section_header('3.19', 'Advanced ML Biomarker Comparison', level=2)
+pdf.body_text(
+    'To address potential overfitting concerns, five ML methods were compared with class-weight '
+    'balancing to handle the 264:63 RB+:RB- class imbalance: Logistic Regression (L2), LASSO (L1), '
+    'SVM-RBF, Random Forest, and Gradient Boosting. Stability selection using 100 random subsamples '
+    'with LASSO identified genes consistently selected as important across data perturbations.'
+)
+pdf.highlight_box(
+    'All 5 ML methods achieved AUC = 1.000 with 5-fold stratified cross-validation. The viral genome '
+    'genes (N761_gp1-3) dominate all classifiers, providing perfect discrimination. Stability selection '
+    'confirmed these genes are selected in >95% of 100 random subsamples.'
+)
+pdf.add_figure(f'{OUT}/46_ml_method_comparison.png',
+               'Figure 46: Multi-method AUC comparison with ROC curves for all 5 classifiers.')
+pdf.add_figure(f'{OUT}/47_stability_selection.png',
+               'Figure 47: LASSO stability selection showing gene selection frequency across 100 random subsamples.')
+pdf.add_figure(f'{OUT}/48_consensus_panel.png',
+               'Figure 48: Consensus biomarker panel with cross-method agreement and ROC curves.')
+
+# 3.20 Causal Mediation Analysis
+pdf.section_header('3.20', 'Causal Mediation Analysis', level=2)
+pdf.body_text(
+    'To transform correlational findings into causal hypotheses, mediation analysis was performed '
+    'to decompose temperature effects on gene expression into direct effects and effects potentially '
+    'mediated through viral titer. Temperature at sampling was mapped to each sample using 7-day '
+    'mean CIMIS weather data. Among the top 500 most variable genes in infected samples, 90 showed '
+    'significant temperature responsiveness (adjusted p < 0.05).'
+)
+pdf.add_figure(f'{OUT}/49_mediation_diagrams.png',
+               'Figure 49: Causal mediation path diagrams for top temperature-responsive genes.')
+pdf.add_figure(f'{OUT}/50_direct_vs_indirect_effects.png',
+               'Figure 50: Direct temperature effects vs titer-mediated indirect effects on gene expression.')
+
+# 3.21 Chromosome DEG Hotspots
+pdf.section_header('3.21', 'Chromosome DEG Hotspot Analysis', level=2)
+pdf.body_text(
+    'To identify chromosomal regions with concentrated DEG activity, the genome-wide distribution '
+    'of differentially expressed genes was analyzed using 1 Mb sliding windows across all 19 '
+    'grapevine chromosomes. DEG density was overlaid with known QTL positions from the curated '
+    'database of 121 loci to identify convergent genomic regions.'
+)
+pdf.add_figure(f'{OUT}/51_chromosome_deg_ideogram.png',
+               'Figure 51: Chromosome ideogram with DEG density heatmap across all 19 grapevine chromosomes.')
+pdf.add_figure(f'{OUT}/52_deg_manhattan_plot.png',
+               'Figure 52: DEG enrichment Manhattan plot with per-chromosome DEG counts and QTL overlay.')
+
+# 3.22 Co-Expression Network Analysis (WGCNA)
+pdf.section_header('3.22', 'Co-Expression Network Analysis (WGCNA)', level=2)
+pdf.body_text(
+    'Weighted Gene Co-Expression Network Analysis (WGCNA) was performed to identify modules of '
+    'co-expressed genes and correlate them with experimental traits. Using a signed network with '
+    'bicor correlation and soft-thresholding, 13 co-expression modules (excluding the grey/unassigned '
+    'module) were identified comprising 10,221 genes.'
+)
+pdf.add_table(
+    ['Metric', 'Result'],
+    [
+        ['Total modules', '13 (excluding grey)'],
+        ['Total genes assigned', '10,221'],
+        ['Dominant trait corr.', 'Maturity Stage (turquoise r=0.941, red r=0.926)'],
+        ['Most infection-correlated', 'Black module (r=+0.126, p=0.022)'],
+        ['Hub genes identified', '130 (top 10 per module by kME)'],
+    ],
+    col_widths=[55, 115]
+)
+pdf.highlight_box(
+    'WGCNA confirms the variance hierarchy from PCA: Maturity Stage dominates module-trait '
+    'correlations. The black module shows the strongest infection correlation, containing genes '
+    'related to defense and secondary metabolism. 130 hub genes provide key regulatory targets.'
+)
+pdf.add_figure(f'{OUT}/53_module_trait_correlations.png',
+               'Figure 53: WGCNA module-trait correlation heatmap showing Pearson correlations between module eigengenes and experimental traits.')
+pdf.add_figure(f'{OUT}/54_module_eigengene_profiles.png',
+               'Figure 54: Module eigengene profiles across maturity stages, seasons, and infection status.')
+pdf.add_figure(f'{OUT}/55_hub_gene_heatmaps.png',
+               'Figure 55: Hub gene expression heatmaps for key modules showing coordinated expression patterns.')
+
 # ---- 4. DISCUSSION ----
 pdf.section_header('4', 'Discussion')
 
@@ -801,7 +964,24 @@ pdf.body_text(
     'suppression: GRBV may interfere with HSF-mediated transcription of the sHSP regulon.'
 )
 
-pdf.section_header('4.6', 'Limitations', level=2)
+pdf.section_header('4.6', 'Multi-Factor Interaction Confirms Environmental Modulation', level=2)
+pdf.body_text(
+    'The formal ANOVA interaction model provides statistical rigor to the observational finding of '
+    'inverted seasonal trajectories. With 773 Infection x Season interaction genes, the environmental '
+    'modulation of GRBV effects is not merely correlational but statistically confirmed. The '
+    'three-way interaction (4,146 genes) underscores that GRBV effects must be interpreted within '
+    'the joint context of developmental stage and growing conditions.'
+)
+
+pdf.section_header('4.7', 'Co-Expression Networks Reveal Regulatory Architecture', level=2)
+pdf.body_text(
+    'WGCNA module-trait correlations reinforce the PCA-derived variance hierarchy and identify '
+    'coordinated gene networks underlying the observed transcriptomic responses. The black module\'s '
+    'infection correlation, while modest (r=0.126), is significant (p=0.022) and contains defense-related '
+    'hub genes that may serve as regulatory targets for understanding GRBV pathogenesis.'
+)
+
+pdf.section_header('4.8', 'Limitations', level=2)
 pdf.bullet_point('QTL positions are approximate, based on flanking markers mapped to PN40024')
 pdf.bullet_point('Co-localization does not prove causation; functional validation needed')
 pdf.bullet_point('DE analysis uses Welch\'s t-test rather than negative binomial models')
@@ -818,6 +998,8 @@ conclusions = [
     'The top host biomarker (RNA-dependent RNA polymerase 1) maps to the sugar accumulation QTL on chromosome 1, linking antiviral defense with the primary disease symptom.',
     'Multiple biomarker genes map to the chr14 NB-LRR mega-cluster (Rpv8/Rpv12/Ren2/PdR1), suggesting shared innate immune machinery with implications for multi-pathogen resistance breeding.',
     '908 universal DEGs confirmed across pooled and stratified analytical approaches demonstrate the robustness and reproducibility of the analysis pipeline.',
+    'Multi-factor ANOVA confirms 773 Infection x Season interaction genes and 4,146 three-way interaction genes, providing formal statistical support for the context-dependent nature of GRBV effects.',
+    'WGCNA co-expression analysis identifies 13 modules (10,221 genes) with maturity stage dominating module-trait correlations. The black module shows the strongest infection correlation (r=0.126, p=0.022), and 130 hub genes provide candidate regulatory targets.',
 ]
 
 for i, c in enumerate(conclusions, 1):
@@ -841,6 +1023,13 @@ pdf.add_table(
         ['heat_stress_signatures.py', 'Heat-stress gene analysis (115 genes, 9 categories)'],
         ['analysis_schematic.py', 'Pipeline flowchart'],
         ['grbv_biology_diagram.py', 'Integrated biology infographic'],
+        ['gsea_analysis.py', 'Permutation-based GSEA (500 perm)'],
+        ['multifactor_interaction_model.py', 'Multi-factor ANOVA interaction model'],
+        ['tf_family_analysis.py', 'TF family profiling (6 families)'],
+        ['advanced_ml_biomarkers.py', 'Multi-method ML biomarker comparison'],
+        ['causal_mediation_analysis.py', 'Temperature-titer mediation analysis'],
+        ['chromosome_deg_hotspots.py', 'Genome-wide DEG density and hotspots'],
+        ['coexpression_network.py', 'WGCNA co-expression module analysis'],
         ['generate_report_pdf.py', 'PDF report generation'],
         ['generate_presentation.py', 'PowerPoint presentation generation'],
         ['generate_workflow_pdf.py', 'Paper-writing workflow PDF'],
@@ -865,11 +1054,23 @@ pdf.add_table(
         ['heat_stress_DEGs_all_conditions.csv', 'Heat gene DE results (all conditions)'],
         ['heat_gene_temperature_correlations.csv', 'Spearman correlations with temperature'],
         ['heat_DEGs_recurrence.csv', 'Recurrent heat DEGs across conditions'],
+        ['gsea_results_all_conditions.csv', 'GSEA NES and FDR for all gene sets x conditions'],
+        ['multifactor_anova_results.csv', 'Per-gene ANOVA F-stats, p-values, eta-sq'],
+        ['interaction_gene_categories.csv', 'Genes with significant interaction terms'],
+        ['tf_family_DE_summary.csv', 'TF family DE enrichment across conditions'],
+        ['advanced_ml_comparison.csv', '5-method ML AUC comparison'],
+        ['stability_selection_results.csv', 'LASSO stability selection frequencies'],
+        ['consensus_biomarker_panel.csv', 'Cross-method consensus biomarker genes'],
+        ['mediation_results.csv', 'Temperature-titer mediation results'],
+        ['chromosome_deg_density.csv', '1 Mb window DEG density per chromosome'],
+        ['coexpression_modules.csv', 'WGCNA module summary'],
+        ['module_trait_correlations.csv', 'Module-trait Pearson correlations'],
+        ['hub_genes_per_module.csv', 'Top 10 hub genes per module by kME'],
     ],
     col_widths=[65, 105]
 )
 
-pdf.section_header('6.3', 'Figures (36 total)', level=2)
+pdf.section_header('6.3', 'Figures (55 total)', level=2)
 pdf.add_table(
     ['Fig.', 'Filename', 'Description'],
     [
@@ -890,6 +1091,13 @@ pdf.add_table(
         ['30-33', '30-33_environment_titer_*.png', 'Weather, titer, integration'],
         ['34-35', '34-35_heat_stress_*.png', 'Heat-stress gene analysis'],
         ['36', '36_GRBV_biology_diagram.png', 'Integrated biology infographic'],
+        ['37-39', '37-39_gsea_*.png', 'GSEA enrichment and concordance'],
+        ['40-42', '40-42_multifactor_*.png', 'Multi-factor ANOVA interaction'],
+        ['43-45', '43-45_tf_family_*.png', 'TF family analysis'],
+        ['46-48', '46-48_ml_*.png', 'Advanced ML biomarkers'],
+        ['49-50', '49-50_mediation_*.png', 'Causal mediation analysis'],
+        ['51-52', '51-52_chromosome_*.png', 'Chromosome DEG hotspots'],
+        ['53-55', '53-55_wgcna_*.png', 'WGCNA co-expression modules'],
     ],
     col_widths=[12, 60, 75]
 )
