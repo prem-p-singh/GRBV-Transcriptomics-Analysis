@@ -2,13 +2,15 @@
 
 # Output files
 *.png
+!assets/*.png
 *.csv
 *.pdf
 *.pptx
 
-# Markdown (except README)
+# Markdown (except README and CLAUDE.md)
 *.md
 !README.md
+!CLAUDE.md
 
 # Data files
 *.txt

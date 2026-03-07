@@ -1,8 +1,14 @@
-# GRBV Transcriptomics Analysis
+<p align="center">
+  <img src="assets/banner.png" alt="GRBV Transcriptomics Analysis Banner" width="100%">
+</p>
 
-![Python](https://img.shields.io/badge/Python-3.6%2B-blue)
-![License](https://img.shields.io/badge/License-MIT-green)
-![Status](https://img.shields.io/badge/Status-Complete-brightgreen)
+<p align="center">
+  <img src="https://img.shields.io/badge/Python-3.6%2B-blue?style=for-the-badge&logo=python&logoColor=white" alt="Python">
+  <img src="https://img.shields.io/badge/License-MIT-green?style=for-the-badge" alt="License">
+  <img src="https://img.shields.io/badge/Status-Complete-brightgreen?style=for-the-badge" alt="Status">
+  <img src="https://img.shields.io/badge/Figures-55-orange?style=for-the-badge" alt="Figures">
+  <img src="https://img.shields.io/badge/Scripts-20-purple?style=for-the-badge" alt="Scripts">
+</p>
 
 A comprehensive RNA-Seq transcriptomics pipeline for studying **Grapevine Red Blotch Virus (GRBV)** effects on *Vitis vinifera* (Merlot). The analysis covers 327 field samples across 2 growing seasons and 4 maturity stages, producing 55 publication-quality figures, 26+ data tables, and automated reports.
 
@@ -43,6 +49,10 @@ The pipeline addresses six core research questions:
 5. **Q5** - What seasonal variation exists in uninfected vines?
 6. **Q6** - How does transcriptome trajectory shift with infection age?
 
+<p align="center">
+  <img src="assets/pipeline_overview.png" alt="Analysis Pipeline Overview" width="100%">
+</p>
+
 ---
 
 ## Repository Structure
@@ -66,7 +76,7 @@ The pipeline addresses six core research questions:
 |---|--------|-------------|
 | 9 | `analysis_schematic.py` | Publication-quality pipeline flowchart diagram |
 | 10 | `grbv_biology_diagram.py` | Data-driven biological infographic of molecular disruption cascade |
-| 11 | `gsea_analysis.py` | Permutation-based GSEA (500 perm) across 8 season × stage conditions |
+| 11 | `gsea_analysis.py` | NumPy-vectorized GSEA (500 perm, HPC-optimized) across 8 season × stage conditions |
 | 12 | `multifactor_interaction_model.py` | Infection × Season × Stage ANOVA with variance decomposition |
 | 13 | `tf_family_analysis.py` | Transcription factor family profiling (WRKY, MYB, NAC, bHLH, ERF/AP2, HSF) |
 | 14 | `advanced_ml_biomarkers.py` | Multi-method ML comparison (LR, RF, LASSO, SVM, GBM) + stability selection |
@@ -249,13 +259,17 @@ Each analysis script can be run independently if its required input files are pr
 
 | File | Content |
 |------|---------|
-| `GRBV_Transcriptomics_Report.pdf` | Comprehensive report with 25+ figures and discussion |
-| `GRBV_Transcriptomics_Presentation.pptx` | 44-slide conference-ready presentation |
+| `GRBV_Transcriptomics_Report.pdf` | 55-page comprehensive report with all figures and discussion |
+| `GRBV_Transcriptomics_Presentation.pptx` | 64-slide conference-ready presentation |
 | `PAPER_WRITING_WORKFLOW.pdf` | 6-phase paper-writing guide with journal targets |
 
 ---
 
 ## Key Findings
+
+<p align="center">
+  <img src="assets/key_findings.png" alt="Key Findings at a Glance" width="100%">
+</p>
 
 - **Stage-dependent viral impact**: GRBV effects are strongest at Post-veraison and Harvest, with up to 1,873 DEGs in a single condition
 - **Inverted seasonal trajectory**: 2021 DEG counts peak at Harvest; 2022 peaks at Post-veraison, driven by a +7.6 &deg;C temperature differential
@@ -263,6 +277,7 @@ Each analysis script can be run independently if its required input files are pr
 - **Diagnostic biomarkers**: A 3-gene panel achieves AUC = 1.000 across 5-fold cross-validation; 12 universal biomarkers significant in all conditions
 - **Genomic validation**: 60% of biomarker genes co-localize within 1 Mb of known GWAS/QTL loci for berry quality traits
 - **Pathway disruption**: Consistent downregulation of phenylpropanoid, flavonoid, and stilbenoid biosynthesis across seasons and stages
+- **270 GSEA enrichments**: Permutation-based GSEA (500 perm) reveals 77% down-regulation; KEGG:Ribosome significant in 6/8 conditions; cross-season NES mirrors inverted trajectory
 - **13 co-expression modules**: WGCNA identifies stage-dominated networks; black module most infection-correlated (r=+0.126, p=0.022); 130 hub genes
 
 ---
