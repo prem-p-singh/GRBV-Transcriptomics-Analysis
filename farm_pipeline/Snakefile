@@ -7,6 +7,7 @@ RESOURCES = config["resources_dir"]
 
 rule all:
     input:
+        f"{RESULTS}/00_weather/weather_per_sample.csv",
         f"{RESULTS}/01_grn/grn_edges.tsv.gz",
         f"{RESULTS}/01_grn/hub_tfs.csv",
         f"{RESULTS}/02_module_preservation/zsummary.csv",
@@ -25,6 +26,29 @@ rule all:
         f"{RESULTS}/09_defense/defense_heatmap.png",
         f"{RESULTS}/10_subtype_characterize/subtype_DE.csv",
         f"{RESULTS}/10_subtype_characterize/subtype_clinical.csv",
+
+# -----------------------------------------------------------------------------
+# 00. Per-sample weather aggregates (used by rules 07 + 08)
+# -----------------------------------------------------------------------------
+rule weather_aggregate:
+    input:
+        meta  = config["inputs"]["metadata"],
+        w2021 = config["inputs"]["weather_2021"],
+        w2022 = config["inputs"]["weather_2022"],
+        cfg   = "config/config.yaml",
+    output:
+        csv = f"{RESULTS}/00_weather/weather_per_sample.csv",
+    log: "logs/00_weather.log"
+    resources:
+        mem_mb = 2000,
+        runtime = 15,
+    shell:
+        """
+        set +u; source /etc/profile.d/modules.sh; module load conda/base; conda activate grbv-extended; set -u
+        python scripts/00_weather_aggregate.py \
+            --meta {input.meta} --weather_2021 {input.w2021} --weather_2022 {input.w2022} \
+            --config {input.cfg} --out {output.csv} &> {log}
+        """
 
 # -----------------------------------------------------------------------------
 # 01. Gene regulatory network inference (GENIE3)
@@ -203,11 +227,10 @@ rule pseudotime:
 # -----------------------------------------------------------------------------
 rule mofa_integration:
     input:
-        counts = config["inputs"]["counts"],
-        meta   = config["inputs"]["metadata"],
-        titer  = config["inputs"]["titer"],
-        w2021  = config["inputs"]["weather_2021"],
-        w2022  = config["inputs"]["weather_2022"],
+        counts  = config["inputs"]["counts"],
+        meta    = config["inputs"]["metadata"],
+        titer   = config["inputs"]["titer"],
+        weather = f"{RESULTS}/00_weather/weather_per_sample.csv",
     output:
         factors = f"{RESULTS}/07_mofa/mofa_factors.csv",
         varexp  = f"{RESULTS}/07_mofa/variance_explained.png",
@@ -222,7 +245,7 @@ rule mofa_integration:
         set +u; source /etc/profile.d/modules.sh; module load conda/base; conda activate grbv-extended; set -u
         python scripts/07_mofa.py \
             --counts {input.counts} --meta {input.meta} --titer {input.titer} \
-            --weather_2021 {input.w2021} --weather_2022 {input.w2022} \
+            --weather {input.weather} \
             --out_factors {output.factors} --out_varexp {output.varexp} --out_model {output.model} \
             --n_factors {config[mofa][n_factors]} --n_iter {config[mofa][n_iter]} \
             --top_var {config[mofa][top_var_expr]} &> {log}
@@ -233,11 +256,10 @@ rule mofa_integration:
 # -----------------------------------------------------------------------------
 rule hima_mediation:
     input:
-        counts = config["inputs"]["counts"],
-        meta   = config["inputs"]["metadata"],
-        titer  = config["inputs"]["titer"],
-        w2021  = config["inputs"]["weather_2021"],
-        w2022  = config["inputs"]["weather_2022"],
+        counts  = config["inputs"]["counts"],
+        meta    = config["inputs"]["metadata"],
+        titer   = config["inputs"]["titer"],
+        weather = f"{RESULTS}/00_weather/weather_per_sample.csv",
     output:
         mediators = f"{RESULTS}/08_hima/hima_mediators.csv",
     log: "logs/08_hima.log"
@@ -250,7 +272,7 @@ rule hima_mediation:
         set +u; source /etc/profile.d/modules.sh; module load conda/base; conda activate grbv-extended; set -u
         Rscript scripts/08_hima.R \
             --counts {input.counts} --meta {input.meta} --titer {input.titer} \
-            --weather_2021 {input.w2021} --weather_2022 {input.w2022} \
+            --weather {input.weather} \
             --out {output.mediators} --top_var {config[hima][top_var]} \
             --cores {resources.cpus_per_task} &> {log}
         """

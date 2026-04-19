@@ -87,7 +87,7 @@ farm_pipeline/
 - **Preemption on `low`:** every rule sets `requeue=true` and the SLURM account/partition/QOS from `config.yaml`.
 - **MEs.csv mismatch:** your existing `MEs.csv` uses different sample IDs (`16H1`…) than `counts_matrix.txt` (`S01`…). All analyses that need module eigengenes recompute them from counts — no dependency on the mismatched file.
 - **Stage spelling:** viral-titer file uses `Pre_véraison` / `Véraison` (accented); scripts map these to the unaccented `Pre_veraison` used in `sample_metadata.txt`.
-- **HIMA exposure is per-season temperature** (not per-sample) because daily weather files are not joined to each sample's Julian day. If you have an exact sampling date per sample, swap the `agg_tavg()` call for a window-aggregate around that date.
+- **Weather is per-sample**, aggregated in a configurable window (default 14 days) ending on each sample's sampling date. Dates live in `config/config.yaml` under `sampling_dates`; tweak `weather_window.days_before` / `base_temp_gdd` to change the window / GDD base. Rule 00 produces `results/00_weather/weather_per_sample.csv` (tavg_mean, tmax_max, tmin_min, gdd_sum, precip_sum, rh_mean) consumed by both MOFA (rule 07) and HIMA (rule 08).
 - **Module names in `Module_genes.xlsx`** must match sheet names; the motif enrichment script reads all sheets and assumes column 1 contains gene IDs.
 
 ## Rerunning a single rule

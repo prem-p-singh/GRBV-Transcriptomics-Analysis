@@ -51,6 +51,21 @@ hima:
   top_var: 3000
   n_perm: 100
 
+# Actual sampling dates (ISO yyyy-mm-dd). Used to build per-sample weather windows.
+sampling_dates:
+  "2021|Pre_veraison":  2021-08-02
+  "2021|Veraison":      2021-08-16
+  "2021|Post_veraison": 2021-09-08
+  "2021|Harvest":       2021-09-21
+  "2022|Pre_veraison":  2022-07-26
+  "2022|Veraison":      2022-08-09
+  "2022|Post_veraison": 2022-08-24
+  "2022|Harvest":       2022-09-13
+
+weather_window:
+  days_before: 14          # window length before sampling date
+  base_temp_gdd: 10        # GDD base temperature (°C)
+
 genome:
   ncbi_accession: GCF_030704535.1
   assembly_name: "PN40024_v4"
