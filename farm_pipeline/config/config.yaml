@@ -1,0 +1,62 @@
+# GRBV extended pipeline — FARM config
+
+inputs:
+  counts: data/counts_matrix.txt
+  metadata: data/sample_metadata.txt
+  titer: data/Virus_titer.txt
+  modules_xlsx: data/Module_genes.xlsx
+  mes_csv: data/MEs.csv
+  weather_2021: data/daily_2021.csv
+  weather_2022: data/daily_2022.csv
+
+resources_dir: resources
+results_dir: results
+
+filtering:
+  min_count: 10
+  min_fraction: 0.10
+  top_variable_genes: 5000
+
+grn:
+  n_trees: 1000
+  top_edges_export: 100000
+
+module_preservation:
+  n_permutations: 100
+  soft_power: 6
+
+subtype_nmf:
+  k_range: [2, 3, 4, 5, 6]
+  n_bootstrap: 50
+  n_top_var: 2000
+
+diffcoex:
+  n_perm: 100
+  top_var: 3000
+
+motif_enrichment:
+  promoter_upstream_bp: 1500
+  fimo_qvalue: 0.05
+
+pseudotime:
+  top_var: 3000
+  n_knots: 6
+
+mofa:
+  n_factors: 10
+  n_iter: 1000
+  top_var_expr: 3000
+
+hima:
+  top_var: 3000
+  n_perm: 100
+
+genome:
+  ncbi_accession: GCF_030704535.1
+  assembly_name: "PN40024_v4"
+
+tf_db:
+  planttfdb_url: "http://planttfdb.gao-lab.org/download/TF_list/Vvi_TF_list.txt.gz"
+
+motif_db:
+  jaspar_plants_url: "https://jaspar.genereg.net/download/data/2024/CORE/JASPAR2024_CORE_plants_non-redundant_pfms_meme.txt"

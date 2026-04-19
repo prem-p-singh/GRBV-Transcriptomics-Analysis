@@ -1,0 +1,19 @@
+executor: slurm
+jobs: 10
+max-jobs-per-second: 2
+restart-times: 2
+latency-wait: 30
+rerun-incomplete: true
+keep-going: true
+printshellcmds: true
+use-conda: false
+
+default-resources:
+  - slurm_account=publicgrp
+  - slurm_partition=low
+  - slurm_qos=publicgrp-low-qos
+  - requeue=true
+  - slurm_extra="'--mail-type=END,FAIL --mail-user=ppssingh@ucdavis.edu --requeue'"
+  - runtime=60
+  - mem_mb=4000
+  - cpus_per_task=1

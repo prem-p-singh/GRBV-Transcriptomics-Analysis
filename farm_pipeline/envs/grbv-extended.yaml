@@ -1,0 +1,40 @@
+name: grbv-extended
+channels:
+  - conda-forge
+  - bioconda
+dependencies:
+  - python=3.12
+  - numpy
+  - pandas
+  - scipy
+  - scikit-learn
+  - statsmodels
+  - matplotlib
+  - seaborn
+  - openpyxl
+  - biopython
+  - pyyaml
+  - snakemake-minimal=9.19
+  - snakemake-executor-plugin-slurm
+  - meme=5.5.5
+  - bedtools
+  - samtools
+  - ncbi-datasets-cli
+  - mofapy2
+  - r-base=4.4
+  - r-data.table
+  - r-matrix
+  - r-tidyverse
+  - bioconductor-genie3
+  - bioconductor-wgcna
+  - r-dgca
+  - bioconductor-slingshot
+  - bioconductor-tradeseq
+  - bioconductor-singlecellexperiment
+  - bioconductor-deseq2
+  - bioconductor-edger
+  - bioconductor-limma
+  - bioconductor-hima
+  - r-igraph
+  - r-ggplot2
+  - r-pheatmap

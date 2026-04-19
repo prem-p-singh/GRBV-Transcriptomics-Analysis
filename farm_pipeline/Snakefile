@@ -1,0 +1,309 @@
+import os
+
+configfile: "config/config.yaml"
+
+RESULTS = config["results_dir"]
+RESOURCES = config["resources_dir"]
+
+rule all:
+    input:
+        f"{RESULTS}/01_grn/grn_edges.tsv.gz",
+        f"{RESULTS}/01_grn/hub_tfs.csv",
+        f"{RESULTS}/02_module_preservation/zsummary.csv",
+        f"{RESULTS}/02_module_preservation/preservation_plot.png",
+        f"{RESULTS}/03_subtype_nmf/subtype_labels.csv",
+        f"{RESULTS}/03_subtype_nmf/cophenetic_plot.png",
+        f"{RESULTS}/04_diffcoex/rewired_edges.csv",
+        f"{RESULTS}/04_diffcoex/rewired_hubs.csv",
+        f"{RESULTS}/05_motif_enrichment/module_motif_enrichment.csv",
+        f"{RESULTS}/06_pseudotime/pseudotime_genes.csv",
+        f"{RESULTS}/06_pseudotime/trajectory_plot.png",
+        f"{RESULTS}/07_mofa/mofa_factors.csv",
+        f"{RESULTS}/07_mofa/variance_explained.png",
+        f"{RESULTS}/08_hima/hima_mediators.csv",
+        f"{RESULTS}/09_defense/defense_expression_summary.csv",
+        f"{RESULTS}/09_defense/defense_heatmap.png",
+        f"{RESULTS}/10_subtype_characterize/subtype_DE.csv",
+        f"{RESULTS}/10_subtype_characterize/subtype_clinical.csv",
+
+# -----------------------------------------------------------------------------
+# 01. Gene regulatory network inference (GENIE3)
+# -----------------------------------------------------------------------------
+rule grn_inference:
+    input:
+        counts = config["inputs"]["counts"],
+        meta   = config["inputs"]["metadata"],
+        tf_list = f"{RESOURCES}/Vvi_TF_list.txt",
+    output:
+        edges = f"{RESULTS}/01_grn/grn_edges.tsv.gz",
+        hubs  = f"{RESULTS}/01_grn/hub_tfs.csv",
+    log: "logs/01_grn.log"
+    resources:
+        mem_mb = 32000,
+        runtime = 360,
+        cpus_per_task = 16,
+    shell:
+        """
+        set +u; source /etc/profile.d/modules.sh; module load conda/base; conda activate grbv-extended; set -u
+        Rscript scripts/01_grn_genie3.R \
+            --counts {input.counts} --meta {input.meta} --tfs {input.tf_list} \
+            --out_edges {output.edges} --out_hubs {output.hubs} \
+            --n_trees {config[grn][n_trees]} --top_edges {config[grn][top_edges_export]} \
+            --top_var {config[filtering][top_variable_genes]} --cores {resources.cpus_per_task} \
+            &> {log}
+        """
+
+# -----------------------------------------------------------------------------
+# 02. Module preservation (WGCNA — build in RB-, test in RB+)
+# -----------------------------------------------------------------------------
+rule module_preservation:
+    input:
+        counts = config["inputs"]["counts"],
+        meta   = config["inputs"]["metadata"],
+    output:
+        zsummary = f"{RESULTS}/02_module_preservation/zsummary.csv",
+        plot     = f"{RESULTS}/02_module_preservation/preservation_plot.png",
+    log: "logs/02_module_preservation.log"
+    resources:
+        mem_mb = 16000,
+        runtime = 180,
+        cpus_per_task = 8,
+    shell:
+        """
+        set +u; source /etc/profile.d/modules.sh; module load conda/base; conda activate grbv-extended; set -u
+        Rscript scripts/02_module_preservation.R \
+            --counts {input.counts} --meta {input.meta} \
+            --out_csv {output.zsummary} --out_plot {output.plot} \
+            --n_perm {config[module_preservation][n_permutations]} \
+            --soft_power {config[module_preservation][soft_power]} \
+            --cores {resources.cpus_per_task} &> {log}
+        """
+
+# -----------------------------------------------------------------------------
+# 03. Subtype discovery in RB+ samples (consensus NMF)
+# -----------------------------------------------------------------------------
+rule subtype_discovery:
+    input:
+        counts = config["inputs"]["counts"],
+        meta   = config["inputs"]["metadata"],
+    output:
+        labels = f"{RESULTS}/03_subtype_nmf/subtype_labels.csv",
+        coph   = f"{RESULTS}/03_subtype_nmf/cophenetic_plot.png",
+        consensus = f"{RESULTS}/03_subtype_nmf/consensus_matrix.png",
+    log: "logs/03_subtype_nmf.log"
+    resources:
+        mem_mb = 8000,
+        runtime = 90,
+        cpus_per_task = 4,
+    shell:
+        """
+        set +u; source /etc/profile.d/modules.sh; module load conda/base; conda activate grbv-extended; set -u
+        python scripts/03_subtype_nmf.py \
+            --counts {input.counts} --meta {input.meta} \
+            --out_labels {output.labels} --out_coph {output.coph} --out_consensus {output.consensus} \
+            --k_min 2 --k_max 6 --n_boot {config[subtype_nmf][n_bootstrap]} \
+            --top_var {config[subtype_nmf][n_top_var]} &> {log}
+        """
+
+# -----------------------------------------------------------------------------
+# 04. Differential co-expression / rewiring (DGCA)
+# -----------------------------------------------------------------------------
+rule diffcoex:
+    input:
+        counts = config["inputs"]["counts"],
+        meta   = config["inputs"]["metadata"],
+    output:
+        edges = f"{RESULTS}/04_diffcoex/rewired_edges.csv",
+        hubs  = f"{RESULTS}/04_diffcoex/rewired_hubs.csv",
+    log: "logs/04_diffcoex.log"
+    resources:
+        mem_mb = 16000,
+        runtime = 120,
+        cpus_per_task = 8,
+    shell:
+        """
+        set +u; source /etc/profile.d/modules.sh; module load conda/base; conda activate grbv-extended; set -u
+        Rscript scripts/04_diffcoex.R \
+            --counts {input.counts} --meta {input.meta} \
+            --out_edges {output.edges} --out_hubs {output.hubs} \
+            --top_var {config[diffcoex][top_var]} --n_perm {config[diffcoex][n_perm]} \
+            &> {log}
+        """
+
+# -----------------------------------------------------------------------------
+# 05. Cis-regulatory motif enrichment (FIMO + JASPAR/PlantTFDB)
+# -----------------------------------------------------------------------------
+rule promoter_extract:
+    input:
+        genome = f"{RESOURCES}/genome/genome.fna",
+        gff    = f"{RESOURCES}/genome/genome.gff",
+    output:
+        promoters = f"{RESOURCES}/promoters_{config[motif_enrichment][promoter_upstream_bp]}bp.fa",
+    log: "logs/05a_promoter_extract.log"
+    resources:
+        mem_mb = 8000,
+        runtime = 60,
+    shell:
+        """
+        set +u; source /etc/profile.d/modules.sh; module load conda/base; conda activate grbv-extended; set -u
+        python scripts/05a_extract_promoters.py \
+            --genome {input.genome} --gff {input.gff} \
+            --upstream_bp {config[motif_enrichment][promoter_upstream_bp]} \
+            --out {output.promoters} &> {log}
+        """
+
+rule motif_enrichment:
+    input:
+        promoters = f"{RESOURCES}/promoters_{config[motif_enrichment][promoter_upstream_bp]}bp.fa",
+        motifs    = f"{RESOURCES}/motifs/jaspar_plants.meme",
+        modules   = config["inputs"]["modules_xlsx"],
+    output:
+        enrichment = f"{RESULTS}/05_motif_enrichment/module_motif_enrichment.csv",
+    log: "logs/05b_motif_enrichment.log"
+    resources:
+        mem_mb = 8000,
+        runtime = 60,
+        cpus_per_task = 4,
+    shell:
+        """
+        set +u; source /etc/profile.d/modules.sh; module load conda/base; conda activate grbv-extended; set -u
+        python scripts/05b_motif_enrichment.py \
+            --promoters {input.promoters} --motifs {input.motifs} --modules {input.modules} \
+            --out {output.enrichment} --qvalue {config[motif_enrichment][fimo_qvalue]} \
+            --threads {resources.cpus_per_task} &> {log}
+        """
+
+# -----------------------------------------------------------------------------
+# 06. Pseudotime / trajectory along infection age (slingshot + tradeSeq)
+# -----------------------------------------------------------------------------
+rule pseudotime:
+    input:
+        counts = config["inputs"]["counts"],
+        meta   = config["inputs"]["metadata"],
+    output:
+        genes = f"{RESULTS}/06_pseudotime/pseudotime_genes.csv",
+        plot  = f"{RESULTS}/06_pseudotime/trajectory_plot.png",
+    log: "logs/06_pseudotime.log"
+    resources:
+        mem_mb = 8000,
+        runtime = 60,
+        cpus_per_task = 4,
+    shell:
+        """
+        set +u; source /etc/profile.d/modules.sh; module load conda/base; conda activate grbv-extended; set -u
+        Rscript scripts/06_pseudotime.R \
+            --counts {input.counts} --meta {input.meta} \
+            --out_genes {output.genes} --out_plot {output.plot} \
+            --top_var {config[pseudotime][top_var]} --n_knots {config[pseudotime][n_knots]} \
+            --cores {resources.cpus_per_task} &> {log}
+        """
+
+# -----------------------------------------------------------------------------
+# 07. Multi-omics integration (MOFA+)
+# -----------------------------------------------------------------------------
+rule mofa_integration:
+    input:
+        counts = config["inputs"]["counts"],
+        meta   = config["inputs"]["metadata"],
+        titer  = config["inputs"]["titer"],
+        w2021  = config["inputs"]["weather_2021"],
+        w2022  = config["inputs"]["weather_2022"],
+    output:
+        factors = f"{RESULTS}/07_mofa/mofa_factors.csv",
+        varexp  = f"{RESULTS}/07_mofa/variance_explained.png",
+        model   = f"{RESULTS}/07_mofa/mofa_model.hdf5",
+    log: "logs/07_mofa.log"
+    resources:
+        mem_mb = 16000,
+        runtime = 120,
+        cpus_per_task = 4,
+    shell:
+        """
+        set +u; source /etc/profile.d/modules.sh; module load conda/base; conda activate grbv-extended; set -u
+        python scripts/07_mofa.py \
+            --counts {input.counts} --meta {input.meta} --titer {input.titer} \
+            --weather_2021 {input.w2021} --weather_2022 {input.w2022} \
+            --out_factors {output.factors} --out_varexp {output.varexp} --out_model {output.model} \
+            --n_factors {config[mofa][n_factors]} --n_iter {config[mofa][n_iter]} \
+            --top_var {config[mofa][top_var_expr]} &> {log}
+        """
+
+# -----------------------------------------------------------------------------
+# 08. High-dimensional mediation (HIMA)
+# -----------------------------------------------------------------------------
+rule hima_mediation:
+    input:
+        counts = config["inputs"]["counts"],
+        meta   = config["inputs"]["metadata"],
+        titer  = config["inputs"]["titer"],
+        w2021  = config["inputs"]["weather_2021"],
+        w2022  = config["inputs"]["weather_2022"],
+    output:
+        mediators = f"{RESULTS}/08_hima/hima_mediators.csv",
+    log: "logs/08_hima.log"
+    resources:
+        mem_mb = 16000,
+        runtime = 180,
+        cpus_per_task = 8,
+    shell:
+        """
+        set +u; source /etc/profile.d/modules.sh; module load conda/base; conda activate grbv-extended; set -u
+        Rscript scripts/08_hima.R \
+            --counts {input.counts} --meta {input.meta} --titer {input.titer} \
+            --weather_2021 {input.w2021} --weather_2022 {input.w2022} \
+            --out {output.mediators} --top_var {config[hima][top_var]} \
+            --cores {resources.cpus_per_task} &> {log}
+        """
+
+# -----------------------------------------------------------------------------
+# 09. Defense gene repertoire profiling
+# -----------------------------------------------------------------------------
+rule defense_repertoire:
+    input:
+        counts = config["inputs"]["counts"],
+        meta   = config["inputs"]["metadata"],
+        gff    = f"{RESOURCES}/genome/genome.gff",
+    output:
+        summary = f"{RESULTS}/09_defense/defense_expression_summary.csv",
+        heatmap = f"{RESULTS}/09_defense/defense_heatmap.png",
+        gene_table = f"{RESULTS}/09_defense/defense_gene_classification.csv",
+    log: "logs/09_defense.log"
+    resources:
+        mem_mb = 4000,
+        runtime = 30,
+        cpus_per_task = 2,
+    shell:
+        """
+        set +u; source /etc/profile.d/modules.sh; module load conda/base; conda activate grbv-extended; set -u
+        python scripts/09_defense_repertoire.py \
+            --counts {input.counts} --meta {input.meta} --gff {input.gff} \
+            --out_summary {output.summary} --out_heatmap {output.heatmap} --out_table {output.gene_table} \
+            &> {log}
+        """
+
+# -----------------------------------------------------------------------------
+# 10. Subtype characterization (depends on rule 03)
+# -----------------------------------------------------------------------------
+rule subtype_characterize:
+    input:
+        counts = config["inputs"]["counts"],
+        meta   = config["inputs"]["metadata"],
+        titer  = config["inputs"]["titer"],
+        subtypes = f"{RESULTS}/03_subtype_nmf/subtype_labels.csv",
+    output:
+        de = f"{RESULTS}/10_subtype_characterize/subtype_DE.csv",
+        clinical = f"{RESULTS}/10_subtype_characterize/subtype_clinical.csv",
+        plot = f"{RESULTS}/10_subtype_characterize/subtype_overview.png",
+    log: "logs/10_subtype_char.log"
+    resources:
+        mem_mb = 4000,
+        runtime = 30,
+        cpus_per_task = 2,
+    shell:
+        """
+        set +u; source /etc/profile.d/modules.sh; module load conda/base; conda activate grbv-extended; set -u
+        python scripts/10_subtype_characterize.py \
+            --counts {input.counts} --meta {input.meta} --titer {input.titer} --subtypes {input.subtypes} \
+            --out_de {output.de} --out_clinical {output.clinical} --out_plot {output.plot} \
+            &> {log}
+        """
