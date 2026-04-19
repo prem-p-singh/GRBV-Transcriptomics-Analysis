@@ -1,4 +1,5 @@
 #!/usr/bin/env Rscript
+.libPaths(c(Sys.getenv("GRBV_RLIBS","~/grbv_extended/Rlibs"), .libPaths()))
 # 06. Pseudotime trajectory on RB+ samples, anchored by Years_Since_Infection.
 # Uses slingshot on PCA; tests temporally variable genes with tradeSeq GAMs.
 

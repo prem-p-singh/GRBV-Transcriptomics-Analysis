@@ -44,8 +44,10 @@ rule weather_aggregate:
         runtime = 15,
     shell:
         """
-        set +u; source /etc/profile.d/modules.sh; module load conda/base; conda activate grbv-extended; set -u
-        python scripts/00_weather_aggregate.py \
+        export GRBV_RLIBS="$HOME/grbv_extended/Rlibs"
+        PY=$HOME/.conda/envs/grbv-extended/bin/python
+        RSCRIPT=/cvmfs/hpc.ucdavis.edu/sw/conda/environments/r-4.4.2/bin/Rscript
+        $PY scripts/00_weather_aggregate.py \
             --meta {input.meta} --weather_2021 {input.w2021} --weather_2022 {input.w2022} \
             --config {input.cfg} --out {output.csv} &> {log}
         """
@@ -58,6 +60,7 @@ rule grn_inference:
         counts = config["inputs"]["counts"],
         meta   = config["inputs"]["metadata"],
         tf_list = f"{RESOURCES}/Vvi_TF_list.txt",
+        gff     = f"{RESOURCES}/genome/genome.gff",
     output:
         edges = f"{RESULTS}/01_grn/grn_edges.tsv.gz",
         hubs  = f"{RESULTS}/01_grn/hub_tfs.csv",
@@ -68,9 +71,11 @@ rule grn_inference:
         cpus_per_task = 16,
     shell:
         """
-        set +u; source /etc/profile.d/modules.sh; module load conda/base; conda activate grbv-extended; set -u
-        Rscript scripts/01_grn_genie3.R \
-            --counts {input.counts} --meta {input.meta} --tfs {input.tf_list} \
+        export GRBV_RLIBS="$HOME/grbv_extended/Rlibs"
+        PY=$HOME/.conda/envs/grbv-extended/bin/python
+        RSCRIPT=/cvmfs/hpc.ucdavis.edu/sw/conda/environments/r-4.4.2/bin/Rscript
+        $RSCRIPT scripts/01_grn_genie3.R \
+            --counts {input.counts} --meta {input.meta} --tfs {input.tf_list} --gff {input.gff} \
             --out_edges {output.edges} --out_hubs {output.hubs} \
             --n_trees {config[grn][n_trees]} --top_edges {config[grn][top_edges_export]} \
             --top_var {config[filtering][top_variable_genes]} --cores {resources.cpus_per_task} \
@@ -94,8 +99,10 @@ rule module_preservation:
         cpus_per_task = 8,
     shell:
         """
-        set +u; source /etc/profile.d/modules.sh; module load conda/base; conda activate grbv-extended; set -u
-        Rscript scripts/02_module_preservation.R \
+        export GRBV_RLIBS="$HOME/grbv_extended/Rlibs"
+        PY=$HOME/.conda/envs/grbv-extended/bin/python
+        RSCRIPT=/cvmfs/hpc.ucdavis.edu/sw/conda/environments/r-4.4.2/bin/Rscript
+        $RSCRIPT scripts/02_module_preservation.R \
             --counts {input.counts} --meta {input.meta} \
             --out_csv {output.zsummary} --out_plot {output.plot} \
             --n_perm {config[module_preservation][n_permutations]} \
@@ -121,8 +128,10 @@ rule subtype_discovery:
         cpus_per_task = 4,
     shell:
         """
-        set +u; source /etc/profile.d/modules.sh; module load conda/base; conda activate grbv-extended; set -u
-        python scripts/03_subtype_nmf.py \
+        export GRBV_RLIBS="$HOME/grbv_extended/Rlibs"
+        PY=$HOME/.conda/envs/grbv-extended/bin/python
+        RSCRIPT=/cvmfs/hpc.ucdavis.edu/sw/conda/environments/r-4.4.2/bin/Rscript
+        $PY scripts/03_subtype_nmf.py \
             --counts {input.counts} --meta {input.meta} \
             --out_labels {output.labels} --out_coph {output.coph} --out_consensus {output.consensus} \
             --k_min 2 --k_max 6 --n_boot {config[subtype_nmf][n_bootstrap]} \
@@ -146,8 +155,10 @@ rule diffcoex:
         cpus_per_task = 8,
     shell:
         """
-        set +u; source /etc/profile.d/modules.sh; module load conda/base; conda activate grbv-extended; set -u
-        Rscript scripts/04_diffcoex.R \
+        export GRBV_RLIBS="$HOME/grbv_extended/Rlibs"
+        PY=$HOME/.conda/envs/grbv-extended/bin/python
+        RSCRIPT=/cvmfs/hpc.ucdavis.edu/sw/conda/environments/r-4.4.2/bin/Rscript
+        $RSCRIPT scripts/04_diffcoex.R \
             --counts {input.counts} --meta {input.meta} \
             --out_edges {output.edges} --out_hubs {output.hubs} \
             --top_var {config[diffcoex][top_var]} --n_perm {config[diffcoex][n_perm]} \
@@ -162,15 +173,17 @@ rule promoter_extract:
         genome = f"{RESOURCES}/genome/genome.fna",
         gff    = f"{RESOURCES}/genome/genome.gff",
     output:
-        promoters = f"{RESOURCES}/promoters_{config[motif_enrichment][promoter_upstream_bp]}bp.fa",
+        promoters = f"{RESOURCES}/promoters_{config['motif_enrichment']['promoter_upstream_bp']}bp.fa",
     log: "logs/05a_promoter_extract.log"
     resources:
         mem_mb = 8000,
         runtime = 60,
     shell:
         """
-        set +u; source /etc/profile.d/modules.sh; module load conda/base; conda activate grbv-extended; set -u
-        python scripts/05a_extract_promoters.py \
+        export GRBV_RLIBS="$HOME/grbv_extended/Rlibs"
+        PY=$HOME/.conda/envs/grbv-extended/bin/python
+        RSCRIPT=/cvmfs/hpc.ucdavis.edu/sw/conda/environments/r-4.4.2/bin/Rscript
+        $PY scripts/05a_extract_promoters.py \
             --genome {input.genome} --gff {input.gff} \
             --upstream_bp {config[motif_enrichment][promoter_upstream_bp]} \
             --out {output.promoters} &> {log}
@@ -178,20 +191,22 @@ rule promoter_extract:
 
 rule motif_enrichment:
     input:
-        promoters = f"{RESOURCES}/promoters_{config[motif_enrichment][promoter_upstream_bp]}bp.fa",
+        promoters = f"{RESOURCES}/promoters_{config['motif_enrichment']['promoter_upstream_bp']}bp.fa",
         motifs    = f"{RESOURCES}/motifs/jaspar_plants.meme",
         modules   = config["inputs"]["modules_xlsx"],
     output:
         enrichment = f"{RESULTS}/05_motif_enrichment/module_motif_enrichment.csv",
     log: "logs/05b_motif_enrichment.log"
     resources:
-        mem_mb = 8000,
-        runtime = 60,
+        mem_mb = 16000,
+        runtime = 300,
         cpus_per_task = 4,
     shell:
         """
-        set +u; source /etc/profile.d/modules.sh; module load conda/base; conda activate grbv-extended; set -u
-        python scripts/05b_motif_enrichment.py \
+        export GRBV_RLIBS="$HOME/grbv_extended/Rlibs"
+        PY=$HOME/.conda/envs/grbv-extended/bin/python
+        RSCRIPT=/cvmfs/hpc.ucdavis.edu/sw/conda/environments/r-4.4.2/bin/Rscript
+        $PY scripts/05b_motif_enrichment.py \
             --promoters {input.promoters} --motifs {input.motifs} --modules {input.modules} \
             --out {output.enrichment} --qvalue {config[motif_enrichment][fimo_qvalue]} \
             --threads {resources.cpus_per_task} &> {log}
@@ -214,8 +229,10 @@ rule pseudotime:
         cpus_per_task = 4,
     shell:
         """
-        set +u; source /etc/profile.d/modules.sh; module load conda/base; conda activate grbv-extended; set -u
-        Rscript scripts/06_pseudotime.R \
+        export GRBV_RLIBS="$HOME/grbv_extended/Rlibs"
+        PY=$HOME/.conda/envs/grbv-extended/bin/python
+        RSCRIPT=/cvmfs/hpc.ucdavis.edu/sw/conda/environments/r-4.4.2/bin/Rscript
+        $RSCRIPT scripts/06_pseudotime.R \
             --counts {input.counts} --meta {input.meta} \
             --out_genes {output.genes} --out_plot {output.plot} \
             --top_var {config[pseudotime][top_var]} --n_knots {config[pseudotime][n_knots]} \
@@ -242,8 +259,10 @@ rule mofa_integration:
         cpus_per_task = 4,
     shell:
         """
-        set +u; source /etc/profile.d/modules.sh; module load conda/base; conda activate grbv-extended; set -u
-        python scripts/07_mofa.py \
+        export GRBV_RLIBS="$HOME/grbv_extended/Rlibs"
+        PY=$HOME/.conda/envs/grbv-extended/bin/python
+        RSCRIPT=/cvmfs/hpc.ucdavis.edu/sw/conda/environments/r-4.4.2/bin/Rscript
+        $PY scripts/07_mofa.py \
             --counts {input.counts} --meta {input.meta} --titer {input.titer} \
             --weather {input.weather} \
             --out_factors {output.factors} --out_varexp {output.varexp} --out_model {output.model} \
@@ -269,8 +288,10 @@ rule hima_mediation:
         cpus_per_task = 8,
     shell:
         """
-        set +u; source /etc/profile.d/modules.sh; module load conda/base; conda activate grbv-extended; set -u
-        Rscript scripts/08_hima.R \
+        export GRBV_RLIBS="$HOME/grbv_extended/Rlibs"
+        PY=$HOME/.conda/envs/grbv-extended/bin/python
+        RSCRIPT=/cvmfs/hpc.ucdavis.edu/sw/conda/environments/r-4.4.2/bin/Rscript
+        $RSCRIPT scripts/08_hima.R \
             --counts {input.counts} --meta {input.meta} --titer {input.titer} \
             --weather {input.weather} \
             --out {output.mediators} --top_var {config[hima][top_var]} \
@@ -296,8 +317,10 @@ rule defense_repertoire:
         cpus_per_task = 2,
     shell:
         """
-        set +u; source /etc/profile.d/modules.sh; module load conda/base; conda activate grbv-extended; set -u
-        python scripts/09_defense_repertoire.py \
+        export GRBV_RLIBS="$HOME/grbv_extended/Rlibs"
+        PY=$HOME/.conda/envs/grbv-extended/bin/python
+        RSCRIPT=/cvmfs/hpc.ucdavis.edu/sw/conda/environments/r-4.4.2/bin/Rscript
+        $PY scripts/09_defense_repertoire.py \
             --counts {input.counts} --meta {input.meta} --gff {input.gff} \
             --out_summary {output.summary} --out_heatmap {output.heatmap} --out_table {output.gene_table} \
             &> {log}
@@ -323,8 +346,10 @@ rule subtype_characterize:
         cpus_per_task = 2,
     shell:
         """
-        set +u; source /etc/profile.d/modules.sh; module load conda/base; conda activate grbv-extended; set -u
-        python scripts/10_subtype_characterize.py \
+        export GRBV_RLIBS="$HOME/grbv_extended/Rlibs"
+        PY=$HOME/.conda/envs/grbv-extended/bin/python
+        RSCRIPT=/cvmfs/hpc.ucdavis.edu/sw/conda/environments/r-4.4.2/bin/Rscript
+        $PY scripts/10_subtype_characterize.py \
             --counts {input.counts} --meta {input.meta} --titer {input.titer} --subtypes {input.subtypes} \
             --out_de {output.de} --out_clinical {output.clinical} --out_plot {output.plot} \
             &> {log}

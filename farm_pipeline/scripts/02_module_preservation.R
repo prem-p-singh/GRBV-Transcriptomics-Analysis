@@ -1,4 +1,5 @@
 #!/usr/bin/env Rscript
+.libPaths(c(Sys.getenv("GRBV_RLIBS","~/grbv_extended/Rlibs"), .libPaths()))
 # 02. WGCNA module preservation — modules built in RB-, tested in RB+.
 # Output: Zsummary per module + medianRank; PNG of Zsummary vs module size.
 

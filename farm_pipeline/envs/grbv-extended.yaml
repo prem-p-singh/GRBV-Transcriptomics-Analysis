@@ -16,25 +16,9 @@ dependencies:
   - pyyaml
   - snakemake-minimal=9.19
   - snakemake-executor-plugin-slurm
-  - meme=5.5.5
+  - meme
   - bedtools
-  - samtools
   - ncbi-datasets-cli
-  - mofapy2
-  - r-base=4.4
-  - r-data.table
-  - r-matrix
-  - r-tidyverse
-  - bioconductor-genie3
-  - bioconductor-wgcna
-  - r-dgca
-  - bioconductor-slingshot
-  - bioconductor-tradeseq
-  - bioconductor-singlecellexperiment
-  - bioconductor-deseq2
-  - bioconductor-edger
-  - bioconductor-limma
-  - bioconductor-hima
-  - r-igraph
-  - r-ggplot2
-  - r-pheatmap
+  - pip
+  - pip:
+      - mofapy2

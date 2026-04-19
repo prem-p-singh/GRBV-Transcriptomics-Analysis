@@ -1,4 +1,5 @@
 #!/usr/bin/env Rscript
+.libPaths(c(Sys.getenv("GRBV_RLIBS","~/grbv_extended/Rlibs"), .libPaths()))
 # 08. High-dimensional mediation (HIMA).
 # Exposure : per-sample mean tavg in window before sampling date (from rule 00).
 # Mediator : top-variable log-CPM gene expression.
@@ -62,9 +63,30 @@ M  <- M[ok, ]; X <- X[ok]; Y <- Y[ok]
 message(sprintf("HIMA: n=%d samples, m=%d mediators, exposure=window tavg_mean",
                 length(Y), ncol(M)))
 
-res <- hima(X=X, Y=Y, M=M, Y.family="gaussian", M.family="gaussian", verbose=TRUE)
-res <- as.data.frame(res); res$gene <- rownames(res)
-res <- res[order(res$`BH.FDR`), ]
+# HIMA v2 API: use formula + data.pheno + data.M
+pheno <- data.frame(X = X, Y = Y)
+res <- tryCatch(
+  hima(formula = Y ~ X, data.pheno = pheno, data.M = M,
+       outcome.family = "gaussian", mediator.family = "gaussian", verbose = TRUE),
+  error = function(e) {
+    message("hima(formula=) failed (", conditionMessage(e),
+            ") — falling back to classicHIMA legacy signature")
+    classicHIMA(X = X, Y = Y, M = M, Y.type = "continuous", verbose = TRUE)
+  }
+)
+df <- if (is.data.frame(res)) {
+  res
+} else if (!is.null(res$summary)) {
+  as.data.frame(res$summary)
+} else if (!is.null(res$res)) {
+  as.data.frame(res$res)
+} else {
+  as.data.frame(unclass(res))
+}
+df$gene <- rownames(df)
+rank_col <- intersect(c("BH.FDR","BH.p","pval","P","pmax","adj.p"), colnames(df))[1]
+if (!is.na(rank_col)) df <- df[order(df[[rank_col]]), ]
+res <- df
 
 dir.create(dirname(opts$out), recursive=TRUE, showWarnings=FALSE)
 fwrite(res, opts$out)

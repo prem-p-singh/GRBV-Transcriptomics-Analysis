@@ -1,5 +1,5 @@
 #!/bin/bash
-# One-shot FARM bootstrap: create conda env + download resources.
+# FARM bootstrap: Python env (conda) + R packages (LMOD R/4.4.2 + user lib) + resources.
 # Run from ~/grbv_extended/ on FARM:  bash setup_farm.sh
 set -euo pipefail
 
@@ -10,19 +10,28 @@ set -u
 
 ENV_NAME="grbv-extended"
 RES="resources"
+RLIBS="$HOME/grbv_extended/Rlibs"
 
-# ---------- 1. conda env ----------
-if ! conda env list | awk '{print $1}' | grep -qx "$ENV_NAME"; then
-    echo "[setup] creating conda env $ENV_NAME"
+mkdir -p "$RES/genome" "$RES/motifs" "$RLIBS" logs
+
+# ---------- 1. Python conda env (lean, no R) ----------
+if [ ! -x "$HOME/.conda/envs/$ENV_NAME/bin/python" ]; then
+    echo "[setup] creating conda env $ENV_NAME (python + tooling only)"
+    [ -d "$HOME/.conda/envs/$ENV_NAME" ] && rm -rf "$HOME/.conda/envs/$ENV_NAME"
     conda env create -f envs/grbv-extended.yaml
 else
     echo "[setup] conda env $ENV_NAME already exists"
 fi
+
+# ---------- 2. R via LMOD + user library ----------
+echo "[setup] loading R/4.4.2 LMOD module"
+set +u; module load R/4.4.2; set -u
+export GRBV_RLIBS="$RLIBS"
+echo "[setup] installing R packages into $RLIBS (this takes a while)"
+Rscript envs/install_r_packages.R
+
+# ---------- 3. Reference genome + GFF ----------
 conda activate "$ENV_NAME"
-
-mkdir -p "$RES/genome" "$RES/motifs" logs
-
-# ---------- 2. Vitis vinifera reference genome + GFF ----------
 ACC=$(awk '/ncbi_accession/{print $2}' config/config.yaml)
 if [ ! -f "$RES/genome/genome.fna" ]; then
     echo "[setup] downloading NCBI genome $ACC"
@@ -37,7 +46,7 @@ else
     echo "[setup] genome already present"
 fi
 
-# ---------- 3. PlantTFDB TF list for V. vinifera ----------
+# ---------- 4. PlantTFDB Vvi TF list ----------
 if [ ! -f "$RES/Vvi_TF_list.txt" ]; then
     echo "[setup] downloading PlantTFDB Vvi TF list"
     curl -sSL -o "$RES/Vvi_TF_list.txt.gz" \
@@ -47,7 +56,7 @@ else
     echo "[setup] TF list already present"
 fi
 
-# ---------- 4. JASPAR plants motif database (MEME format) ----------
+# ---------- 5. JASPAR plants motif DB ----------
 if [ ! -f "$RES/motifs/jaspar_plants.meme" ]; then
     echo "[setup] downloading JASPAR2024 CORE plants motifs"
     curl -sSL -o "$RES/motifs/jaspar_plants.meme" \
@@ -56,6 +65,8 @@ else
     echo "[setup] motif DB already present"
 fi
 
-echo "[setup] done. disk usage:"
-du -sh "$RES"/* 2>/dev/null
+echo "[setup] disk usage:"
+du -sh "$RES"/* 2>/dev/null || true
+du -sh "$RLIBS" 2>/dev/null || true
 df -h ~ | tail -1
+echo "[setup] done"

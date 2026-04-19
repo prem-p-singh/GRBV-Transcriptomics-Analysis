@@ -1,4 +1,5 @@
 #!/usr/bin/env Rscript
+.libPaths(c(Sys.getenv("GRBV_RLIBS","~/grbv_extended/Rlibs"), .libPaths()))
 # 04. Differential co-expression (DGCA) — RB+ vs RB-.
 # Outputs: rewired edges with pValDiff + z-scores, and gene-level rewiring counts.
 

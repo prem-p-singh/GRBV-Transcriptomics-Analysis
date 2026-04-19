@@ -33,7 +33,9 @@ top = lcpm.var(axis=1).nlargest(args.top_var).index
 expr = lcpm.loc[top, :].T                     # samples × genes
 
 samples = expr.index.intersection(meta.index)
-expr = expr.loc[samples]; meta = meta.loc[samples]
+expr = expr.loc[samples]
+meta = meta.loc[samples]
+meta.index.name = "Sample"            # restore index name for reset_index()
 
 # ----- Titer view (per-sample via season×year×stage average of bioreps) -----
 titer = pd.read_csv(args.titer, sep="\t")
@@ -78,25 +80,41 @@ ent.build()
 ent.run()
 ent.save(args.out_model)
 
-# ----- Factors + variance explained -----
-Z = ent.model.getExpectations("Z")["E"]
-factors_df = pd.concat(
-    [pd.DataFrame(Z[g], index=long_df.loc[long_df["group"] == g, "sample"].unique(),
-                  columns=[f"F{i+1}" for i in range(args.n_factors)]) for g in Z],
-    axis=0)
-factors_df.to_csv(args.out_factors)
+# ----- Factors + variance explained (read back from saved HDF5) -----
+import h5py
+factor_frames = []
+with h5py.File(args.out_model, "r") as f:
+    groups = list(f["expectations/Z"].keys())
+    for g in groups:
+        Zg = f[f"expectations/Z/{g}"][:]            # shape: n_samples × n_factors  OR  transposed
+        if Zg.shape[0] == args.n_factors:           # transposed case
+            Zg = Zg.T
+        samps = long_df.loc[long_df["group"] == g, "sample"].unique()
+        df = pd.DataFrame(Zg, index=samps[: Zg.shape[0]],
+                          columns=[f"F{i+1}" for i in range(Zg.shape[1])])
+        df["group"] = g
+        factor_frames.append(df)
+    # Variance explained heatmap
+    try:
+        views_ = [v.decode() if isinstance(v, bytes) else v
+                  for v in f["views/views"][:]]
+    except Exception:
+        views_ = ["expression", "titer", "weather"]
+    try:
+        r2 = np.stack([f[f"variance_explained/r2_per_factor/{g}"][:] for g in groups], axis=0).mean(axis=0)
+        if r2.shape[0] != len(views_):
+            r2 = r2.T
+    except Exception as e:
+        r2 = None; r2_err = str(e)
+pd.concat(factor_frames).to_csv(args.out_factors)
 
-var_exp = ent.model.calculate_variance_explained()
 fig, ax = plt.subplots(figsize=(8, 5))
-try:
-    r2_pf = var_exp["r2_per_factor"]
-    mat = np.stack([np.array(r2_pf[g]) for g in r2_pf], axis=0).mean(axis=0)
-    views_ = ["expression", "titer", "weather"]
-    im = ax.imshow(mat, aspect="auto", cmap="YlGnBu")
+if r2 is not None:
+    im = ax.imshow(r2, aspect="auto", cmap="YlGnBu")
     ax.set_xticks(range(len(views_))); ax.set_xticklabels(views_, rotation=30)
-    ax.set_yticks(range(mat.shape[0])); ax.set_yticklabels([f"F{i+1}" for i in range(mat.shape[0])])
+    ax.set_yticks(range(r2.shape[0])); ax.set_yticklabels([f"F{i+1}" for i in range(r2.shape[0])])
     fig.colorbar(im, ax=ax, label="R²")
-except Exception as e:
-    ax.text(0.5, 0.5, f"var-exp plot failed: {e}", ha="center", va="center")
+else:
+    ax.text(0.5, 0.5, f"var-exp plot failed: {r2_err}", ha="center", va="center")
 fig.tight_layout(); fig.savefig(args.out_varexp, dpi=200); plt.close(fig)
 print("Done.")

@@ -17,6 +17,17 @@
 !requirements.txt
 *.db
 *.obo
+*.xlsx
+*.log
+*.hdf5
+*.gz
+*.tsv
+
+# FARM pipeline: don't track data, results, resources, logs
+farm_pipeline/data/
+farm_pipeline/results/
+farm_pipeline/resources/
+farm_pipeline/logs/
 
 # Python cache
 __pycache__/

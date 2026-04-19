@@ -38,7 +38,7 @@ print(f"[05b] loaded {len(prom)} promoters", file=sys.stderr)
 def run_fimo(fa_path):
     """Return set of (motif_id, gene) hits passing q-value filter."""
     with tempfile.TemporaryDirectory() as tmp:
-        cmd = ["fimo", "--thresh", str(args.qvalue), "--qv-thresh",
+        cmd = ["fimo", "--thresh", "1e-4", "--max-stored-scores", "1000000",
                "--oc", tmp, args.motifs, fa_path]
         subprocess.run(cmd, check=True)
         hits = set()
