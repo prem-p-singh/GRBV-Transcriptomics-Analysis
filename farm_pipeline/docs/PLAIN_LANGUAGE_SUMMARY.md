@@ -3,148 +3,156 @@
 *A walkthrough of what we did, what we found, and why it matters — written for
 anyone who isn't a grape-virology specialist.*
 
+**Corrected version** (the earlier draft said "GRBV disables the thermostat";
+the viral-titer data show that is too simple). For the rigorous, numeric
+account see the companion [INTEGRATED_ANALYSIS.md](INTEGRATED_ANALYSIS.md).
+
 ## The problem
 
 Grapevine Red Blotch Virus (GRBV) is a relatively new disease of wine grapes.
-Infected vines produce fruit with less sugar, odd flavours, and delayed ripening.
-The US grape industry loses tens of thousands of dollars per hectare per year to
-it, and there is no cure — growers can only pull out infected vines.
+Infected vines produce fruit with less sugar, odd flavours, and delayed
+ripening. The US grape industry loses tens of thousands of dollars per hectare
+per year to it, and there is no cure — growers can only pull out infected
+vines.
 
 We wanted to know: what is the virus actually *doing* to the plant? If we can
-understand the mechanism, we can predict which years will be worse, breed more
+understand the mechanism we can predict which years will be worse, breed more
 resistant vines, or time harvests around the infection.
 
 ## What we did
 
-We read every gene's activity level in 327 grape leaf samples of cv. Merlot.
-These samples covered:
+We read every gene's activity level in 327 leaf samples of *Vitis vinifera* cv.
+Merlot covering two climate-different seasons (2021 cool, 2022 about 7.6 °C
+hotter at harvest), four ripening stages, and vines carrying the virus for
+anywhere from one to six years, plus healthy controls. Then we asked three
+kinds of question of the data: what changes (differential expression), how are
+genes organised (network analysis), and which changes actually *cause* the
+disease (causal inference).
 
-- **Two climate-different growing seasons** (2021 cooler, 2022 much hotter —
-  about 7.6 °C warmer at harvest)
-- **Four berry ripening stages** (before colour change, at colour change, after,
-  and at harvest)
-- **Seven years of infection history** (some vines newly infected, some carrying
-  the virus for six years)
-- **Healthy control vines** matched to each condition
+## The big picture — in three mechanisms, not one
 
-Then we asked three kinds of question of the data:
+The virus causes disease by doing three things at the same time:
 
-1. **Standard analysis** (our main paper): which genes change, by how much,
-   and when?
-2. **Network analysis** (the FARM pipeline): how do genes *organise* into
-   coordinated groups, and how does infection re-arrange those groups?
-3. **Causal analysis**: among all the changes, which ones actually *cause*
-   the disease, versus just bystanders?
+**1. Ignoring the plant's immune system.** We checked ten canonical defence
+categories (pathogen receptors, resistance proteins, salicylic-acid signalling,
+jasmonate signalling, ethylene signalling, WRKY TFs, PR proteins, callose
+deposition, reactive-oxygen species, and R-protein adapters). None of them
+showed meaningful up- or down-regulation in infected vines. The plant is
+**not** mounting an immune response against GRBV.
 
-## The big picture finding
+**2. Selectively damping the plant's heat-shock chaperone system.** Small
+heat-shock proteins (sHSPs) are a family of 36 expressed chaperones that
+protect cellular machinery against stress. GRBV turns **29 of them off**. The
+master regulator that normally switches sHSPs on, a transcription factor
+called HSF, is also suppressed. Importantly, the **structure** of the
+co-expression network is preserved — we tested all six gene-network modules
+for preservation between healthy and infected tissue and every one of them
+survived with very strong statistical preservation. So GRBV is not destroying
+the wiring; it is tuning the output down.
 
-**The virus does not make the plant's immune system fight back. It disables
-the plant's thermal defence system.**
+**3. Rewiring the plant's sugar and metabolism regulators.** The host genes
+that handle sugar accumulation and carbon metabolism end up in different
+co-expression groups in infected tissue. The transcription factors whose
+binding sites are enriched in these rewired groups are DOFs — the canonical
+plant regulators of sugar transport. This is the direct regulatory link to the
+grower-visible symptoms (low-sugar fruit, altered ripening). In our network
+analyses, the virus's own genes sit among the most-rewired nodes — once
+present, the virus is *in* the regulatory network, not outside it attacking.
 
-Think of it this way. Plants have two lines of defence against viruses:
+## What the viral-titer data actually show
 
-- An **immune response** (like our adaptive immunity — specific proteins made to
-  recognise the threat)
-- A **heat-shock response** (like a thermostat + repair kit — kicks in under any
-  stress and includes chaperone proteins called HSPs that physically protect
-  cellular machinery)
+A reasonable question: *if the virus weakens heat defences, does heat kill the
+virus?*
 
-In GRBV-infected vines, the immune response is barely activated — we checked ten
-different canonical immune-defence categories and none of them showed meaningful
-up- or down-regulation. But the heat-shock response, specifically the small HSPs
-(sHSPs), is **knocked down hard**: 29 of 36 of them are turned off. The master
-switch that normally turns on the sHSPs (a transcription factor called HSF) is
-also suppressed.
+| Stage | 2021 cool season titer | 2022 hot season titer |
+|---|---|---|
+| Pre-véraison | 457,000 | **1,630,000** (3.6 × higher) |
+| Véraison | 832,000 | 1,387,000 |
+| Post-véraison | 755,000 | 729,000 |
+| Harvest | **2,211,000** | 393,000 (5.6 × *lower*) |
 
-This is important because heat normally *helps* the plant fight the virus. Hot
-weather triggers HSF, which turns on sHSPs, which suppress viral replication.
-The virus has apparently evolved to block this line of defence. In a hot year,
-the plant would normally win; with the virus's sabotage, it can't.
+Temperature doesn't act in one direction. It has **two opposing effects**:
 
-## Specific findings that support this story
+- Early in the season, heat speeds up viral replication kinetically — hot
+  years start with much more virus.
+- Late in the season, under sustained heat, a residual antiviral pathway
+  kicks in — hot years end with much less virus.
 
-- **Seasons matter differently.** In the cool 2021 season, disease signals
-  peaked at harvest. In the hot 2022 season, they peaked earlier (at post-
-  veraison). The virus's footprint *shifts* with temperature.
+Net result: cool seasons see virus build up slowly to a harvest peak; hot
+seasons see virus front-load and then crash. This is the "inverted seasonal
+trajectory" that was the main paper's headline finding.
 
-- **One gene mediates the whole temperature effect.** Using an objective causal-
-  inference method on 3,000 candidate genes, we identified a single gene
-  (`LOC132254135`) that carries 100 % of the detected temperature → viral-load
-  effect. When it's up (during heat), viral load goes down. This is the single
-  most specific, testable prediction in the paper.
+We found one gene (`LOC132254135`) that carries a statistically detectable
+piece of the late-season antiviral effect, identified by an objective causal-
+inference method scanning 3,000 candidate mediators. It isn't the whole
+picture — the 5.6-fold late-season drop is larger than one gene can explain —
+but it's the clearest single target for confirming the mechanism in the lab.
 
-- **The plant's gene-network skeleton stays intact.** We took the healthy-vine
-  gene co-expression network and tested whether it survives in infected vines.
-  All six modules pass with flying colours — the virus perturbs gene *levels*
-  within existing groups but does not break the groups apart.
+## What dominates the transcriptome
 
-- **Two viral genes are the most rewired hubs.** In the differential co-
-  expression analysis, two of the top five most-reconnected genes are the
-  virus's own — a direct, independent signature of infection at the network
-  level, useful as a quality control.
+**Maturity stage**, by a wide margin. In a three-way ANOVA, the main effect of
+stage explains 43 % of gene-level variance — more than infection, season, or
+any combination. When we clustered infected vines to look for hidden severity
+subtypes, the two clusters that emerged were simply early vs late ripening,
+with identical infection-year distributions and identical viral titer. There
+is no latent "mild versus severe" infection subgroup in the data; maturity is
+the landscape, and infection / season / temperature are weather on it.
 
-- **The sugar phenotype has a regulatory signature.** Gene modules that
-  contain the sugar-handling genes are enriched for binding sites of DOF
-  transcription factors — the canonical plant regulators of carbon
-  metabolism. This ties the transcriptomic evidence to the grower-visible
-  symptom (low-sugar fruit) through known biology.
+## What happens in vines that have been infected for years
 
-- **No "severity subtype" exists in the data.** A common question is whether
-  some infected vines have a mild form and others a severe form. We looked
-  carefully with an unsupervised clustering method; the two clusters that
-  emerged were simply early- versus late-season samples. Maturity is by far
-  the biggest source of variation, not disease severity.
-
-## What we can predict (and haven't yet tested)
-
-If the above mechanism is right, then **silencing HSF in a healthy vine should
-make it behave like an infected vine** — more susceptible to GRBV, and no
-longer protected by hot weather. A companion protocol
-([HSFA2_VIGS_EXPERIMENT_PLAN.md](HSFA2_VIGS_EXPERIMENT_PLAN.md)) lays out
-exactly how to test this.
+Ordering infected samples by years-since-infection reveals a **chronic drift
+toward abiotic-stress signatures**, not an immune response. The top temporally
+variable gene across infection age is RD22-C (Responsive to Desiccation 22),
+an ABA / water-stress marker. Long-infected vines look progressively more
+like they are dehydrated and heat-stressed. This is consistent with the
+thermal-defence damping accumulating over years.
 
 ## Why it matters
 
 Three practical consequences:
 
-1. **For breeders.** The vulnerable node is HSF (the heat-stress master
-   regulator), not a canonical immune gene. Breeding programmes should screen
-   for varieties with more robust HSF expression under infection.
-2. **For growers.** Disease severity will track seasonal temperature in a
-   predictable way. Hot spells *after* post-veraison should reduce viral titer;
-   cool late seasons will make the disease worse.
-3. **For the field.** GRBV is the first plant virus where we have direct
-   evidence (observational, to be confirmed functionally) that the infection
-   mechanism is suppression of thermal defence rather than of classical
-   immunity. That re-frames how we think about plant–virus interactions more
-   generally.
+1. **For breeders.** The vulnerable node is the HSF master regulator, not a
+   canonical immune gene. Screen cultivars for robust HSF expression under
+   infection rather than for classical disease-resistance proteins.
+2. **For growers.** Disease severity tracks seasonal temperature in a
+   *biphasic*, predictable way: hot springs front-load the disease; hot
+   late-season spells suppress viral load. Cool, even seasons are
+   worst-case — they let the virus climb steadily to a harvest peak.
+3. **For plant virology.** We have evidence that GRBV works by perturbing
+   stress-circuit regulation rather than engaging with classical immunity.
+   If this extends to other viruses, it's a conceptual reframe of how we
+   think about plant–virus interactions.
 
-## What's in the repository
+## What we can predict (and haven't tested yet)
 
-- **Main paper pipeline** — 55 figures, 26 data tables, 20 analysis scripts
-  covering DE, pathway enrichment, biomarkers, ML classification, GSEA,
-  mediation, multifactor ANOVA.
-- **Extended FARM HPC pipeline** — 13 rules producing the network-level,
-  causal, and cis-regulatory analyses summarised above.
-- **Functional protocol** — a wet-lab plan to confirm the mechanism using
-  VIGS (virus-induced gene silencing) of the master heat-shock regulator.
-- **Comparative pipeline** — harmonises your DEG signature against published
-  GLRaV-3, GPGV, powdery-mildew and heat-stress signatures to ask how much of
-  this is GRBV-specific versus generic grape stress.
+If the mechanism above is right, then silencing HSF in a healthy vine should
+mimic part of what infection does — specifically, it should abolish the
+late-season thermal antiviral effect. A companion protocol at
+[HSFA2_VIGS_EXPERIMENT_PLAN.md](HSFA2_VIGS_EXPERIMENT_PLAN.md) lays out
+exactly how to run this test. Either outcome is publishable: a positive
+result confirms the HSF → sHSP mechanism; a negative result tells us the
+late-season suppression runs through some other pathway we should pursue.
 
-## Numbers you can drop into a grant or talk
+## Numbers for a grant or talk
 
 | Metric | Number |
 |---|---|
 | Samples | 327 (264 RB+, 63 RB−) |
 | Genes tested | 14,604 |
-| Seasons compared | 2 (2021, 2022) |
+| Seasons compared | 2 (2021 cool, 2022 hot, +7.6 °C at harvest) |
 | Maturity stages | 4 |
 | Universal DEGs (robust across all analyses) | 908 |
-| sHSPs affected | 29 down / 36 expressed |
+| sHSPs suppressed | 29 of 36 expressed |
 | HSF–sHSP correlation | r = 0.625, p = 7.2 × 10⁻³⁷ |
-| Genes that mediate the temperature → titer link | 1 (`LOC132254135`) |
 | Defense categories with |log₂FC| > 0.5 | 0 of 10 |
-| Co-expression modules preserved in infected vines | 6 of 6 |
-| Directed TF → target regulatory edges | 100,000 |
+| Co-expression modules preserved | 6 of 6 |
+| Pre-véraison titer, hot / cool ratio | 3.6 × |
+| Harvest titer, hot / cool ratio | 0.18 × (i.e., 5.6 × lower in the hot year) |
+| Genes mediating temperature → titer (HIMA) | 1 (`LOC132254135`) |
+| Variance explained by maturity stage | η² = 0.43 |
+| Directed TF → target regulatory edges built | 100,000 |
+| DOF motifs enriched in sugar-metabolism modules | DOF3.6, DOF1.7 |
 | Pipeline rules completed on FARM HPC | 13 of 13 |
+
+For the full technical analysis with connections between every piece of
+evidence, see [INTEGRATED_ANALYSIS.md](INTEGRATED_ANALYSIS.md).
