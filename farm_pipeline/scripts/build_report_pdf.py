@@ -94,6 +94,17 @@ def sanitize_html(s):
     return "".join(out)
 
 html_body = sanitize_html(html_body)
+# fpdf2 write_html doesn't allow <strong>/<em> inside <td>; strip nested tags inside table cells.
+html_body = re.sub(
+    r"(<td[^>]*>)(.*?)(</td>)",
+    lambda m: m.group(1) + re.sub(r"</?(strong|em|b|i|code)[^>]*>", "", m.group(2)) + m.group(3),
+    html_body, flags=re.DOTALL,
+)
+html_body = re.sub(
+    r"(<th[^>]*>)(.*?)(</th>)",
+    lambda m: m.group(1) + re.sub(r"</?(strong|em|b|i|code)[^>]*>", "", m.group(2)) + m.group(3),
+    html_body, flags=re.DOTALL,
+)
 
 # --- Build PDF ---
 class Report(FPDF):

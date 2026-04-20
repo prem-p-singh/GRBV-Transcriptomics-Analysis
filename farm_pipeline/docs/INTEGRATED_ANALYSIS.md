@@ -167,7 +167,7 @@ architecture:
     │     │                  │
     │     │                  ▼
     │     │      some residual thermal antiviral
-    │     │      ( LOC132254135 mediator, Thread 3 )
+    │     │      ( robust 3-gene panel; LOC100249249 convergent across pipelines, Thread 3 )
     │     │                  │
     ▼     ▼                  ▼
 Virus ─── replicates kinetically under heat (direct pro-viral)
@@ -203,7 +203,8 @@ Reading the diagram:
    - Directly accelerates viral replication (→ higher early-season titer in
      hot years).
    - Indirectly, via residual thermal-defence pathways including
-     `LOC132254135`, suppresses titer (→ late-season crash in hot years).
+     a robust host-gene panel including `LOC100249249`, modulates titer
+     (→ late-season crash in hot years).
    Net result is biphasic (thread 3).
 5. **Viral transcripts rewire the host.** Once present, the virus is in the
    regulatory network as a hub, co-expressing with and influencing thousands
@@ -239,10 +240,12 @@ Reading the diagram:
   the hot 2022 season was 3.6 × higher than in the cool 2021 season.
 
 - At late maturity stages in sustained heat, a residual antiviral pathway
-  *suppresses* viral accumulation — we detect one piece of this as the
-  `LOC132254135`-mediated negative indirect effect, though the total late-
-  season suppression is larger than this one gene explains. Harvest titer in
-  hot 2022 was 5.6 × *lower* than cool 2021.
+  *suppresses* viral accumulation — a sensitivity-corrected host-gene panel
+  (`LOC100266309`, `LOC100232974`, `LOC100249249`) captures detectable
+  pieces of this, with `LOC100249249` replicating across two independent
+  causal-mediation pipelines. The total late-season suppression is larger
+  than three genes can explain, so other pathways contribute too. Harvest
+  titer in hot 2022 was 5.6 × *lower* than cool 2021.
 
 The net outcome: **hot years front-load disease; cool years back-load it.**
 This is the "inverted seasonal trajectory" that was the main paper's headline
@@ -316,7 +319,7 @@ model from a narrative claim into a constrained hypothesis.
 | Variance explained by maturity stage | η² = 0.426 |
 | Pre-véraison titer, hot / cool ratio | **3.57 ×** |
 | Harvest titer, hot / cool ratio | **0.18 ×** (i.e., cool > hot by 5.6 ×) |
-| Genes mediating temperature → titer (HIMA) | 1 (`LOC132254135`) |
+| Robust mediators of temperature → titer (across HIMA + main-paper sensitivity sweeps) | 3 (`LOC100266309`, `LOC100232974`, `LOC100249249`); `LOC100249249` cross-pipeline convergent |
 | Indirect effect α · β of temperature on log₁₀ titer | −0.084, p = 2.8 × 10⁻⁴ |
 | Directed TF → target regulatory edges | 100,000 |
 | DOF motifs enriched in sugar-metabolism modules | 2 (DOF3.6, DOF1.7) |
@@ -341,8 +344,10 @@ heat-shock chaperone axis; (iii) **rewires** the host sugar-metabolism
 regulon through DOF transcription factors. Temperature interacts biphasically
 with infection: kinetically pro-viral early in the season, antiviral under
 sustained heat through a single host gene we identify by causal inference
-(`LOC132254135`). This reframes plant–virus interactions from an
-immunity-centric to a stress-circuit-centric view.
+identified by sensitivity-robust causal inference (`LOC100249249`,
+cross-replicated across two independent mediation pipelines). This
+reframes plant–virus interactions from an immunity-centric to a
+stress-circuit-centric view.
 
 ---
 

@@ -26,7 +26,7 @@ The GRBV RNA-seq study (327 samples, 2 seasons, 4 maturity stages) identified th
 
 1. **sHSP collapse**: 29 of 36 expressed sHSPs are downregulated in RB+ vines; module score drops ~55 % (+1.64 → +0.74).
 2. **HSF–sHSP axis**: Pearson r = 0.625, p = 7.2 × 10⁻³⁷ across samples; expression of HSF family members covaries with the sHSP module.
-3. **Temperature mediation**: High-dimensional mediation analysis (HIMA) on 3,000 top-variable mediators identified a single gene, `LOC132254135`, with significant joint α·β effect (α = +0.569 from 14-day window mean *T*_avg to gene; β = −0.147 from gene to log₁₀ titer; p = 2.8 × 10⁻⁴; relative importance 100 %). The net indirect effect is **negative**: heat, via this transcript, depresses viral load.
+3. **Temperature mediation** (sensitivity-corrected). A multi-threshold HIMA sweep (top-var = 3k, 5k, 7.5k, 10k, 14.6k) identified a panel of robust mediators rather than a single gene: `LOC100266309` (passes at 3/5 thresholds), `LOC100232974` (2/5), and `LOC100249249` (2/5). Independently, the main paper's causal-mediation analysis (Temperature → Titer → Gene) at tv = 2k and 5k identifies `LOC100249249` as the top-ranked mediator (p = 4.8 × 10⁻¹¹ and 1.2 × 10⁻¹⁰). **`LOC100249249` is the single gene to appear as a robust mediator in both independent causal pipelines at multiple thresholds, making it the primary functional-validation target.** See [SENSITIVITY_REPORT.md](SENSITIVITY_REPORT.md) for the full sweep.
 
 Points 1–2 are correlative; point 3 is inferred from observational data. A perturbation experiment is required to establish causality — exactly the gap PNAS reviewers will flag.
 
@@ -117,7 +117,8 @@ Once the exact *V. vinifera* HSFA2 locus is resolved from the NCBI GFF on FARM, 
 | HSFA2 knockdown | RT-qPCR | *HSFA2*-qPCR-F/R; normalize to *VvUBQ*, *VvActin* | 21 dpi (pre-T shift), 4, 8 wpi |
 | sHSP response | RT-qPCR panel of 5 representative sHSPs (choose top-5 downregulated from the transcriptomic dataset) | design from transcript sequences | Same time points |
 | GRBV titer (primary) | qPCR of GRBV RNA-dependent RNA polymerase (target gene `LOC100268011` on the host side reflects viral RdRp1 activity; for viral DNA use a GRBV coat protein primer pair) | Published GRBV CP qPCR (e.g. Sudarshana et al. 2015) | 4, 8, 12 wpi |
-| Mediator validation | RT-qPCR of `LOC132254135` (HIMA-identified mediator) | design de novo | 4, 8 wpi |
+| Mediator validation (primary) | RT-qPCR of `LOC100249249` — cross-pipeline robust mediator | design de novo | 4, 8 wpi |
+| Mediator validation (secondary) | RT-qPCR of `LOC100266309` and `LOC100232974` — HIMA-robust panel | design de novo | 4, 8 wpi |
 | Phenotype | Leaf red blotch score (0–4 ordinal scale), plant height | Visual, caliper | 4, 8, 12 wpi |
 | sHSP protein | Immunoblot (anti-HSP17.6 commercial antibody, Agrisera AS07 255) | n/a | 8 wpi subset |
 
@@ -131,7 +132,7 @@ Register all analyses **before data collection** (for pre-registration).
 2. **H1 (sHSP response):** Mixed-effects model `ΔCt ~ construct + (1|plant)` across the 5-gene panel; FDR-correct across panel.
 3. **H2 (baseline susceptibility):** Welch's *t*-test of log₁₀(titer) at 8 wpi, VIGS-HSFA2 vs TRV-empty, control-temperature only. Pre-specified one-sided alternative (VIGS > TRV).
 4. **H3 (interaction test):** Two-way ANOVA on log₁₀(titer) at 8 wpi: `titer ~ construct × temperature + experiment_round`. Primary inference is the F-test on the `construct × temperature` term. Effect size η² reported.
-5. **Mediator validation:** Correlation of HSFA2 ΔCt and `LOC132254135` ΔCt across all GRBV-inoculated plants (Pearson and Spearman).
+5. **Mediator validation:** Correlation of HSFA2 ΔCt and each of the three robust mediators (`LOC100249249` primary, `LOC100266309`, `LOC100232974`) ΔCt across all GRBV-inoculated plants (Pearson and Spearman). `LOC100249249` is the pre-specified primary readout because it is the one cross-pipeline robust mediator; the others are secondary.
 6. **Effect sizes and CIs** reported alongside every *p*-value.
 7. **Missing data:** pairwise deletion; sensitivity analysis with multiple imputation if > 10 % missingness on any endpoint.
 8. **Multiplicity:** Bonferroni across the three primary hypotheses H1–H3 (adjusted α = 0.017).

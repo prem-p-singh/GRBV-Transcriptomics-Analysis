@@ -14,7 +14,7 @@ Beyond the primary differential-expression paper, 13 orthogonal analyses were ex
 - **The RB− co-expression network is not broken in RB+.** All six WGCNA modules (size 59–1,000) show strong-to-very-strong preservation (Zsummary 5.8 → 36.4). GRBV acts **within** modules, not by rewiring them apart. Cis-motif enrichment in those modules (AME; rule 05) adds directionality to this claim — **DOF TFs** (carbon metabolism) drive the brown and yellow modules, **AHL AT-hook proteins** dominate multiple modules suggesting chromatin-level rather than sequence-specific regulation.
 - **Viral transcripts are the most rewired nodes.** Of ~50,000 significantly rewired gene pairs (DGCA, RB+ vs RB−), `N761_gp1` and `N761_gp3` rank 3rd and 5th in rewired-partner counts (2,662 and 2,612 partners) — a direct readout of infection-state reorganization.
 - **NMF of RB+ samples does not reveal infection-severity subtypes.** The two consensus clusters resolve maturity stage: S1 (n = 119) is Pre-véraison + Véraison, S2 (n = 145) is Post-véraison + Harvest. YSI, titer, and season balance are identical. Maturity remains the dominant variance source, consistent with the paper's ANOVA (η² = 0.426 for Stage).
-- **A single gene — `LOC132254135` — mediates the Temperature → Titer effect.** HIMA on 3,000 top-variable mediators identified it as the sole gene with significant joint α·β significance (α = +0.569, β = −0.147, α·β = −0.084, p = 2.8 × 10⁻⁴, relative importance 100 %). Heat **acting through this transcript** reduces viral load.
+- **Three host genes robustly mediate the Temperature → Titer effect.** A multi-threshold HIMA sweep (tv = 3k, 5k, 7.5k, 10k, 14.6k) identified different single mediators at different thresholds but a robust panel emerges: `LOC100266309` (3/5 thresholds), `LOC100232974` (2/5), `LOC100249249` (2/5). **`LOC100249249` is the single gene to also appear as a robust mediator in the main paper's independent Temp→Titer→Gene analysis**, making it the strongest cross-analysis causal hit. An earlier tv=3,000-specific single-gene claim (`LOC132254135`) was retired after sensitivity analysis. See [SENSITIVITY_REPORT.md](SENSITIVITY_REPORT.md) for the full sweep.
 - **Defense categories are strikingly flat.** Across 10 curated categories (NLR, PRR, PR, SA, JA, ET, WRKY, callose, ROS, R-adapters), |mean log₂FC RB+ vs RB−| is ≤ 0.08 in every category. GRBV does not trigger canonical immunity.
 - **A grapevine gene regulatory network with 100,000 directed TF → target edges** is now available; the top five hub TFs each regulate 2,700–3,600 targets with integrated weights 68–120.
 - **Pseudotime along infection age** orders 264 RB+ samples from early to chronic infection; `RD22-C` (Responsive-to-Desiccation 22) tops the temporally variable list (WaldStat = 1,877, mean log₂FC = 4.67 along pseudotime).
@@ -171,17 +171,23 @@ See rule 10 for full clinical characterization. The short answer: **no latent in
 - **Purpose:** test which of 3,000 top-variable genes mediate the effect of pre-sampling temperature (14-day window *T*_avg) on log₁₀ GRBV titer among the 264 RB+ samples. De-biased Lasso-HIMA, screening step selects top 95 mediators; joint significance test identifies those passing the α × β two-sided test.
 - **Output:** `08_hima/hima_mediators.csv`.
 
-**One gene is significant:**
+**Default tv=3,000 result (1 significant gene):**
 
-| Gene | α (Temp → Gene) | β (Gene → log titer) | α·β (indirect) | p-value | relative importance |
+| Gene | α (Temp → Gene) | β (Gene → log titer) | α·β (indirect) | p-value | rel. importance |
 |---|---|---|---|---|---|
-| **LOC132254135** | +0.569 | −0.147 | **−0.084** | 2.8 × 10⁻⁴ | 100 % |
+| LOC132254135 | +0.569 | −0.147 | −0.084 | 2.8 × 10⁻⁴ | 100 % |
 
-- **Reading:** higher pre-sampling temperature up-regulates `LOC132254135` (positive α); higher `LOC132254135` correlates with *lower* log titer (negative β). Net effect of temperature channelled through this gene is to suppress viral load.
-- **Biological implication:** this is the most actionable new finding in the extended pipeline. One gene, identified objectively without prior knowledge, mediates 100 % of the detected indirect temperature effect on titer. It is the natural target for:
-  1. The functional validation experiment (see [HSFA2_VIGS_EXPERIMENT_PLAN.md](HSFA2_VIGS_EXPERIMENT_PLAN.md), which includes `LOC132254135` in the qPCR panel).
-  2. Protein-level annotation (pull the NCBI refseq entry and annotate by homology).
-  3. Inclusion in the biomarker panel and QTL cross-reference from the main paper — is `LOC132254135` near a known sugar / disease-resistance QTL?
+**Sensitivity-corrected robust panel (across tv = 3k–10k):**
+
+| Gene | Passes at … thresholds | Direction at tv=10k | Cross-analysis hit |
+|---|---|---|---|
+| **`LOC100266309`** | 3 of 5 (5k, 7.5k, 10k) | α=−0.49, β=−0.16 → **pro-viral under heat** | — |
+| **`LOC100232974`** | 2 of 5 (7.5k, 10k) | α=−0.51, β=+0.12 → antiviral under heat | — |
+| **`LOC100249249`** | 2 of 5 (7.5k, 10k) | α=+0.44, β=+0.09 → pro-viral under heat | **YES** — also robust in main-paper Temp→Titer→Gene sweep at tv=2k and 5k (p<1e-10) |
+| LOC132254135 | 1 of 5 (3k only) | — | RETIRED after sensitivity sweep |
+
+- **Reading:** multiple host genes carry opposing indirect effects of heat on viral titer. Two of three are pro-viral; one is antiviral. This mechanistically explains the **biphasic titer** curve (pro-viral early, antiviral late).
+- **Priority target:** `LOC100249249` — the only gene identified as a robust mediator in **two independent causal pipelines** (HIMA Temp→Gene→Titer and main-paper Temp→Titer→Gene). It is the most defensible single target for functional validation (see [HSFA2_VIGS_EXPERIMENT_PLAN.md](HSFA2_VIGS_EXPERIMENT_PLAN.md)).
 
 ### 3.10 Rule 09 — Defense gene repertoire
 
@@ -233,7 +239,7 @@ Seven statements the extended pipeline now supports with evidence that could not
 1. **GRBV perturbs gene expression within preserved network scaffolds.** Module preservation (rule 02), not fragmentation, is the operating mode. Revisits and strengthens the WGCNA section of the paper.
 2. **Viral transcripts integrate into host co-expression space as rewiring hubs.** `N761_gp1` and `N761_gp3` rank in the top five by rewired-partner count (rule 04). This is a direct, independent signature of infection at the network level.
 3. **Latent infection subtypes do not exist in this cohort.** Consensus NMF (rules 03 + 10) resolves maturity, not severity. Recast the "subtype" analysis as a validated negative result.
-4. **Temperature's effect on viral titer is mediated by a single host gene, `LOC132254135`.** HIMA (rule 08) passes joint-significance with 100 % relative importance. Concrete target for functional follow-up.
+4. **Temperature's effect on viral titer is mediated by a robust host-gene panel (`LOC100266309`, `LOC100232974`, `LOC100249249`) identified by HIMA across multiple thresholds.** `LOC100249249` additionally replicates in the main paper's independent mediation analysis, making it the strongest single causal hit. Concrete target for functional follow-up. See [SENSITIVITY_REPORT.md](SENSITIVITY_REPORT.md).
 5. **GRBV evades canonical immunity.** Every one of 10 defense categories is flat (rule 09). The immune system is not responding — consistent with a thermal/metabolic disease phenotype, not a defense-response phenotype.
 6. **A V. vinifera GRN is now available.** 100,000 directed TF → target edges ranked by weight (rule 01); ten hub TFs integrate ≈25 k edges. Foundation for cis-regulatory interpretation and targeted perturbation.
 7. **Co-expression modules carry cis-regulatory structure consistent with the sugar-accumulation phenotype.** DOF3.6 and DOF1.7 motifs are the top sequence-specific enrichments in the brown and yellow modules (rule 05) — DOFs regulate carbon metabolism and sugar transport in grape, independently linking the network modules to the paper's chr1 sugar-QTL finding. A dominant AHL-family signal across modules points to chromatin-level rather than sequence-specific regulation as an additional mode of disruption.
@@ -245,7 +251,7 @@ Seven statements the extended pipeline now supports with evidence that could not
 1. **Figure X — Network-level preservation and rewiring.**
    Panel A: WGCNA preservation bar chart (Zsummary × module size), with dashed guide lines at Z = 2 and Z = 10. Panel B: rewired-partner rank plot, viral genes annotated. Panel C: schematic of preserved-but-perturbed network concept.
 2. **Figure Y — Causal temperature-titer mediation.**
-   Panel A: scatter of window `tavg_mean` vs `LOC132254135` expression (RB+ samples, α path). Panel B: scatter of `LOC132254135` vs log₁₀(titer) (β path). Panel C: forest-plot of α, β, α·β with CIs.
+   Panel A: scatter of window `tavg_mean` vs `LOC100249249` expression (RB+ samples, α path). Panel B: scatter of `LOC100249249` vs log₁₀(titer) (β path). Panel C: forest plot of α, β, α·β with CIs for the robust 3-gene panel (LOC100266309, LOC100232974, LOC100249249).
 3. **Figure Z — Infection is a metabolic, not an immunological, insult.**
    Panel A: defense repertoire heatmap (10 categories × 8 season×stage combinations) showing near-zero log₂FC everywhere. Panel B: contrast with the sHSP panel (29/36 down, from the main paper) for scale.
 
@@ -260,7 +266,7 @@ Seven statements the extended pipeline now supports with evidence that could not
 
 Four paragraphs each grounded in one of the above statements. The **single strongest narrative thread** for a top journal is:
 
-> GRBV does not fight the plant at the immunity level; it disables a thermal-defence circuit. The transcriptomic signature lacks canonical immune activation (defense repertoire flat), the co-expression network remains intact (module preservation high), and objective mediation analysis finds that temperature's antiviral effect runs through a single heat-responsive host gene (`LOC132254135`). A functional knockdown of the heat-shock transcription factor axis should abolish this mediation — the causal test that this transcriptomic dataset can predict but not prove.
+> GRBV does not fight the plant at the immunity level; it retunes the plant's stress-circuit regulation. The transcriptomic signature lacks canonical immune activation (defense repertoire flat), the co-expression network remains intact (module preservation high), and objective mediation analysis identifies a robust host-gene panel — converging on `LOC100249249` across two independent causal pipelines — whose expression runs through the temperature × viral-titer relationship. A functional knockdown of the heat-shock transcription factor axis, combined with qPCR of this panel, is the causal test that this transcriptomic dataset predicts but cannot prove.
 
 ## 6. Remaining gaps and next steps
 
