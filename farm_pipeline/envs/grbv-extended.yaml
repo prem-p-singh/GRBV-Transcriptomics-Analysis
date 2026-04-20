@@ -19,6 +19,7 @@ dependencies:
   - meme
   - bedtools
   - ncbi-datasets-cli
+  - upsetplot
   - pip
   - pip:
       - mofapy2

@@ -9,6 +9,11 @@ rule all:
     input:
         f"{RESULTS}/00_weather/weather_per_sample.csv",
         f"{RESULTS}/01_grn/grn_edges.tsv.gz",
+        f"{RESULTS}/11_harmonized/coverage_report.csv",
+        f"{RESULTS}/12_meta/overlap_matrix.csv",
+        f"{RESULTS}/12_meta/specificity_classes.csv",
+        f"{RESULTS}/12_meta/upset_plot.png",
+        f"{RESULTS}/12_meta/fc_correlation_heatmap.png",
         f"{RESULTS}/01_grn/hub_tfs.csv",
         f"{RESULTS}/02_module_preservation/zsummary.csv",
         f"{RESULTS}/02_module_preservation/preservation_plot.png",
@@ -352,5 +357,61 @@ rule subtype_characterize:
         $PY scripts/10_subtype_characterize.py \
             --counts {input.counts} --meta {input.meta} --titer {input.titer} --subtypes {input.subtypes} \
             --out_de {output.de} --out_clinical {output.clinical} --out_plot {output.plot} \
+            &> {log}
+        """
+
+# -----------------------------------------------------------------------------
+# 11. Harmonize published Vitis DEG tables to NCBI LOC_ IDs
+# -----------------------------------------------------------------------------
+rule harmonize_literature_degs:
+    input:
+        crosswalk = f"{RESOURCES}/id_crosswalk.tsv",
+    output:
+        coverage = f"{RESULTS}/11_harmonized/coverage_report.csv",
+    log: "logs/11_harmonize.log"
+    resources:
+        mem_mb = 4000,
+        runtime = 15,
+        cpus_per_task = 1,
+    shell:
+        """
+        export GRBV_RLIBS="$HOME/grbv_extended/Rlibs"
+        PY=$HOME/.conda/envs/grbv-extended/bin/python
+        $PY scripts/11_harmonize_literature_degs.py \
+            --literature_dir data/literature \
+            --crosswalk {input.crosswalk} \
+            --out_dir {RESULTS}/11_harmonized \
+            --out_coverage {output.coverage} &> {log}
+        """
+
+# -----------------------------------------------------------------------------
+# 12. Comparative meta-analysis (GRBV vs harmonized literature signatures)
+# -----------------------------------------------------------------------------
+rule comparative_meta_analysis:
+    input:
+        counts   = config["inputs"]["counts"],
+        meta     = config["inputs"]["metadata"],
+        coverage = f"{RESULTS}/11_harmonized/coverage_report.csv",
+    output:
+        overlap    = f"{RESULTS}/12_meta/overlap_matrix.csv",
+        classes    = f"{RESULTS}/12_meta/specificity_classes.csv",
+        upset      = f"{RESULTS}/12_meta/upset_plot.png",
+        fc_heatmap = f"{RESULTS}/12_meta/fc_correlation_heatmap.png",
+    log: "logs/12_meta.log"
+    resources:
+        mem_mb = 8000,
+        runtime = 60,
+        cpus_per_task = 4,
+    shell:
+        """
+        export GRBV_RLIBS="$HOME/grbv_extended/Rlibs"
+        PY=$HOME/.conda/envs/grbv-extended/bin/python
+        $PY scripts/12_comparative_metaanalysis.py \
+            --counts {input.counts} --meta {input.meta} \
+            --harmonized_dir {RESULTS}/11_harmonized \
+            --coverage {input.coverage} \
+            --out_dir {RESULTS}/12_meta \
+            --padj_thresh {config[meta_analysis][padj_thresh]} \
+            --lfc_thresh  {config[meta_analysis][lfc_thresh]} \
             &> {log}
         """

@@ -65,6 +65,24 @@ else
     echo "[setup] motif DB already present"
 fi
 
+# ---------- 6. ID crosswalk for comparative meta-analysis (rules 11-12) ----------
+if [ ! -f "$RES/id_crosswalk.tsv" ]; then
+    echo "[setup] building VIT/Vvi/Symbol -> LOC crosswalk from NCBI GFF"
+    python scripts/_build_id_crosswalk.py \
+        --gff "$RES/genome/genome.gff" \
+        ${ORTHOLOG_MAP:+--ortholog_map "$ORTHOLOG_MAP"} \
+        --out "$RES/id_crosswalk.tsv"
+else
+    echo "[setup] id_crosswalk.tsv already present"
+fi
+
+# ---------- 7. Stub literature directory if empty ----------
+mkdir -p data/literature
+if [ -z "$(ls -A data/literature/*.csv 2>/dev/null)" ]; then
+    echo "[setup] data/literature/ is empty -- rule 11 will skip until you populate it."
+    echo "        See docs/LITERATURE_SCHEMA.md for the required CSV format."
+fi
+
 echo "[setup] disk usage:"
 du -sh "$RES"/* 2>/dev/null || true
 du -sh "$RLIBS" 2>/dev/null || true

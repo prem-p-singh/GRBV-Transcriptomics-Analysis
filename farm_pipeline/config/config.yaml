@@ -51,6 +51,10 @@ hima:
   top_var: 3000
   n_perm: 100
 
+meta_analysis:
+  padj_thresh: 0.05          # significance cutoff for DEG classification
+  lfc_thresh:  1.0           # |log2FC| cutoff
+
 # Actual sampling dates (ISO yyyy-mm-dd). Used to build per-sample weather windows.
 sampling_dates:
   "2021|Pre_veraison":  2021-08-02
