@@ -82,11 +82,18 @@ Net result: cool seasons see virus build up slowly to a harvest peak; hot
 seasons see virus front-load and then crash. This is the "inverted seasonal
 trajectory" that was the main paper's headline finding.
 
-We found one gene (`LOC132254135`) that carries a statistically detectable
-piece of the late-season antiviral effect, identified by an objective causal-
-inference method scanning 3,000 candidate mediators. It isn't the whole
-picture — the 5.6-fold late-season drop is larger than one gene can explain —
-but it's the clearest single target for confirming the mechanism in the lab.
+When we ran the same causal-inference method at five different gene-pool
+sizes (from 3,000 to 14,604 genes) to check robustness, we found that a
+**three-gene panel** (`LOC100266309`, `LOC100232974`, `LOC100249249`)
+consistently comes up as the statistically detectable piece of the late-
+season antiviral effect. **`LOC100249249` is the strongest candidate**: it
+shows up as a significant mediator in *both* the gene-is-mediator analysis
+(HIMA) and the opposite-direction titer-is-mediator analysis from the main
+paper, at multiple gene-pool sizes. Earlier we had named a single gene
+(`LOC132254135`) as "the" mediator — we've retired that specific claim
+because it only appeared at one particular gene-pool size. The robust
+finding is the three-gene panel, with `LOC100249249` as the best-supported
+target for wet-lab follow-up.
 
 ## What dominates the transcriptome
 
@@ -148,7 +155,7 @@ late-season suppression runs through some other pathway we should pursue.
 | Co-expression modules preserved | 6 of 6 |
 | Pre-véraison titer, hot / cool ratio | 3.6 × |
 | Harvest titer, hot / cool ratio | 0.18 × (i.e., 5.6 × lower in the hot year) |
-| Genes mediating temperature → titer (HIMA) | 1 (`LOC132254135`) |
+| Genes mediating temperature → titer (robust across HIMA sweep + main-paper mediation sweep) | 3 candidates (`LOC100249249` convergent across both analyses) |
 | Variance explained by maturity stage | η² = 0.43 |
 | Directed TF → target regulatory edges built | 100,000 |
 | DOF motifs enriched in sugar-metabolism modules | DOF3.6, DOF1.7 |

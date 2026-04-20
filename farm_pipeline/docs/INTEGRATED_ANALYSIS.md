@@ -62,17 +62,26 @@ Two patterns stand out:
    Within 2022, titer drops ~4-fold from Pre-véraison (1.6 M) to Harvest
    (0.4 M). Something is actively suppressing the virus late in the hot year.
 
-Supporting causal evidence:
+Supporting causal evidence (**sensitivity-analysis corrected**):
 
-- **HIMA mediation (rule 08):** of 3,000 top-variable mediators tested,
-  `LOC132254135` is the sole gene passing joint significance
-  (α = +0.569, β = −0.147, α·β = **−0.084**, p = 2.8 × 10⁻⁴, relative
-  importance 100 %). The *indirect* effect of temperature on titer via this
-  gene is **negative** — higher T → more of this gene → lower titer.
-- This indirect effect is small in magnitude and runs through one detectable
-  pathway. The total effect of temperature on titer is the sum of indirect
-  antiviral (through this and probably other pathways) and direct pro-
-  replication (host-cell kinetics, heat-accelerated transcription).
+- **HIMA mediation (rule 08):** a multi-threshold sweep (top-var = 3k, 5k,
+  7.5k, 10k, 14.6k) identifies a mediation *signal* at every completed
+  threshold but with different specific genes. Robust candidates passing
+  joint significance in **≥ 2 of 5 thresholds**: `LOC100266309` (3 of 5),
+  `LOC100232974` (2 of 5), `LOC100249249` (2 of 5). At tv = 14,604 no gene
+  passes — Lasso regularisation distributes signal across multiple
+  correlated mediators. **The earlier tv=3,000 single-gene claim
+  (`LOC132254135`) is threshold-specific and has been retired.**
+- **Independent convergence:** the main-paper causal-mediation script
+  (direction: Temperature → Titer → Gene, opposite DAG from HIMA) swept at
+  tv = 500, 1k, 2k, 5k. At the paper's original tv=500 **zero** genes pass
+  joint significance; at tv=2k and 5k, `LOC100249249` is the top-ranked
+  mediator (p = 5 × 10⁻¹¹ and 1.2 × 10⁻¹⁰). **`LOC100249249` is the one
+  gene to appear as a robust mediator in both independent analyses** — the
+  most defensible causal hit.
+- The indirect effects have opposing signs across the mediator panel — some
+  carry pro-viral heat effects, others antiviral — mechanistically
+  consistent with the biphasic titer response.
 
 This is what gives the biphasic curve:
 
@@ -113,7 +122,7 @@ landscape; everything else is weather on that landscape.
 | DiffCoEx (rule 04) | Of ~50,000 most-rewired gene pairs, two viral transcripts (`N761_gp1`, `N761_gp3`) rank 3rd and 5th in per-gene rewired-partner count (2,662 and 2,612 partners) |
 | GRN (rule 01) | 100,000 directed TF → target edges built from co-expression; top 10 hub TFs regulate 2,700–3,600 targets each |
 | Motif enrichment (rule 05) | 138 motif × module enrichments; DOF3.6 / DOF1.7 top sequence-specific hits in brown / yellow modules |
-| Main paper biomarkers | Top 5 host biomarkers include RNA-dep RNA polymerase 1, and viral genes N761_gp1–3 dominate ML feature importance (the AUC = 1.000 is largely "detect virus by detecting virus") |
+| Main paper biomarkers | Top 5 host biomarkers include RNA-dep RNA polymerase 1. **Sensitivity sweep (tv = 200, 500, 1k, 2k)** confirms: with viral `N761_gp*` transcripts in the feature pool, 5-method CV AUC is 1.000 at every threshold — robust. With viral transcripts **removed**, host-only AUC drops to 0.92–1.00 depending on method and threshold (LASSO at tv=200 is the lowest at 0.919). The "AUC=1.000" claim depends on including viral transcripts. |
 
 The virus is not an external attacker — once present, it is a **node in the
 host regulatory network** with thousands of rewired connections. The DOF
@@ -263,7 +272,8 @@ virus's chronic phase is metabolic attrition, not immune warfare.
 | "Viral transcripts integrate as hubs in the host regulatory network" | Thread 5 (N761_gp1/3 in top-5 rewired) | **High** |
 | "A DOF-regulated cis-regulatory signature explains the sugar-accumulation phenotype" | Thread 5 (rule 05 DOF3.6/DOF1.7, chr1 QTL co-localisation) | **Moderate–High** (needs DOF-TF over-expression test ideally) |
 | "Temperature has a biphasic effect on viral titer: pro-viral early, antiviral late" | Thread 3 (raw titer table, HIMA) | **High for biphasic; moderate for mechanism** |
-| "A single host gene, `LOC132254135`, mediates part of the late-season thermal antiviral effect" | Thread 3 (HIMA) | **Moderate** (statistically detected, biological identity of gene needs annotation) |
+| "`LOC100249249` is a robust mediator of the temperature × titer relationship, replicated across two independent causal-mediation pipelines (HIMA Temp→Gene→Titer and Temp→Titer→Gene from the main paper) at multiple top-variance thresholds" | Thread 3 (HIMA + sensitivity sweep + main-paper mediation sensitivity sweep) | **Moderate–High** — replicated across two DAGs and ≥2 thresholds each |
+| "`LOC132254135` is the sole mediator" (earlier claim) | threshold-specific tv=3,000 artifact | **RETIRED** after sensitivity analysis |
 | "GRBV disables the plant's thermal defence completely" | — | **NOT supported.** The axis is dampened, not eliminated. |
 | "Heat suppresses viral titer via HSF → sHSPs" | — | **NOT directly shown.** Suggested by threads 2 + 3 but requires the VIGS experiment to confirm. |
 | "Chronic infection shifts the plant toward an ABA / desiccation signature" | Thread 6 (RD22-C, dual-regulated genes) | **Moderate** |

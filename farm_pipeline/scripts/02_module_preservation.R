@@ -14,6 +14,7 @@ opts <- parse_args(OptionParser(option_list=list(
   make_option("--out_csv"), make_option("--out_plot"),
   make_option("--n_perm",    type="integer", default=100),
   make_option("--soft_power", type="integer", default=6),
+  make_option("--top_var",   type="integer", default=10000),
   make_option("--cores",     type="integer", default=8)
 )))
 
@@ -35,7 +36,7 @@ message(sprintf("RB-: %d   RB+: %d", length(rb_neg), length(rb_pos)))
 
 # Top variable genes (use RB- variance as reference structure)
 v_neg <- apply(lcpm[, rb_neg], 1, var)
-keep_v <- names(sort(v_neg, decreasing=TRUE))[1:min(10000, sum(v_neg > 0))]
+keep_v <- names(sort(v_neg, decreasing=TRUE))[1:min(opts$top_var, sum(v_neg > 0))]
 
 datRef <- t(lcpm[keep_v, rb_neg])
 datTst <- t(lcpm[keep_v, rb_pos])
