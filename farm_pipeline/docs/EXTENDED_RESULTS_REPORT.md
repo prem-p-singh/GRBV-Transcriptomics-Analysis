@@ -9,9 +9,9 @@
 
 ## 1. Executive summary
 
-Beyond the primary differential-expression paper, 10 orthogonal analyses were executed on UC Davis FARM HPC over 327 samples (264 RB+, 63 RB−). Twelve of thirteen rules completed; motif enrichment was dropped as marginally informative against the main story. Key integrative findings:
+Beyond the primary differential-expression paper, 13 orthogonal analyses were executed on UC Davis FARM HPC over 327 samples (264 RB+, 63 RB−). **All 13 rules completed** — the final pass of motif enrichment (rule 05) ran to completion in 47 minutes after switching from FIMO to AME `--text` mode with a subsampled 3,000-gene background. Key integrative findings:
 
-- **The RB− co-expression network is not broken in RB+.** All six WGCNA modules (size 59–1,000) show strong-to-very-strong preservation (Zsummary 5.8 → 36.4). GRBV acts **within** modules, not by rewiring them apart.
+- **The RB− co-expression network is not broken in RB+.** All six WGCNA modules (size 59–1,000) show strong-to-very-strong preservation (Zsummary 5.8 → 36.4). GRBV acts **within** modules, not by rewiring them apart. Cis-motif enrichment in those modules (AME; rule 05) adds directionality to this claim — **DOF TFs** (carbon metabolism) drive the brown and yellow modules, **AHL AT-hook proteins** dominate multiple modules suggesting chromatin-level rather than sequence-specific regulation.
 - **Viral transcripts are the most rewired nodes.** Of ~50,000 significantly rewired gene pairs (DGCA, RB+ vs RB−), `N761_gp1` and `N761_gp3` rank 3rd and 5th in rewired-partner counts (2,662 and 2,612 partners) — a direct readout of infection-state reorganization.
 - **NMF of RB+ samples does not reveal infection-severity subtypes.** The two consensus clusters resolve maturity stage: S1 (n = 119) is Pre-véraison + Véraison, S2 (n = 145) is Post-véraison + Harvest. YSI, titer, and season balance are identical. Maturity remains the dominant variance source, consistent with the paper's ANOVA (η² = 0.426 for Stage).
 - **A single gene — `LOC132254135` — mediates the Temperature → Titer effect.** HIMA on 3,000 top-variable mediators identified it as the sole gene with significant joint α·β significance (α = +0.569, β = −0.147, α·β = −0.084, p = 2.8 × 10⁻⁴, relative importance 100 %). Heat **acting through this transcript** reduces viral load.
@@ -111,10 +111,33 @@ See rule 10 for full clinical characterization. The short answer: **no latent in
 
 - **Interpretation:** that two of the seven most-rewired nodes are viral transcripts is a direct, independent signature of infection — the viral genome is hub-integrated into host co-expression space when GRBV is active. Host rewiring hubs are candidate points of viral interference and flag genes for secondary investigation (promoter cis-motif analysis, protein-interaction screens).
 
-### 3.6 Rule 05 — Motif enrichment (dropped)
+### 3.6 Rule 05 — Cis-regulatory motif enrichment (AME)
 
-- Attempted with FIMO (walltime exceeded) and AME (`--text` bypass of broken conda template; background subsampled to 3,000 genes). With all 14 WGCNA modules × ~655 JASPAR plant motifs, AME runtime saturated the 2 h preemption window on the free `low` partition.
-- **Decision:** omitted from the manuscript. TF-family enrichment from the main paper and GENIE3 (rule 01) directed edges convey equivalent cis-regulatory information with fewer ambiguities.
+- **Purpose:** test whether each WGCNA module's promoters are enriched for any JASPAR2024 CORE plants motifs relative to a non-module background. Foreground = module promoters (1.5 kb upstream of TSS); background = 3,000 non-module promoters randomly sampled per run (seed 42).
+- **Tool:** AME 5.5.9 in `--text` mode (bypasses a conda-build template bug), 656 plant motifs scanned per module.
+- **Output:** `05_motif_enrichment/module_motif_enrichment.csv` — 138 enriched motif × module pairs across 12 of 14 modules.
+
+**Top motif per module (smallest adjusted p):**
+
+| Module | Size | Motif ID | Alt name | adj. p | TP | Biological class |
+|---|---|---|---|---|---|---|
+| grey | 5,065 | MA0932.1 | **AHL12** | 1.3 × 10⁻³² | 3,726 | AT-hook chromatin regulator |
+| turquoise | 1,620 | MA2374.1 | **AHL13** | 7.8 × 10⁻¹⁶ | 1,147 | AT-hook |
+| brown | 646 | MA1274.1 | **DOF3.6** | 1.5 × 10⁻¹¹ | 488 | C-metabolism / sugar signalling |
+| black | 147 | MA2084.1 | PK23009.1 | 2.5 × 10⁻⁵ | 118 | — |
+| pink | 128 | MA2032.2 | **TRB1** | 1.2 × 10⁻⁴ | 19 | Telomere repeat binding |
+| blue | 1,499 | MA2374.1 | **AHL13** | 1.5 × 10⁻⁴ | 1,026 | AT-hook |
+| green | 279 | MA0934.1 | **AHL25** | 3.4 × 10⁻⁴ | 190 | AT-hook |
+| yellow | 303 | MA1277.2 | **DOF1.7** | 9.4 × 10⁻⁴ | 57 | C-metabolism |
+| magenta | 102 | MA1337.2 | **BZIP44** | 1.5 × 10⁻³ | 16 | Seed maturation / ABA |
+| purple | 67 | MA0933.1 | **AHL20** | 2.2 × 10⁻³ | 52 | AT-hook |
+| red | 238 | MA2374.1 | **AHL13** | 3.2 × 10⁻³ | 171 | AT-hook |
+| salmon | 19 | MA1367.2 | AT1G76870 (MYB) | 9.4 × 10⁻⁴ | 13 | R2R3-MYB |
+
+- **Interpretation.** Two coherent signals emerge:
+  1. **AHL (AT-hook motif nuclear-localised) TFs dominate multiple modules** (AHL12, AHL13, AHL20, AHL25 as top hit in 6 of 12 enriched modules). AHLs bind AT-rich matrix-attachment regions and act as chromatin-level scaffold regulators, not sequence-specific activators. Their uniform enrichment is consistent with broad chromatin remodelling in infected tissue rather than precise TF-family-specific control. Caveat: AT-rich hits are also the most common false-positive class in plant motif scans; these edges should be confirmed by ChIP or DAP-seq.
+  2. **Module-specific, biology-coherent hits** are visible above the AHL background. **DOF3.6 and DOF1.7** in brown and yellow are the headline finding — DOFs are canonical regulators of sugar transport and carbon metabolism in grapevine, directly matching the paper's sugar-accumulation-defect phenotype and the chr1 sugar-QTL co-localisation of the top host biomarker. **BZIP44** in magenta links to ABA / seed-maturation responses; **TRB1** in pink to telomere maintenance; the salmon module is MYB-driven.
+- **Caveat.** No canonical HSE (heat-shock element) appears in any module's top hit. Two possible reasons: JASPAR2024 CORE plants under-represents HSEs, and/or HSF regulation of the sHSP module operates at sub-sequence (e.g. chromatin) level. The HSF → sHSP axis remains supported by the r = 0.625 expression correlation from the main paper, but cis-motif enrichment alone does not independently confirm it. This is a real limitation to name in the discussion.
 
 ### 3.7 Rule 06 — Pseudotime trajectory along infection age
 
@@ -205,7 +228,7 @@ See rule 10 for full clinical characterization. The short answer: **no latent in
 
 ## 4. Integrative claims for the manuscript
 
-Six statements the extended pipeline now supports with evidence that could not be produced from DE alone:
+Seven statements the extended pipeline now supports with evidence that could not be produced from DE alone:
 
 1. **GRBV perturbs gene expression within preserved network scaffolds.** Module preservation (rule 02), not fragmentation, is the operating mode. Revisits and strengthens the WGCNA section of the paper.
 2. **Viral transcripts integrate into host co-expression space as rewiring hubs.** `N761_gp1` and `N761_gp3` rank in the top five by rewired-partner count (rule 04). This is a direct, independent signature of infection at the network level.
@@ -213,6 +236,7 @@ Six statements the extended pipeline now supports with evidence that could not b
 4. **Temperature's effect on viral titer is mediated by a single host gene, `LOC132254135`.** HIMA (rule 08) passes joint-significance with 100 % relative importance. Concrete target for functional follow-up.
 5. **GRBV evades canonical immunity.** Every one of 10 defense categories is flat (rule 09). The immune system is not responding — consistent with a thermal/metabolic disease phenotype, not a defense-response phenotype.
 6. **A V. vinifera GRN is now available.** 100,000 directed TF → target edges ranked by weight (rule 01); ten hub TFs integrate ≈25 k edges. Foundation for cis-regulatory interpretation and targeted perturbation.
+7. **Co-expression modules carry cis-regulatory structure consistent with the sugar-accumulation phenotype.** DOF3.6 and DOF1.7 motifs are the top sequence-specific enrichments in the brown and yellow modules (rule 05) — DOFs regulate carbon metabolism and sugar transport in grape, independently linking the network modules to the paper's chr1 sugar-QTL finding. A dominant AHL-family signal across modules points to chromatin-level rather than sequence-specific regulation as an additional mode of disruption.
 
 ## 5. Recommended additions to the manuscript
 
