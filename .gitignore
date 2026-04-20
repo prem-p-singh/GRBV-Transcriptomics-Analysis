@@ -7,10 +7,11 @@
 *.pdf
 *.pptx
 
-# Markdown (except README and CLAUDE.md)
+# Markdown (except README, CLAUDE.md, and repo docs/)
 *.md
 !README.md
 !CLAUDE.md
+!farm_pipeline/docs/*.md
 
 # Data files
 *.txt
