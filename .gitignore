@@ -5,6 +5,7 @@
 !assets/*.png
 *.csv
 *.pdf
+!farm_pipeline/docs/*.pdf
 *.pptx
 
 # Markdown (except README, CLAUDE.md, and repo docs/)
