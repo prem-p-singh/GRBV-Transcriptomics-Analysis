@@ -1,0 +1,147 @@
+#!/usr/bin/env python3
+"""Render CRITICAL_REVIEW.md to PDF using reportlab."""
+import re
+from pathlib import Path
+from reportlab.lib import colors
+from reportlab.lib.pagesizes import A4
+from reportlab.lib.styles import ParagraphStyle
+from reportlab.lib.units import mm
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, PageBreak
+
+ROOT = Path("/Users/prempratapsingh/Data_Analysis/farm_pipeline")
+SRC  = ROOT / "docs/CRITICAL_REVIEW.md"
+OUT  = ROOT / "docs/CRITICAL_REVIEW.pdf"
+md = SRC.read_text(encoding="utf-8")
+md = re.sub(r"^# .*?\n\n\*.*?submission\.\*\*\n\n", "", md, count=1, flags=re.DOTALL)
+md = re.sub(r"^---\s*$", "", md, flags=re.MULTILINE)
+
+def md_inline(s):
+    s = s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+    s = re.sub(r"\*\*(.+?)\*\*", r"<b>\1</b>", s)
+    s = re.sub(r"(?<!\w)\*(?!\s)(.+?)(?<!\s)\*(?!\w)", r"<i>\1</i>", s)
+    s = re.sub(r"`([^`]+)`", r'<font face="Courier" color="#222244">\1</font>', s)
+    s = re.sub(r"\[([^\]]+)\]\(([^)]+)\)", r'<a href="\2" color="#1a4d8c">\1</a>', s)
+    return s
+
+body = ParagraphStyle("body", fontName="Times-Roman", fontSize=10, leading=13,
+                     alignment=4, spaceAfter=3, spaceBefore=2)
+h1 = ParagraphStyle("h1", fontName="Helvetica-Bold", fontSize=17, leading=20,
+                    textColor=colors.HexColor("#7a1a1a"), spaceBefore=14, spaceAfter=6)
+h2 = ParagraphStyle("h2", fontName="Helvetica-Bold", fontSize=13, leading=16,
+                    textColor=colors.HexColor("#a02323"), spaceBefore=12, spaceAfter=5)
+h3 = ParagraphStyle("h3", fontName="Helvetica-Bold", fontSize=11.5, leading=14,
+                    textColor=colors.HexColor("#3a577a"), spaceBefore=9, spaceAfter=3)
+li = ParagraphStyle("li", parent=body, leftIndent=14, bulletIndent=4, spaceAfter=1, spaceBefore=1)
+code = ParagraphStyle("code", parent=body, fontName="Courier", fontSize=8.5, leading=11,
+                      backColor=colors.HexColor("#f4f5f7"), borderPadding=3,
+                      leftIndent=8, rightIndent=8, spaceBefore=4, spaceAfter=4, alignment=0)
+tbl_style = TableStyle([
+    ("BACKGROUND",(0,0),(-1,0), colors.HexColor("#fbeaea")),
+    ("TEXTCOLOR",(0,0),(-1,0), colors.HexColor("#7a1a1a")),
+    ("FONTNAME",(0,0),(-1,0), "Helvetica-Bold"),
+    ("FONTNAME",(0,1),(-1,-1), "Helvetica"),
+    ("FONTSIZE",(0,0),(-1,-1), 8.5),
+    ("VALIGN",(0,0),(-1,-1), "TOP"),
+    ("GRID",(0,0),(-1,-1), 0.25, colors.HexColor("#c7d1de")),
+    ("ROWBACKGROUNDS",(0,1),(-1,-1),[colors.white, colors.HexColor("#fafbfc")]),
+    ("LEFTPADDING",(0,0),(-1,-1), 4),("RIGHTPADDING",(0,0),(-1,-1), 4),
+    ("TOPPADDING",(0,0),(-1,-1), 3),("BOTTOMPADDING",(0,0),(-1,-1), 3),
+])
+
+flow = [
+    Spacer(1, 16*mm),
+    Paragraph("Critical review of the GRBV analysis pipeline",
+              ParagraphStyle("title", fontName="Helvetica-Bold", fontSize=20, leading=24,
+                             textColor=colors.HexColor("#122a4d"), alignment=1, spaceAfter=4)),
+    Paragraph("Simulated journal-reviewer critique of the GRBV / <i>Vitis vinifera</i> cv. Merlot manuscript, "
+              "benchmarked against published plant RNA-seq papers in target journals (Nature Plants, Plant Cell, New Phytologist, PNAS).",
+              ParagraphStyle("sub", fontName="Times-Italic", fontSize=11, leading=14,
+                             textColor=colors.HexColor("#3a557d"), alignment=1, spaceAfter=10)),
+    Paragraph("<b>Severity key.</b> &nbsp;&nbsp; "
+              "<font color='#b00000'>●</font> Critical (must fix before submission) &nbsp;&nbsp; "
+              "<font color='#c28018'>●</font> Major (should fix) &nbsp;&nbsp; "
+              "<font color='#2e7a2e'>●</font> Minor (nice to have)",
+              ParagraphStyle("key", fontName="Helvetica", fontSize=9.5, alignment=1,
+                             textColor=colors.HexColor("#333"), spaceAfter=4)),
+    Paragraph("<b>Author:</b> Prem Pratap Singh &nbsp;•&nbsp; <b>Date:</b> 2026-04-20 &nbsp;•&nbsp; "
+              "See companion <i>INTEGRATED_ANALYSIS</i>, <i>SENSITIVITY_REPORT</i> and <i>HSFA2_VIGS_EXPERIMENT_PLAN</i> documents.",
+              ParagraphStyle("meta", fontName="Helvetica", fontSize=9, alignment=1,
+                             textColor=colors.HexColor("#555"))),
+    PageBreak(),
+]
+
+def parse_tbl(lines):
+    rows = []
+    for ln in lines:
+        cells = [c.strip() for c in ln.strip().strip("|").split("|")]
+        rows.append(cells)
+    rows = [r for r in rows if not all(set(c) <= set("-: ") for c in r)]
+    return rows
+
+lines = md.splitlines()
+i = 0; para = []
+def flush():
+    global para
+    if para:
+        t = " ".join(para).strip()
+        if t:
+            flow.append(Paragraph(md_inline(t), body))
+        para = []
+
+while i < len(lines):
+    ln = lines[i]
+    m = re.match(r"^(#{1,3})\s+(.+)$", ln)
+    if m:
+        flush()
+        flow.append(Paragraph(md_inline(m.group(2)), [h1, h2, h3][len(m.group(1))-1]))
+        i += 1; continue
+    if ln.startswith("```"):
+        flush(); i += 1
+        buf = []
+        while i < len(lines) and not lines[i].startswith("```"):
+            buf.append(lines[i]); i += 1
+        i += 1
+        esc = "\n".join(buf).replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+        flow.append(Paragraph("<br/>".join(esc.split("\n")), code))
+        continue
+    if ln.startswith("|") and i+1 < len(lines) and re.match(r"^\|[\s|:\-]+\|$", lines[i+1].strip()):
+        flush()
+        tbl = [ln]; j = i+1
+        while j < len(lines) and lines[j].startswith("|"):
+            tbl.append(lines[j]); j += 1
+        rows = parse_tbl(tbl)
+        rl_rows = [[Paragraph(md_inline(c), body) for c in r] for r in rows]
+        ncols = max(len(r) for r in rl_rows)
+        tbl_obj = Table(rl_rows, colWidths=[175*mm/ncols]*ncols, repeatRows=1)
+        tbl_obj.setStyle(tbl_style)
+        flow.append(Spacer(1, 2*mm)); flow.append(tbl_obj); flow.append(Spacer(1, 3*mm))
+        i = j; continue
+    if re.match(r"^\s*[-*]\s+", ln):
+        flush()
+        flow.append(Paragraph("&bull;&nbsp;" + md_inline(re.sub(r"^\s*[-*]\s+", "", ln)), li))
+        i += 1; continue
+    m_ol = re.match(r"^(\s*)(\d+)\.\s+(.+)$", ln)
+    if m_ol:
+        flush()
+        flow.append(Paragraph(f"{m_ol.group(2)}.&nbsp; " + md_inline(m_ol.group(3)), li))
+        i += 1; continue
+    if not ln.strip():
+        flush(); i += 1; continue
+    para.append(ln.strip()); i += 1
+flush()
+
+def footer(canvas, doc):
+    canvas.saveState()
+    canvas.setFont("Helvetica-Oblique", 8)
+    canvas.setFillColorRGB(0.45,0.45,0.45)
+    if doc.page > 1:
+        canvas.drawString(18*mm, A4[1]-14*mm, "GRBV critical review")
+    canvas.drawCentredString(A4[0]/2, 10*mm, f"Page {doc.page}")
+    canvas.restoreState()
+
+doc = SimpleDocTemplate(str(OUT), pagesize=A4,
+                        leftMargin=18*mm, rightMargin=18*mm,
+                        topMargin=18*mm, bottomMargin=15*mm,
+                        title="GRBV critical review")
+doc.build(flow, onLaterPages=footer, onFirstPage=footer)
+print(f"Wrote {OUT}  ({OUT.stat().st_size/1024:.1f} KB)")
