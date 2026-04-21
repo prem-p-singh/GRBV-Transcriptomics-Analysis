@@ -489,13 +489,13 @@ Across INTEGRATED_ANALYSIS, EXTENDED_RESULTS_REPORT, PLAIN_LANGUAGE, HSFA2_VIGS_
 1. **qPCR validation** of ≥10 key genes (MBF1c, SPS1, LOC100266309, HSFA2, 3 sHSPs, 3 top biomarkers) — 6–8 weeks wet-lab.
 2. **Sequencing platform / core facility / RIN values** in Methods — minutes to pull from lab records.
 3. **GEO / SRA deposition** — 2–4 weeks submission time.
-4. **Regenerate main-paper Figs 49–50** from the fix03 tv=2000 mediation_results.csv; LOC100249249 / MBF1c should be front panel.
+4. ~~**Regenerate main-paper Figs 49–50**~~ DONE 2026-04-21. Script `farm_pipeline/scripts/fix04b_regen_figs49_50.py` reads the fix03 tv=2000 mediation_results.csv + fix11 NCBI annotations and overwrites `49_mediation_diagrams.png` and `50_direct_vs_indirect_effects.png`. Top-6 panel order: MBF1c → phytosulfokine 6 → F-box PP2-B15 → DREB1E → uncharacterised LOC100854026 → glutaredoxin-C9. 39 / 2,000 joint-significant mediators displayed in Fig 50.
 5. **Tier-1 literature meta-analysis** — populate `farm_pipeline/data/literature/` with 5 supp tables, rule 11–12 already scaffolded.
 6. **VIGS experiment** per `HSFA2_VIGS_EXPERIMENT_PLAN.md` (targets now: MBF1c, SPS1, LOC100266309).
 
 ## Submission path from this checkpoint
 
-- **Nature Plants ready after**: items 2, 3, 4 above + one-paragraph rewrites to docs to reflect DESeq2-based DE counts.
+- **Nature Plants ready after**: items 2, 3 above + one-paragraph rewrites to docs to reflect DESeq2-based DE counts (item 4 now done).
 - **PNAS competitive after**: above + VIGS experiment (item 6).
 
 ## Headline commits in master (in order)
