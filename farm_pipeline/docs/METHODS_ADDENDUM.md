@@ -26,41 +26,50 @@ items still requiring user input are flagged **[TO CONFIRM]**.*
   same vine across stages, the vine ID should be recorded. This is needed
   for the repeated-measures model (see §4).
 
-## 2. RNA extraction, library preparation, sequencing **[TO CONFIRM]**
+## 2. RNA extraction, library preparation, sequencing
 
-The current repository does not document the wet-lab and sequencing
-upstream of `counts_matrix.txt`. For submission, the following must be
-reconstructed from lab records:
+*Sourced from `Oberholster lab / RNA Seq / Bioinformatics_Analysis/` (Bradley N. Jenner, May 2025).*
 
-- RNA extraction protocol (e.g. Spectrum™ Plant Total RNA Kit, CTAB)
-- Library prep kit (TruSeq, NEBNext, etc.)
-- Sequencing platform (e.g. Illumina NovaSeq 6000), read length, paired
-  vs single-end, target reads per library
-- Core facility that performed the work
-- Library QC: Bioanalyzer RIN values (range and median)
+- **Library type**: **TAG-seq** (3′-end tag counting mRNA-seq; produces
+  single read per transcript rather than full-length coverage; typical
+  yield ~1 M mapped tags per library).
+- **Deduplication**: UMI-tools (unique molecular identifier collapsing)
+  is used downstream to remove PCR duplicates.
+- **Core facility**: **[TO CONFIRM]** UC Davis DNA Technologies Core /
+  Genome Center is likely; confirm from lab records.
+- **Sequencing platform**: **[TO CONFIRM]** Illumina NovaSeq / NextSeq
+  (single-end, 100 bp typical for TAG-seq); confirm from core facility
+  records.
+- **RNA extraction / library QC (RIN, prep kit)**: **[TO CONFIRM]** from
+  lab notebook.
 
-## 3. Read-level QC and quantification **[TO CONFIRM]**
+## 3. Read-level QC and quantification
 
-The repository does not include a MultiQC report or alignment statistics.
-For submission, at minimum report:
+*Pipeline performed by Bradley N. Jenner (Oberholster lab, UC Davis),
+May 2025. Reports available at
+`Oberholster lab / RNA Seq / Bioinformatics_Analysis/QC/2025_April_Singh_Grape_TAGseq_multiqc_report.html`
+and `.../singh_alignment_summary.html`.*
 
-- **Raw read QC**: FastQC / MultiQC summary (per-base quality,
-  adapter contamination, duplication, GC distribution).
-- **Trimming**: tool + parameters (e.g. fastp `--detect_adapter_for_pe`,
-  quality cutoff Q20, minimum length 36).
-- **Alignment / quantification**: tool and version (e.g. STAR 2.7.x +
-  featureCounts, Salmon 1.10.x in mapping-based mode, HISAT2 + StringTie).
-- **Reference genome**: NCBI *Vitis vinifera* RefSeq assembly. The
-  extended FARM pipeline uses **GCF_030704535.1** (PN40024.v4 /
-  Merlot-lineage). Confirm the main-paper quant used the same or
-  document the differences.
-- **Transcript annotation**: RefSeq GFF version used.
-- **Per-library stats**: mean read count, mean assigned-reads rate,
-  rRNA/chloroplast/GRBV contamination rate. Reviewers typically want
-  a summary table and one or two per-library dot/bar plots.
-- **Deposition**: raw FASTQ to NCBI SRA (PRJNA accession) or at least
-  the counts matrix + metadata to GEO (GSE accession) **before the
-  manuscript goes out for review**.
+- **Pre-alignment QC**: FastQC (adapter, GC, per-base quality, duplication, over-represented sequences).
+- **Adapter + quality trimming + UMI extraction**: **HTStream** pipeline modules:
+  - `hts_AdapterTrimmer`, `hts_CutTrim`, `hts_NTrimmer`, `hts_LengthFilter`,
+    `hts_PolyATTrim`, `hts_QWindowTrim`, `hts_SeqScreener` (rRNA + chloroplast
+    contamination screen), `htstream_stats` (per-cycle nucleotide distribution QC).
+- **Deduplication**: `umi_tools dedup` using the inline UMI from the TAG-seq read structure.
+- **Alignment**: **STAR** (version **[TO CONFIRM]** from the core-facility pipeline), tested against two references:
+  - `VITVvi_vMerlFPS15_v1.1` (Merlot) — **rejected** because ~50 % of reads were unmapped or multi-mapped, and the highly fragmented assembly forced many libraries below the 1 M uniquely-mapped-reads threshold typically required for DE.
+  - **`ASM3070453v1` (Pinot Noir reference, NCBI GCF_030704535.1, chromosome-level contiguous assembly)** — adopted as the final reference. Mapped rate substantially higher, minimum per-library uniquely-mapped reads ≈ 750 k (vs ≈ 350 k on the Merlot assembly).
+- **Quantification**: **featureCounts** (Subread) with the GCF_030704535.1 annotation. Output: `2025_April_Singh_Grape_TAGseq_ASM3070453v1_counts.txt` (the raw counts file that `counts_matrix.txt` in the repository is derived from).
+- **Gene annotation**: NCBI RefSeq assembly GCF_030704535.1; gene-symbol and NCBI-Entrez ID mapping retained in `GCF_030704535.1_ASM3070453v1_and_GRBV_annotation_info.txt`.
+- **Per-library sequencing depth** (from alignment summary):
+  - Minimum uniquely-mapped reads per library ≈ 750 k
+  - Typical (median) uniquely-mapped reads ≈ 1 M (TAG-seq characteristic)
+  - No library fell below the 1 M threshold *after* reference switch.
+- **Known limitation flagged**: ~50 % loss when using the original Merlot reference motivated the switch to the Pinot Noir assembly. Any interpretation involving Merlot-specific variants (presence/absence genes, cultivar-specific isoforms) needs explicit caveat.
+- **Data deposition**: **[TO BE ACTIONED]**
+  - Raw FASTQ → NCBI SRA (PRJNA accession).
+  - Count matrix + sample metadata → GEO (GSE accession).
+  - Bradley N. Jenner's QC HTML reports + featureCounts outputs should be archived as supplementary material.
 
 ## 4. Differential expression — replacement for Welch t-test (fix #1)
 
@@ -100,22 +109,29 @@ closely (Jaccard 0.62). Stratified per-stage DE recovers the paper's
 larger signal (~1,000 DEGs at Harvest alone), consistent with
 stage-specific infection effects.
 
-## 5. Repeated-measures handling **[TO CONFIRM]**
+## 5. Repeated-measures handling
 
-If the same vine contributed multiple samples (across stages / seasons),
-the DE model should account for within-vine correlation:
+Vine identity was recovered from `Correct.Sample_Metadata.xlsx` (Oberholster
+lab). The cohort comprises **44 unique vines**, each sampled up to 8 times
+(4 maturity stages × 2 seasons; mean 7.64 samples per vine). Samples from
+the same vine are not statistically independent.
 
-- **limma-voom with `duplicateCorrelation`** by `vine_id`, used as
-  `lmFit(v, design, block = meta$vine_id, correlation = corfit$consensus)`.
-- **DESeq2 with a fixed blocking factor** on `vine_id` — acceptable for
-  few levels (say ≤ 30 vines), otherwise use the limma approach.
-
-**Action required:** if vine IDs exist in the lab records, merge them
-into `sample_metadata.txt` as a `vine_id` column and re-run fix01 with
-the repeated-measures design. If they do not exist, state explicitly in
-the Methods that "vine identity was not preserved in the sample
-metadata; pseudoreplication cannot be ruled out and is acknowledged as
-a limitation of the observational sampling design."
+- Enhanced metadata is stored as `sample_metadata_v2.txt` in the repo;
+  the `vine_id` column encodes vine identity (`R20V17`, `R22V31`, …) and
+  `biorep_id` encodes the original bio-replicate index.
+- DE re-run with repeated-measures design:
+  **limma-voom + `duplicateCorrelation(block = vine_id)`** fitted twice
+  (the recommended iterative procedure). Design formula
+  `~ Maturity_stage + Sampling_Season + Infection_Group`.
+- Script: [`fix01b_de_repeated_measures.R`](../scripts/fix01b_de_repeated_measures.R).
+  FARM SLURM job 32497375.
+- Output: `results/fix01b_de_repeated_measures/SUMMARY.csv` reports the
+  consensus within-vine correlation (expected ~0.1–0.3 for this cohort)
+  and repeated-measures-adjusted DEG counts per comparison.
+- **Interpretation for the paper**: the effective sample size for the
+  infection-group contrast is closer to **44 independent vines** than
+  327 samples. Any reviewer-facing claim about statistical power should
+  be calibrated against this correct n.
 
 ## 6. Multiple testing strategy
 

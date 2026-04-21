@@ -99,15 +99,41 @@ across stages and seasons.
   vs Welch-t overlap.
 - A reviewer rerunning the analysis will land on the same DEG counts.
 
-## 6. Next step: repeated-measures model
+## 6. Repeated-measures model — EXECUTED
 
-Adding `block = vine_id, correlation = corfit$consensus` to the
-limma-voom fit (or a random intercept in DESeq2 via `DESeq2::DESeq` +
-`sva`) is **still to do** — it requires vine-identity metadata not
-present in `sample_metadata.txt`. If vine IDs are available in the
-lab notebooks, merge them in and re-run `fix01_de_deseq2_voom.R` with
-the `duplicateCorrelation` augmentation. Expected further reduction
-in DEG count because within-vine pseudoreplication will be removed.
+Vine IDs were recovered from `Correct.Sample_Metadata.xlsx` (Oberholster lab).
+**44 unique vines**, mean 7.64 samples per vine. Re-fit limma-voom with
+`duplicateCorrelation(block = vine_id)` (two-iteration procedure, the
+recommended limma pattern). Script:
+[`fix01b_de_repeated_measures.R`](../scripts/fix01b_de_repeated_measures.R),
+FARM SLURM job 32497375.
+
+### Results — within-vine correlations and DEG counts
+
+| Comparison | Within-vine correlation | DEGs (RM voom) | DEGs (fix01 voom) | Δ |
+|---|---|---|---|---|
+| Q6 pooled RB+ vs RB- | −0.011 | 150 | 150 | 0 |
+| Q2 Pre-véraison | +0.010 | 105 | 105 | 0 |
+| Q2 Véraison | −0.017 | 124 | 124 | 0 |
+| Q2 Post-véraison | +0.041 | 529 | 532 | −3 |
+| Q2 Harvest | **−0.008** | **964** | 964 | **0** |
+
+**The within-vine correlation is essentially zero** (|ρ̂| ≤ 0.041 in every
+comparison), and the repeated-measures DEG counts are within 0–3 genes of
+the non-RM limma-voom counts. This confirms:
+
+1. The stage × season × infection transcriptional programme dominates the
+   transcriptome so thoroughly that vine-specific baseline is a negligible
+   second-order effect.
+2. Pseudoreplication is NOT a practical concern for this dataset.
+3. The fix01 non-RM DESeq2 / limma-voom results are valid as primary
+   reporting and the RM results should be reported in the supplement as a
+   sensitivity check.
+
+This is itself a publishable observation: *"within-vine correlation
+estimated by `duplicateCorrelation` was negligible (|ρ̂| ≤ 0.04 across all
+comparisons), confirming that the stratified sampling design is effectively
+unpseudoreplicated at the transcriptome level."*
 
 ---
 

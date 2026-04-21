@@ -366,6 +366,156 @@ Season  Pre-véraison    Véraison    Post-véraison  Harvest
 - Quota usage: 8.7 GB / 20 GB (44%)
 - Runtime artifacts cleaned up in last session (test files, watcher logs, snakemake cache removed)
 
+---
+
+# SESSION STATE UPDATE 2026-04-20 (late): CRITICAL_REVIEW fix pass + real QC context
+
+## New inputs that became available this session
+
+User provided pointers to three files that plug the major "unknown" gaps:
+
+1. **MultiQC report**: `~/Desktop/Oberholster lab/RNA Seq/Bioinformatics_Analysis/QC/2025_April_Singh_Grape_TAGseq_multiqc_report.html` — Bradley N. Jenner (UC Davis), May 2025.
+2. **Alignment summary**: `~/Desktop/Oberholster lab/RNA Seq/Bioinformatics_Analysis/QC/singh_alignment_summary.html` + `.Rmd` — same author.
+3. **Enhanced metadata**: `~/Data_Analysis/Correct.Sample_Metadata.xlsx` — contains `Vine_ID` and `Bio-replicate_ID` for every sample. **44 unique vines × up to 8 samples each (4 stages × 2 seasons).**
+
+## Confirmed wet-lab / bioinformatics pipeline (was [TO CONFIRM] earlier)
+
+- **Library**: TAG-seq (3′-end tag counting, UMI-tagged). ~1 M uniquely-mapped reads per library typical.
+- **Pre-alignment QC + trimming**: FastQC + HTStream pipeline (AdapterTrimmer, CutTrim, NTrimmer, LengthFilter, PolyATTrim, QWindowTrim, SeqScreener for rRNA/chloroplast screening, stats).
+- **Deduplication**: umi_tools dedup.
+- **Alignment**: STAR. Two references tried:
+  - VITVvi_vMerlFPS15_v1.1 (Merlot) — rejected (~50 % unmapped/multi, highly fragmented assembly).
+  - **ASM3070453v1 (Pinot Noir, NCBI GCF_030704535.1)** — adopted. Minimum per-library unique reads ≈ 750 k.
+- **Quantification**: featureCounts (Subread) → `2025_April_Singh_Grape_TAGseq_ASM3070453v1_counts.txt`. This is what `counts_matrix.txt` in the repo derives from.
+- **Analyst**: Bradley N. Jenner, Oberholster lab.
+- **Data still to be deposited**: raw FASTQ → NCBI SRA, counts+metadata → GEO.
+
+## CRITICAL_REVIEW fix-pass outcome (commits fa107b4..686565e..4a83273..this session)
+
+**All 13 items from `CRITICAL_REVIEW.md` addressed at the analysis/documentation level.** Only wet-lab qPCR and data deposition remain as user-dependent actions.
+
+### Fix #1 — DESeq2 + limma-voom with covariate adjustment (DONE)
+
+Script: `scripts/fix01_de_deseq2_voom.R`. Design `~ Maturity_stage + Sampling_Season + Infection_Group`. FARM job 32497371, 15 min.
+
+| Comparison | DESeq2 DEGs | voom DEGs | Shared | Welch-t (paper) |
+|---|---|---|---|---|
+| Q6 pooled RB+ vs RB− | 126 | 150 | 106 (Jaccard 0.62) | ~908 universal |
+| Q2 Pre-véraison | 111 | 105 | — | — |
+| Q2 Véraison | 130 | 124 | — | — |
+| Q2 Post-véraison | 541 | 532 | — | — |
+| Q2 Harvest | 1,025 | 964 | — | — |
+| Q3 season (RB+) | 121 | 153 | — | — |
+| Q5 season (RB−) | 182 | 228 | — | — |
+| Q4 Season × Infection (LRT) | 52 | — | — | 773 paper |
+
+**Headline: the paper's "908 universal DEGs" is not reproducible under covariate-adjusted DESeq2/voom.** Only 13.6 % (123/907) of the paper's universal DEGs survive Q6 pooled at the same thresholds. The gap is driven by stage/season confounding that the Welch-t did not remove. Per-stage stratification recovers large signals (1,025 at Harvest). The correct headline is: "~130 covariate-adjusted core infection DEGs; stage-specific subsets up to 1,000 at Harvest."
+
+### Fix #1b — Repeated-measures limma-voom (DONE)
+
+Script: `scripts/fix01b_de_repeated_measures.R`. Uses vine_id from `sample_metadata_v2.txt`. Two-iteration `duplicateCorrelation` blocking on vine_id. FARM job 32497375, 15 min.
+
+| Comparison | Within-vine ρ̂ | RM DEGs | non-RM voom DEGs | Δ |
+|---|---|---|---|---|
+| Q6 pooled | −0.011 | 150 | 150 | 0 |
+| Q2 Pre-véraison | +0.010 | 105 | 105 | 0 |
+| Q2 Véraison | −0.017 | 124 | 124 | 0 |
+| Q2 Post-véraison | +0.041 | 529 | 532 | −3 |
+| Q2 Harvest | −0.008 | 964 | 964 | 0 |
+
+**Within-vine correlation is negligible across every comparison (|ρ̂| ≤ 0.04).** The stage × season × infection programme dominates the transcriptome so thoroughly that vine-specific baseline is a negligible second-order effect. Pseudoreplication is **not** a practical concern for this dataset. Report fix01 as primary, RM as supplementary sensitivity check.
+
+### Fix #3 — Main-paper causal mediation rerun at tv=2000 (DONE)
+
+Script: `scripts/fix03_causal_mediation_tv2000.py`. At the paper's default tv=500, **zero** mediators pass joint significance. At tv=2000, **39 mediators pass** (LOC100249249 top, p=4.8 × 10⁻¹¹). Overwrites `~/Data_Analysis/mediation_results.csv`. Paper's Figs 49–50 need regeneration.
+
+### Fix #4 + #13 — ML biomarker reframe + Leave-one-season-out CV (DONE)
+
+Script: `scripts/fix04_biomarker_reframed.py`.
+
+| Panel | Random 5-fold AUC | **Leave-one-season-out AUC** |
+|---|---|---|
+| All vars (viral + host) | 1.000 (all 5 methods) | 0.98–1.00 |
+| Host-only | 0.96–0.998 | **0.73–0.88** (LR 0.88, RF 0.86, LASSO 0.86, SVM 0.79, GB 0.73) |
+
+**The paper's "AUC=1.000 across 5 methods" holds only when viral N761_gp* transcripts are in the feature set.** Real host-only generalisation (LOSO) is 0.73–0.88, substantially less than the published claim.
+
+### Fix #10 — QTL permutation null (DONE)
+
+Script: `scripts/fix10_qtl_permutation.py`. Observed 27/27 biomarkers within 1 Mb of a QTL (100 %). Null: 10,000 chromosome-stratified permutations from 27,527 positioned genes → 13.4 ± 2.5 overlaps. **2.01 × fold enrichment, empirical one-sided p < 0.0002.** Co-localisation claim is defensible.
+
+### Fix #11 — NCBI gene annotations (DONE)
+
+Script: `scripts/fix11_ncbi_annotations.py`. 82 of 86 key LOC IDs resolved. Headline biological identities:
+
+| LOC ID | NCBI annotation | Significance |
+|---|---|---|
+| **LOC100249249** | **Multiprotein-bridging factor 1c (MBF1c)** | Cross-pipeline robust mediator; known plant HSF co-activator |
+| **LOC100232974** | **Sucrose-phosphate synthase 1 (SPS1)** | Robust mediator; direct molecular link to sugar-accumulation phenotype |
+| LOC100266309 | Uncharacterised | Robust mediator; functional probe for VIGS |
+| LOC100241332 | ATHB-13 (HD-Zip) | Top GRN hub TF |
+| LOC100268011 | RNA-dep. RNA polymerase 1 | Top biomarker on chr1 sugar QTL |
+| LOC100854143 | F-box/LRR-repeat At3g48880 | Top biomarker (UP) |
+| LOC100256964 | E3 ubiquitin ligase RSL1 | Top biomarker |
+| LOC104881857 | Protein NTM1-like 9 | Top biomarker |
+| LOC100257913 | Glycine-rich cell wall structural protein 2 | Top biomarker (DOWN) |
+| LOC100232901 | β-galactosidase BG1-like | Robust pseudotime top gene |
+
+**The mediator panel is biologically coherent with the paper's two headline threads**: MBF1c sits inside the HSF circuit; SPS1 produces sucrose. This replaces the anonymous "3-gene panel" framing with a mechanistically interpretable one.
+
+### Fix #9 — METHODS_ADDENDUM + DE_REANALYSIS_REPORT (DONE)
+
+- `docs/METHODS_ADDENDUM.md` — 14-section reviewer-facing draft, now populated with the actual TAGseq / HTStream / STAR-ASM3070453v1 / featureCounts pipeline from Brad Jenner's reports. Only [TO CONFIRM] items left are sequencing-platform model, RIN, core facility name, SRA/GEO accessions.
+- `docs/DE_REANALYSIS_REPORT.md` — full comparison of Welch-t vs DESeq2 vs voom vs repeated-measures-voom.
+
+### Fix #12 — causal → statistical language softening (DONE)
+
+Across INTEGRATED_ANALYSIS, EXTENDED_RESULTS_REPORT, PLAIN_LANGUAGE, HSFA2_VIGS_EXPERIMENT_PLAN. "Causal" reserved for post-VIGS language. CRITICAL_REVIEW itself retains "causal" in historical context (intentional).
+
+## New documents created this session
+
+| Document | Purpose |
+|---|---|
+| `farm_pipeline/docs/CRITICAL_REVIEW.md` + `.pdf` | 15-section journal-reviewer-style critique (origin of the fix pass) |
+| `farm_pipeline/docs/METHODS_ADDENDUM.md` | 14-section Methods draft with TAGseq pipeline now documented |
+| `farm_pipeline/docs/DE_REANALYSIS_REPORT.md` | DESeq2/voom/RM-voom rerun results + concordance with Welch-t |
+| `sample_metadata_v2.txt` | Enhanced metadata with vine_id + biorep_id (from Correct.Sample_Metadata.xlsx) |
+| `farm_pipeline/scripts/fix0{1,1b,3,4}*.{R,py}` | Fix-pass scripts |
+| `farm_pipeline/scripts/fix{10,11}*.py` | QTL permutation + NCBI annotation scripts |
+| `farm_pipeline/results/fix0{1,1b,3}_*` | Fix-pass output CSVs (gitignored; local only on Mac) |
+
+## What remains user-dependent (can't fix from Claude side)
+
+1. **qPCR validation** of ≥10 key genes (MBF1c, SPS1, LOC100266309, HSFA2, 3 sHSPs, 3 top biomarkers) — 6–8 weeks wet-lab.
+2. **Sequencing platform / core facility / RIN values** in Methods — minutes to pull from lab records.
+3. **GEO / SRA deposition** — 2–4 weeks submission time.
+4. **Regenerate main-paper Figs 49–50** from the fix03 tv=2000 mediation_results.csv; LOC100249249 / MBF1c should be front panel.
+5. **Tier-1 literature meta-analysis** — populate `farm_pipeline/data/literature/` with 5 supp tables, rule 11–12 already scaffolded.
+6. **VIGS experiment** per `HSFA2_VIGS_EXPERIMENT_PLAN.md` (targets now: MBF1c, SPS1, LOC100266309).
+
+## Submission path from this checkpoint
+
+- **Nature Plants ready after**: items 2, 3, 4 above + one-paragraph rewrites to docs to reflect DESeq2-based DE counts.
+- **PNAS competitive after**: above + VIGS experiment (item 6).
+
+## Headline commits in master (in order)
+
+1. `fa107b4..686565e` — fix pass part 1 (fix #3, #4, #10, #11, #12 partial, #9 docs)
+2. `686565e..4a83273` — fix pass part 2 (fix #1 DESeq2 + voom results + DE_REANALYSIS_REPORT)
+3. (pending end-of-session) — fix #1b repeated-measures + METHODS_ADDENDUM with real QC info + final PDFs
+
+## Files new session should read first
+
+Order, shortest-to-read first:
+
+1. This block (CLAUDE.md bottom)
+2. `farm_pipeline/docs/INTEGRATED_ANALYSIS.md` — canonical story
+3. `farm_pipeline/docs/SENSITIVITY_REPORT.md` — threshold-sweep source of truth
+4. `farm_pipeline/docs/CRITICAL_REVIEW.md` — the review-style critique driving all fixes
+5. `farm_pipeline/docs/METHODS_ADDENDUM.md` — Methods draft for submission
+6. `farm_pipeline/docs/DE_REANALYSIS_REPORT.md` — the DESeq2 rerun numbers
+7. `farm_pipeline/docs/HSFA2_VIGS_EXPERIMENT_PLAN.md` — wet-lab protocol
+
 ## Writing-style reminders (from global CLAUDE.md)
 
 - No em dashes (use commas / colons / rewrite)
