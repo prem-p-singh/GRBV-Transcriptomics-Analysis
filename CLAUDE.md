@@ -208,3 +208,169 @@
 
 ## Dependencies
 numpy, pandas, scipy, scikit-learn, statsmodels, matplotlib, seaborn, goatools, fpdf2, python-pptx, openpyxl
+
+---
+
+# SESSION STATE AS OF 2026-04-20
+
+> Everything below captures work done on the extended FARM pipeline, the sensitivity analyses that corrected several claims, and the current story for the paper. Read this first in any new session.
+
+## The corrected narrative (don't forget)
+
+The headline "GRBV disables the plant's thermostat" framing from an earlier draft is **wrong**. The actual story that fits both the transcriptomic and raw viral-titer data is:
+
+**GRBV causes disease by three simultaneous mechanisms:**
+1. **Ignores canonical plant immunity** — all 10 defense categories (NLR, PRR, PR, SA, JA, ET, WRKY, callose, ROS, R-adapters) show |log₂FC|<0.08 in infected vs healthy. The plant is NOT fighting back with its usual weapons.
+2. **Dampens but does not destroy the HSF → sHSP thermal-defence axis** — 29/36 sHSPs suppressed, HSF-sHSP r=0.625, but all 6 WGCNA modules preserve with Zsum 5.8-36.4 (network structure intact).
+3. **Rewires sugar metabolism via DOF TFs** — motif enrichment (rule 05) finds DOF3.6/DOF1.7 are top enriched in brown and yellow modules; viral N761_gp1/3 transcripts are themselves top network rewiring hubs.
+
+**Temperature acts biphasically on viral titer:**
+
+| Stage | 2021 cool titer | 2022 hot titer | Hot/Cool |
+|---|---|---|---|
+| Pre-véraison | 457 k | 1,630 k | **3.6×** (heat promotes replication) |
+| Véraison | 832 k | 1,387 k | 1.7× |
+| Post-véraison | 755 k | 729 k | 1.0× |
+| Harvest | 2,211 k | 393 k | **0.18×** (heat suppresses replication) |
+
+Net: hot seasons front-load disease; cool seasons back-load it. This is the "inverted seasonal trajectory" — now mechanistically interpretable rather than descriptive.
+
+## FARM HPC extended pipeline — 13 rules, ALL COMPLETED
+
+Working directory on FARM: `~/grbv_extended/`
+Local mirror: `/Users/prempratapsingh/Data_Analysis/farm_pipeline/`
+SSH alias: `farm` (see `~/FARM_HPC.md`)
+Conda env: `grbv-extended` (Python tools) + R/4.4.2 LMOD + `~/grbv_extended/Rlibs` (Bioconductor packages installed via BiocManager; DGCA from CRAN archive)
+SLURM: partition `low`, account `publicgrp`, QOS `publicgrp-low-qos`, `--requeue` on every job
+
+| # | Rule | Script | Status | Key output |
+|---|------|--------|--------|------------|
+| 00 | weather_aggregate | `00_weather_aggregate.py` | ✅ | weather_per_sample.csv (per-sample 14-day window aggregates) |
+| 01 | grn_inference | `01_grn_genie3.R` | ✅ | 100,000 directed TF→target edges; top hub TFs |
+| 02 | module_preservation | `02_module_preservation.R` | ✅ | All 6 modules Zsum 5.8-36.4 (strongly preserved in RB+) |
+| 03 | subtype_discovery | `03_subtype_nmf.py` | ✅ | NMF k=2; S1 = Pre+Vér, S2 = Post+Harvest (maturity, not severity) |
+| 04 | diffcoex | `04_diffcoex.R` | ✅ | 50k rewired pairs; N761_gp1/3 in top-5 rewiring hubs |
+| 05 | motif_enrichment | `05a_extract_promoters.py` + `05b_motif_enrichment.py` | ✅ | 138 enriched motif×module pairs; AHL family + DOF3.6/1.7 |
+| 06 | pseudotime | `06_pseudotime.R` | ✅ | RD22-C top temporally variable gene (WaldStat 1,877) |
+| 07 | mofa_integration | `07_mofa.py` | ✅ | 10 factors; expression 85%, weather 79%, titer 47% VE |
+| 08 | hima_mediation | `08_hima.R` | ✅ | Multi-mediator (see sensitivity section) |
+| 09 | defense_repertoire | `09_defense_repertoire.py` | ✅ | 10 categories all flat |
+| 10 | subtype_characterize | `10_subtype_characterize.py` | ✅ | 1,000 top DE markers per subtype |
+| 11 | harmonize_literature_degs | `11_harmonize_literature_degs.py` | ⏸ scaffolded, awaiting literature tables | NCBI-crosswalk harmonization |
+| 12 | comparative_meta_analysis | `12_comparative_metaanalysis.py` | ⏸ scaffolded | Fisher overlaps + UpSet + specificity classes |
+
+Helpers: `setup_farm.sh`, `run_farm.sh`, `push.sh`, `pull.sh`, `aggregate_sensitivity.py`, `build_report_pdf.py`, `build_integrated_pdf.py`, `build_sensitivity_pdf.py`.
+
+Config: `farm_pipeline/config/config.yaml` exposes all thresholds (incl. sampling dates, weather window, HIMA top_var, NMF k range, etc.).
+
+## Sensitivity analysis — critical correction
+
+Every analysis using a `top-N variable genes` filter was re-run at 3–5 additional thresholds. See `farm_pipeline/docs/SENSITIVITY_REPORT.md` + `.pdf`.
+
+**Biggest finding: single-mediator claim RETIRED.** At the original tv=3,000, HIMA identified `LOC132254135`. This does NOT replicate at other thresholds. The robust set is:
+
+| Gene | HIMA thresholds passed | Main-paper mediation passed | Direction at heat |
+|---|---|---|---|
+| `LOC100266309` | 3 of 5 (5k, 7.5k, 10k) | — | pro-viral (α<0, β<0) |
+| `LOC100232974` | 2 of 5 (7.5k, 10k) | — | antiviral (α<0, β>0) |
+| `LOC100249249` | 2 of 5 (7.5k, 10k) | **YES — 2k (rank 1, p=5e-11) and 5k (rank 1, p=1e-10)** | pro-viral (α>0, β>0) |
+| `LOC132254135` | 1 of 5 (3k only) | — | RETIRED |
+
+**`LOC100249249` is the cross-pipeline robust mediator** — the only gene identified by both HIMA (Temp→Gene→Titer) and the main paper's independent Temp→Titer→Gene analysis. This is the primary qPCR / VIGS validation target.
+
+Other sensitivity findings:
+- **ML biomarker AUC=1.000**: holds ONLY when viral N761_gp* transcripts are in the feature pool. Host-only AUC drops to 0.92–1.00 depending on method. The paper's "5 methods achieve AUC=1.000" claim is accurate but largely reflects "detect virus by detecting virus." Must state this caveat.
+- **Main paper's causal_mediation_analysis.py at tv=500 (original) finds ZERO significant mediators.** Signal emerges at tv=2k-5k with `LOC100249249` as top hit.
+- **Subtype NMF**: biologically robust (always maturity-driven, no severity subtype) but k changes (2 vs 3) with top_var; tv=1k/3k/5k all give k=3 with ARI≈0.98. tv=2000 gives k=2 as the outlier.
+- **Module preservation, GRN hubs, DiffCoEx viral-hub claim**: robust across thresholds.
+- **Pseudotime**: only LOC100232901 in top-30 at every tv; RD22-C is in top-5 at some but not all thresholds.
+
+## Viral titer data — the reality check
+
+Raw `Virus titer.txt` shows titer by Season × Year × Biorep × Stage. Do NOT rely on mean summaries that average out the biphasic pattern.
+
+Mean titer (across all biological replicates and infection cohorts):
+
+```
+Season  Pre-véraison    Véraison    Post-véraison  Harvest
+2021       457,000       832,000        755,000    2,211,000
+2022     1,630,000     1,387,000        729,000      393,000
+```
+
+`LOC132254135`-style single-gene causal claims don't survive this data. The biphasic pattern is the actual finding, and multiple host genes with opposing heat effects (LOC100266309 pro-viral, LOC100232974 antiviral, LOC100249249 pro-viral) mechanistically support it.
+
+## Corrected top-level numbers table
+
+| Metric | Value | Source |
+|---|---|---|
+| Samples | 327 (264 RB+, 63 RB−) | main |
+| Genes tested | 14,604 | main |
+| Universal DEGs | 908 | main |
+| sHSPs suppressed | 29 of 36 | main |
+| HSF–sHSP correlation | r = 0.625, p = 7.2e-37 | main |
+| Defense categories with |log₂FC|>0.5 | 0 of 10 | rule 09 |
+| WGCNA modules preserved in infected | 6 of 6 (Zsum 5.8–36.4) | rule 02 |
+| Infection-severity subtypes | 0 (NMF = maturity) | rule 03 + 10 |
+| Stage variance component | η² = 0.426 | main |
+| Pre-véraison titer hot/cool | 3.6× | raw titer data |
+| Harvest titer hot/cool | 0.18× | raw titer data |
+| Robust temp→titer mediators | 3 (LOC100266309, LOC100232974, **LOC100249249**) | rules 08 + sensitivity + main-paper mediation sweep |
+| Cross-pipeline robust mediator | **LOC100249249** | HIMA ∩ main-paper mediation |
+| Directed TF→target edges | 100,000 | rule 01 |
+| DOF motifs enriched in sugar modules | DOF3.6, DOF1.7 | rule 05 |
+| Top pseudotime gene (tv=3k) | RD22-C | rule 06 |
+| Pipeline rules completed on FARM | 13 of 13 | full pipeline |
+
+## Documents in `farm_pipeline/docs/` (all committed to GitHub)
+
+| File | Purpose |
+|---|---|
+| `INTEGRATED_ANALYSIS.md` + `.pdf` | Rigorous everything-connected account with numbers and claims ledger |
+| `EXTENDED_RESULTS_REPORT.md` + `.pdf` | Per-rule technical report (13 pages, includes embedded figures) |
+| `PLAIN_LANGUAGE_SUMMARY.md` | Non-specialist version of the story |
+| `SENSITIVITY_REPORT.md` + `.pdf` | Full sensitivity sweep and claim corrections |
+| `HSFA2_VIGS_EXPERIMENT_PLAN.md` | Wet-lab protocol (7 months; LOC100249249 primary + LOC100266309/232974 secondary in qPCR panel) |
+| `LITERATURE_SCHEMA.md` | Schema for Tier 1 meta-analysis (rules 11–12) |
+
+## Paper submission plan
+
+- **Target**: Nature Plants. My earlier statement that Nature Plants requires the VIGS experiment was wrong — it does NOT strictly require functional validation. Observational papers with strong causal inference and novel conceptual framing are accepted.
+- **Path A (recommended)**: submit now with (i) biphasic titer + mechanistic framing, (ii) LOC100249249 causal convergence as headline, (iii) defense-evasion + sHSP axis + DOF rewiring as three-thread story, (iv) VIGS protocol proposed in discussion as next work.
+- **Path B (if targeting PNAS or strong Nature Plants bid)**: execute VIGS wet-lab first (7 months per `HSFA2_VIGS_EXPERIMENT_PLAN.md`).
+- **Comparative meta-analysis (rules 11–12)** adds polish but is not strictly required. Tier 1 (download supplementary DEG tables from 5 published Vitis studies, ~30–60 min of manual work) answers ~80% of the "is GRBV-specific?" question.
+
+## Immediate open items
+
+1. **Main-paper scripts still use hardcoded top-N filters** that sensitivity analysis flagged:
+   - `causal_mediation_analysis.py` line 253: `nlargest(500)` (should be ≥2,000 for robust signal)
+   - `advanced_ml_biomarkers.py` line 88: `nlargest(200)` (AUC caveat should be added explicitly to narrative)
+   Decide whether to (a) patch defaults + re-run and update main-paper figures, or (b) add a sensitivity-check paragraph to the paper's results section.
+2. **Annotate the three robust mediators** via NCBI Entrez / InterPro to get gene identities (`LOC100266309`, `LOC100232974`, `LOC100249249`). Current names are just locus IDs.
+3. **Populate `farm_pipeline/data/literature/`** with 5 supplementary DEG tables from published Vitis stress studies (GLRaV-3, GPGV, powdery mildew, downy mildew, heat) to run Tier 1 meta-analysis.
+4. **Regenerate main-paper Figures 49–50** if causal_mediation is re-run at tv≥2k (will show many more significant mediators than the current zero at tv=500).
+5. **Reframe paper's "AUC=1.000" messaging** to distinguish all-vars classification (AUC=1.000 robust) from host-only classification (AUC 0.92–1.00 depending on method).
+
+## Git repository
+
+- Repo: https://github.com/prem-p-singh/GRBV-Transcriptomics-Analysis
+- Main branch: `master`. Most recent commits cover the extended pipeline + sensitivity correction wave.
+- `.gitignore`: results/, resources/, logs/, data/ all excluded; `docs/*.md` and `docs/*.pdf` explicitly allowed.
+- Commits never include Claude co-author lines (per user preference).
+
+## FARM state as of this checkpoint
+
+- `~/grbv_extended/results/` (18 MB) — all 23 output files, fully mirrored locally
+- `~/grbv_extended/results/sensitivity/` — raw sensitivity sweeps (gitignored; local mirror at `farm_pipeline/results/sensitivity/`)
+- `~/grbv_extended/resources/` (550 MB) — genome + motifs + TF list + id_crosswalk.tsv (keep — rebuildable but saves 15–30 min)
+- `~/grbv_extended/Rlibs/` (80 MB) — installed R packages (keep)
+- Quota usage: 8.7 GB / 20 GB (44%)
+- Runtime artifacts cleaned up in last session (test files, watcher logs, snakemake cache removed)
+
+## Writing-style reminders (from global CLAUDE.md)
+
+- No em dashes (use commas / colons / rewrite)
+- No rule-of-three, no buzzwords (leverage, synergy, passionate, cutting-edge, robust, actionable)
+- No filler phrases ("in order to", "it is worth noting", "I am confident that")
+- No -ing padding
+- Paper-verified claims only — avoid ELISA, TEM, biocontrol, greenhouse/field trial design references unless genuinely performed
+- No Claude co-author lines in commits

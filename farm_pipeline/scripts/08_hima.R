@@ -53,9 +53,10 @@ setnames(weather, colnames(weather)[1], "Sample")
 wrow <- weather[match(mm$Sample, weather$Sample), ]
 X    <- wrow$tavg_mean                                        # primary exposure
 
-# Mediators
+# Mediators: filter out near-zero variance before selecting top_var
 v   <- apply(lcpm[, rb_pos], 1, var)
-top <- names(sort(v, decreasing=TRUE))[1:opts$top_var]
+v   <- v[v > 1e-6]                                                 # drop constants
+top <- names(sort(v, decreasing=TRUE))[1:min(opts$top_var, length(v))]
 M   <- t(lcpm[top, rb_pos])
 
 ok <- complete.cases(X, Y) & rowSums(is.na(M)) == 0
