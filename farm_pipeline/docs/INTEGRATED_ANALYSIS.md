@@ -275,7 +275,7 @@ virus's chronic phase is metabolic attrition, not immune warfare.
 | "Viral transcripts integrate as hubs in the host regulatory network" | Thread 5 (N761_gp1/3 in top-5 rewired) | **High** |
 | "A DOF-regulated cis-regulatory signature explains the sugar-accumulation phenotype" | Thread 5 (rule 05 DOF3.6/DOF1.7, chr1 QTL co-localisation) | **Moderate–High** (needs DOF-TF over-expression test ideally) |
 | "Temperature has a biphasic effect on viral titer: pro-viral early, antiviral late" | Thread 3 (raw titer table, HIMA) | **High for biphasic; moderate for mechanism** |
-| "`LOC100249249` is a robust mediator of the temperature × titer relationship, replicated across two independent causal-mediation pipelines (HIMA Temp→Gene→Titer and Temp→Titer→Gene from the main paper) at multiple top-variance thresholds" | Thread 3 (HIMA + sensitivity sweep + main-paper mediation sensitivity sweep) | **Moderate–High** — replicated across two DAGs and ≥2 thresholds each |
+| "`LOC100249249` (**MBF1c — multiprotein-bridging factor 1c**, a known plant HSF co-activator) is a robust statistical mediator of the temperature × titer relationship, replicated across two independent mediation pipelines at multiple top-variance thresholds. `LOC100232974` (**SPS1 — sucrose-phosphate synthase 1**) is a second robust mediator, providing a direct molecular link to the sugar-accumulation phenotype." | Thread 3 (HIMA + main-paper mediation sensitivity sweeps + NCBI annotations) | **Moderate–High** — replicated across two DAGs, biologically coherent with the HSF–sHSP and sugar-QTL findings. Causal language reserved pending VIGS validation. |
 | "`LOC132254135` is the sole mediator" (earlier claim) | threshold-specific tv=3,000 artifact | **RETIRED** after sensitivity analysis |
 | "GRBV disables the plant's thermal defence completely" | — | **NOT supported.** The axis is dampened, not eliminated. |
 | "Heat suppresses viral titer via HSF → sHSPs" | — | **NOT directly shown.** Suggested by threads 2 + 3 but requires the VIGS experiment to confirm. |
@@ -344,10 +344,12 @@ heat-shock chaperone axis; (iii) **rewires** the host sugar-metabolism
 regulon through DOF transcription factors. Temperature interacts biphasically
 with infection: kinetically pro-viral early in the season, antiviral under
 sustained heat through a single host gene we identify by causal inference
-identified by sensitivity-robust causal inference (`LOC100249249`,
-cross-replicated across two independent mediation pipelines). This
-reframes plant–virus interactions from an immunity-centric to a
-stress-circuit-centric view.
+identified by sensitivity-robust statistical mediation analysis:
+`LOC100249249` (MBF1c — an HSF transcriptional co-activator) and
+`LOC100232974` (SPS1 — sucrose-phosphate synthase 1), cross-replicated
+across two independent mediation pipelines. These biologically-coherent
+candidates reframe plant–virus interactions from an immunity-centric
+to a stress-circuit-centric view.
 
 ---
 

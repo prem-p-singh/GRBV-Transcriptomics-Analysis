@@ -82,18 +82,30 @@ Net result: cool seasons see virus build up slowly to a harvest peak; hot
 seasons see virus front-load and then crash. This is the "inverted seasonal
 trajectory" that was the main paper's headline finding.
 
-When we ran the same causal-inference method at five different gene-pool
-sizes (from 3,000 to 14,604 genes) to check robustness, we found that a
-**three-gene panel** (`LOC100266309`, `LOC100232974`, `LOC100249249`)
-consistently comes up as the statistically detectable piece of the late-
-season antiviral effect. **`LOC100249249` is the strongest candidate**: it
-shows up as a significant mediator in *both* the gene-is-mediator analysis
-(HIMA) and the opposite-direction titer-is-mediator analysis from the main
-paper, at multiple gene-pool sizes. Earlier we had named a single gene
-(`LOC132254135`) as "the" mediator — we've retired that specific claim
-because it only appeared at one particular gene-pool size. The robust
-finding is the three-gene panel, with `LOC100249249` as the best-supported
-target for wet-lab follow-up.
+When we ran the same statistical-mediation method at five different
+gene-pool sizes (from 3,000 to 14,604 genes) to check robustness, we
+found a **three-gene panel** that consistently comes up as the
+statistically detectable piece of the late-season antiviral effect.
+Using NCBI gene annotations, the three genes turn out to have
+**biologically coherent identities**:
+
+- **`LOC100249249` = MBF1c (multiprotein-bridging factor 1c)** — a
+  well-known plant heat-stress transcription co-activator; it sits
+  inside the HSF–sHSP circuit and is the strongest single candidate
+  because it shows up in *both* the gene-is-mediator analysis and
+  the opposite-direction titer-is-mediator analysis from the main
+  paper.
+- **`LOC100232974` = SPS1 (sucrose-phosphate synthase 1)** — the
+  rate-limiting enzyme in sucrose biosynthesis; this directly ties
+  the mediator panel to the grower-visible sugar-accumulation
+  phenotype.
+- `LOC100266309` — uncharacterised; a functional probe for future
+  work.
+
+An earlier draft named `LOC132254135` as the single mediator; that
+claim appeared only at one specific gene-pool size and has been
+retired. The robust, biologically-interpretable finding is the
+three-gene panel above.
 
 ## What dominates the transcriptome
 
