@@ -90,7 +90,15 @@ For each comparison, overlap with DESeq2 and limma-voom DEG sets is
 reported (expected ≥ 80 % three-way overlap for robust comparisons).
 
 Script: [`fix01_de_deseq2_voom.R`](../scripts/fix01_de_deseq2_voom.R).
-FARM walltime: ≤ 4 h on 8 cores / 48 GB RAM.
+FARM walltime: ≤ 4 h on 8 cores / 48 GB RAM. Results summarised in
+[`DE_REANALYSIS_REPORT.md`](DE_REANALYSIS_REPORT.md).
+
+**Headline from the rerun**: covariate-adjusted pooled DE identifies
+**~130 core infection DEGs** at padj<0.05 + |log₂FC|≥1, compared to
+~908 from the paper's unadjusted Welch t. DESeq2 and voom agree
+closely (Jaccard 0.62). Stratified per-stage DE recovers the paper's
+larger signal (~1,000 DEGs at Harvest alone), consistent with
+stage-specific infection effects.
 
 ## 5. Repeated-measures handling **[TO CONFIRM]**
 
