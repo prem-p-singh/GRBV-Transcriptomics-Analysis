@@ -583,3 +583,45 @@ Higher SPS1 correlates with **lower** Brix within-season (2021 ρ=−0.73, p=0.0
 
 - Consider adding harvest biochemistry as a 4th factor in the MOFA integration (rule 07) on FARM for a formal multi-omics alignment.
 - qPCR panel for VIGS follow-up: LOC100266309 now confirmed as strongest host validation, alongside MBF1c (statistical primary) and SPS1 (as compensatory marker).
+
+---
+
+# SESSION STATE UPDATE 2026-04-23 (late): Tier 1 literature meta-analysis + directory convention
+
+## Where paper figures live vs where diagnostic plots live
+
+A question that came up this session and is worth pinning for future work:
+
+- **Paper figures** (Main + Supp) live in `figures/main/` and `figures/supp/`, produced by R scripts in `figures/scripts_R/` using `theme_grbv.R`, PNG + SVG at 600 DPI. These are the canonical outputs that land in the manuscript and the atlas PDF.
+- **Diagnostic / intermediate plots** live under `farm_pipeline/results/<rule>/*.png`. They are raw matplotlib / R output from the FARM pipeline rules (02 module preservation, 03 subtype NMF, 06 pseudotime, 07 MOFA, 09 defense, 10 subtype characterisation, 12 metaanalysis). They are gitignored, not in the atlas, and not styled for publication. Their role is reproducibility: each rule writes whatever plot proves it ran. The underlying findings are incorporated into the paper via the proper R figure pipeline, but the raw diagnostic PNGs are kept on disk as artefacts.
+- **Do not confuse the two**: when a new analysis needs a paper figure, the workflow is (i) FARM rule or top-level Python writes CSVs + intermediate diagnostic PNGs to `farm_pipeline/results/` or to the repo root, (ii) an R script in `figures/scripts_R/` reads the CSVs and produces the publication PNG + SVG in `figures/supp/` or `figures/main/`, (iii) `figures/scripts_R/build_full_atlas.py` stitches the atlas. Never add a diagnostic PNG directly to the atlas; port it through R first.
+
+## Tier 1 literature meta-analysis (added this session)
+
+- **Ingest**: `scripts/ingest_tier1.py` reads 6 supplementary files in `farm_pipeline/data/literature/` and emits 18 tidy per-contrast CSVs + YAML sidecars. Primary contrasts kept at top level (1 per paper); secondary contrasts moved to `farm_pipeline/data/literature/secondary/` so Rule 11/12 see a clean 6-paper panel.
+- **Crosswalk**: `scripts/build_id_crosswalk.sh` builds `farm_pipeline/resources/id_crosswalk.tsv` (24,817 rows) by merging NCBI `All_Plants.gene_info.gz` (current Vvi + LOC + Symbol) with Ensembl Plants release-50 `Vitis_vinifera.12X.50.entrez.tsv.gz` (legacy VIT_*s*g* → LOC). Unlocks 60–91 % mapping for the 3 VIT-based papers (Blanco-Ulate, Song, Agudelo-Romero).
+- **Rule 12** (`farm_pipeline/scripts/12_comparative_metaanalysis.py`): new `--publish_dir` flag writes six CSVs with `tier1_` prefix to the repo root (`tier1_grbv_signature.csv`, `tier1_overlap_matrix.csv`, `tier1_specificity_classes.csv`, `tier1_specificity_summary.csv`, `tier1_fc_correlation_matrix.csv`, `tier1_coverage_report.csv`). Matplotlib plotting is skipped in publish mode; R is the canonical renderer.
+- **Figures**: `figures/scripts_R/supp_tier1.R` reads the `tier1_*.csv` files and produces S64 (3-panel overlap summary: signature sizes, GRBV intersections, Fisher enrichment) and S65 (log2FC Spearman concordance heatmap) in `figures/supp/`. Atlas now 75 pages.
+
+## Verified 6-paper Tier 1 panel (citations all PubMed-confirmed)
+
+| Stress | Study | PMID | Coverage |
+|---|---|---|---|
+| GRBV | Blanco-Ulate et al. 2017 *J Exp Bot* 68:1225 (Zinfandel berries, 2 vineyards × 4 stages) | 28338755 | 68.7 % |
+| GLRaV-3 | Song et al. 2022 *Viruses* 14:1831 (Cabernet Franc leaves + berries, 3 stages) | 36016453 | 68–91 % |
+| Powdery mildew | Fung et al. 2008 *Plant Physiol* 146:236 (Cabernet Sauvignon leaves) | 17993546 | 0.5 % (Affy probeset → VIT bridge needed) |
+| Downy mildew | Polesani et al. 2010 *BMC Genomics* 11:117 (V. vinifera leaf disks 24 hpi) | 20167053 | 0 % (TIGR TC → VIT bridge needed) |
+| Botrytis | Agudelo-Romero et al. 2015 *J Exp Bot* 66:1769 (Trincadeira berries EL33 + EL35) | 25675955 | 60.2 % |
+| Heat | Liu et al. 2012 *BMC Plant Biol* 12:174 (Cabernet Sauvignon leaves) | 23016701 | 0 % (Affy probeset → VIT bridge needed) |
+
+Paper-ready findings from Tier 1:
+
+1. **GRBV replicates across cultivars (Merlot → Zinfandel)**: Fisher p=2.0e-8, log2OR=5.5, Spearman ρ(log2FC)=0.47 against Blanco-Ulate 2017 Zinfandel Oakville Harvest. First cross-cultivar validation.
+2. **GRBV ≠ GLRaV-3 at the transcriptome level**: Spearman ρ ≈ 0 against Song 2022; the Merlot GRBV response is not a generic Vitis viral response.
+3. **64 % of 55 GRBV DEGs are GRBV-unique**; 24 % overlap with Botrytis (berry-stress core); 3-gene cross-cultivar GRBV core (Merlot ∩ Zinfandel) visible in Fig. S64b.
+
+## Not yet done (Tier 2 roadmap)
+
+- Affymetrix Vitis GeneChip probeset → VIT crosswalk (would unlock Fung 2008 + Liu 2012; ~1–2 days of work or fetch vitis.db Bioconductor annotation if still hosted).
+- TIGR Tentative Consensus → VIT crosswalk (unlocks Polesani 2010).
+- Raw-count re-analysis from GEO / SRA for all six papers under a unified DESeq2 pipeline. Most robust but 1–2 weeks of work.
