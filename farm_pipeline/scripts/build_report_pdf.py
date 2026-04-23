@@ -6,7 +6,7 @@ import markdown
 from fpdf import FPDF
 from fpdf.enums import XPos, YPos
 
-ROOT = Path("/Users/prempratapsingh/Data_Analysis/farm_pipeline")
+ROOT = Path("/Users/prempratapsingh/Data_Analysis")
 SRC  = ROOT / "docs/EXTENDED_RESULTS_REPORT.md"
 OUT  = ROOT / "docs/EXTENDED_RESULTS_REPORT.pdf"
 RES  = ROOT / "results"

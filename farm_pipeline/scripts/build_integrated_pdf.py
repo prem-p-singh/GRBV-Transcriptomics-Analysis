@@ -16,7 +16,7 @@ from reportlab.platypus import (
     SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, PageBreak, KeepTogether
 )
 
-ROOT = Path("/Users/prempratapsingh/Data_Analysis/farm_pipeline")
+ROOT = Path("/Users/prempratapsingh/Data_Analysis")
 SRC  = ROOT / "docs/INTEGRATED_ANALYSIS.md"
 OUT  = ROOT / "docs/INTEGRATED_ANALYSIS.pdf"
 

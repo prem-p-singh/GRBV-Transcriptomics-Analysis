@@ -8,7 +8,7 @@ from reportlab.lib.styles import ParagraphStyle
 from reportlab.lib.units import mm
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, PageBreak
 
-ROOT = Path("/Users/prempratapsingh/Data_Analysis/farm_pipeline")
+ROOT = Path("/Users/prempratapsingh/Data_Analysis")
 SRC  = ROOT / "docs/CRITICAL_REVIEW.md"
 OUT  = ROOT / "docs/CRITICAL_REVIEW.pdf"
 md = SRC.read_text(encoding="utf-8")

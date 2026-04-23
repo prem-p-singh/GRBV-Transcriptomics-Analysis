@@ -105,7 +105,14 @@ without triggering it at all.</b>
 
 ### MBF1c, SPS1, and 37 other mediators
 
-Causal-mediation sweep on the top 2,000 variable genes returns **39 temperature → titer → gene mediators** at joint BH-FDR < 0.05. The top hit, LOC100249249, turns out to be **multiprotein-bridging factor 1c (MBF1c)**, a known HSF co-activator: joint p = 4.8 × 10⁻¹¹, **61.8 % of the temperature effect mediated by viral titer**. Second-tier robust mediator is LOC100232974 = **sucrose-phosphate synthase 1 (SPS1)**, the enzyme that makes sucrose: direct molecular link from titer to the sugar-deficit phenotype.
+Causal-mediation sweep on the top 2,000 variable genes returns **39 temperature → titer → gene mediators** at joint BH-FDR < 0.05. The top hit, LOC100249249, turns out to be **multiprotein-bridging factor 1c (MBF1c)**, a known HSF co-activator: joint p = 4.8 × 10⁻¹¹, **61.8 % of the temperature effect mediated by viral titer**. Second-tier robust mediator is LOC100232974 = **sucrose-phosphate synthase 1 (SPS1)**. Paired harvest biochemistry (Figs S61-S63, n = 33) shows SPS1 correlates *negatively* with Brix within-season (2021 ρ = −0.73), so SPS1 is up-regulated in the infected, low-Brix berries. The mediator status stands; the role is compensatory, not rate-limiting.
+
+</td></tr>
+<tr><td align="center"><b>4</b></td><td>
+
+### Harvest juice chemistry mirrors the inverted seasonal trajectory
+
+Two-way Season × Infection ANOVA on n = 33 paired harvest samples confirms the transcriptomic inversion in the phenotype. **TA** is the cleanest mirror: no main effect of season (p = 0.69) or infection (p = 0.16), but the Season × Infection interaction reaches **η² = 0.77, p = 4.3 × 10⁻¹¹**. GRBV raises TA by **+0.62 g/L in 2021 cool** and lowers it by **−0.79 g/L in 2022 hot**; malic acid follows the same inversion (+398 vs −195 mg/L). Brix is suppressed in both seasons but **2.6× stronger in 2022** (−9.83 vs −3.77 °Bx). In 2021 a biphasic cohort-age recovery appears at harvest: Brix rises +0.10 °Bx / yr with years-since-infection (r = 0.76, p = 0.0045) while nitrogen markers decline.
 
 </td></tr>
 </table>
