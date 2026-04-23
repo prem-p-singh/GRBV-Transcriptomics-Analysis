@@ -101,6 +101,10 @@ SOURCE_FIGS = [
     (53, "53_module_trait_correlations.png",          "WGCNA module-trait correlation heatmap",             "current",  "See Main 7 panel A"),
     (54, "54_module_eigengene_profiles.png",          "WGCNA module eigengene profiles",                    "current",  ""),
     (55, "55_hub_gene_heatmaps.png",                  "WGCNA hub gene expression heatmaps",                 "current",  "See Main 7 panel C"),
+    (56, "S56_viral_expression_atlas.png",            "Viral transcriptome atlas (5 ORFs \u00d7 8 cells \u00d7 cohorts)", "regenerated", "Per-ORF log-CPM across stage/season/cohort"),
+    (57, "S57_viral_titer_coherence.png",             "Virus-titer coherence check",                        "regenerated", "RNA-Seq CPM vs RT-qPCR titer, r = 0.07 overall"),
+    (58, "S58_per_ORF_host_correlates.png",           "Per-ORF host-gene correlate landscape",              "regenerated", "Top 15 host Spearman correlates per viral gene"),
+    (59, "S59_viral_host_scatter_grid.png",           "Viral-host co-expression grid",                      "regenerated", "5 viral ORFs \u00d7 5 host anchors (MBF1c, SPS1, etc.)"),
 ]
 
 PAGE_W, PAGE_H = LETTER  # 8.5 x 11 inches
