@@ -106,6 +106,9 @@ SOURCE_FIGS = [
     (58, "S58_per_ORF_host_correlates.png",           "Per-ORF host-gene correlate landscape",              "regenerated", "Top 15 host Spearman correlates per viral gene"),
     (59, "S59_viral_host_scatter_grid.png",           "Viral-host co-expression grid",                      "regenerated", "5 viral ORFs \u00d7 5 host anchors (MBF1c, SPS1, etc.)"),
     (60, "S60_viral_biology_diagram.png",             "Viral-gene function atlas (biology explainer)",      "regenerated", "Genome schematic + function cards + virus-host impact map"),
+    (61, "S61_biochem_validation.png",                "Harvest biochem x transcriptome validation",         "regenerated", "Per-season + partial rho for SPS1, MBF1c, LOC100266309, sHSP, titer vs Brix / Malic"),
+    (62, "S62_biochem_cohort_trajectory.png",         "Harvest biochem vs years-since-infection",           "regenerated", "Brix / pH / TA / Malic vs YSI per season; 2021 Brix recovery +0.10 \u00b0Bx / yr (r=0.76, p=0.0045)"),
+    (63, "S63_biochem_season_infection.png",          "Season x Infection ANOVA on juice chemistry",        "regenerated", "TA interaction \u03b7\u00b2=0.77; cool 2021 +0.62 g/L vs hot 2022 -0.79 g/L; Brix 2.6x stronger in 2022"),
 ]
 
 PAGE_W, PAGE_H = LETTER  # 8.5 x 11 inches

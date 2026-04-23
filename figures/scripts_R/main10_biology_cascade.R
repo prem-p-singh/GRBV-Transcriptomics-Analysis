@@ -39,7 +39,7 @@ nodes <- data.frame(
 
     "29 / 36 sHSPs down-regulated in infected vines (Main 4, panel A);\nHSF \u2194 sHSP coordinated, r = 0.625 (Main 4, panel B);\nMBF1c (LOC100249249) is the cross-pipeline robust\ntemperature \u2192 titer mediator (Main 5)",
 
-    "DOF3.6 / DOF1.7 motifs enriched in brown + yellow modules (Main 7);\nSPS1 (LOC100232974) is a robust temperature mediator (Main 5);\ntop host biomarker maps to sugar-accumulation QTL on chr 1 (Main 8)",
+    "DOF3.6 / DOF1.7 motifs enriched in brown + yellow modules (Main 7);\nBrix suppressed 4\u20139.8 \u00b0Bx in infected berries, with TA / Malic\ninverted between 2021 cool and 2022 hot seasons (S63);\ntop host biomarker maps to sugar-accumulation QTL on chr 1 (Main 8)",
 
     "Visible red blotching;  reduced \u00b0Brix and yield;\n\u22651,500 stage-specific DEGs at Harvest in cool seasons (Main 3, panel A);\nbiomarker panel co-localises with known grape QTL\n(Main 8, panel C;  2.0\u00d7 enrichment over a 5,000-permutation null)"
   )

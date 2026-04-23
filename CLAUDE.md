@@ -524,3 +524,62 @@ Order, shortest-to-read first:
 - No -ing padding
 - Paper-verified claims only — avoid ELISA, TEM, biocontrol, greenhouse/field trial design references unless genuinely performed
 - No Claude co-author lines in commits
+
+---
+
+# SESSION STATE UPDATE 2026-04-23: Harvest biochemistry integration + SPS1 reframe
+
+## New input
+
+`Biochemical_Data.xlsx` (2 sheets, 2021 and 2022, 33 rows). Harvest-only juice chemistry: Brix, pH, TA, Malic, NOPA, NH3, YAN + cluster weight + juice volume. Sample IDs map 1-to-1 to transcriptomics bioreps within each (Sampling_Season, Infection_Year, Biorep=1..3) cell.
+
+## New code + data
+
+- `biochemistry_harvest_prep.py` (top level): Python prep + stats only. Produces five CSVs at repo root:
+  `biochemistry_harvest.csv`, `biochemistry_transcriptome_harvest_merged.csv`,
+  `biochemistry_validation_correlations.csv`, `biochemistry_cohort_trajectory.csv`,
+  `biochemistry_season_infection_anova.csv`.
+- `figures/scripts_R/supp_biochem.R`: reads the five CSVs, produces S61, S62, S63 (PNG + SVG) in `figures/supp/`.
+- `figures/scripts_R/build_full_atlas.py`: extended with entries for S61-S63. `GRBV_Full_Figure_Atlas.pdf` now 73 pages (10 main + 63 supp).
+- `docs/BIOCHEM_HARVEST_VALIDATION.md`: results report (full numbers + interpretations).
+
+## Headline findings
+
+1. **Season × Infection interaction on TA is the cleanest phenotypic mirror of the inverted seasonal trajectory.** F=104, p=4.3e-11, η²=0.77. No main effect of season (p=0.69) or infection (p=0.16). GRBV raises TA by +0.62 g/L in 2021 (cool) and lowers it by −0.79 g/L in 2022 (hot). Same inversion for Malic (+398 mg/L vs −195 mg/L). **Fig. S63.**
+2. **Brix suppression is 2.6× stronger in 2022** (−9.83) than in 2021 (−3.77). Interaction η²=0.13.
+3. **2021 shows a biphasic cohort-age recovery at harvest**: Brix rises +0.10/yr (r=0.76, p=0.0045) across RB(+) infection cohorts while NOPA (−2.45/yr, p=0.006) and NH3 (−2.40/yr, p=0.035) decline. Phenotypic reading: vines partially compensate on sugar over years at the cost of durable nitrogen-metabolism depletion. Direct biochemical analogue of the transcriptomic Q1 biphasic finding. **Fig. S62.**
+4. **LOC100266309 and SPS1 (LOC100232974) have defensible within-season negative correlations with Brix** (partial rho −0.45 and −0.42 after controlling for season; 2021 rho −0.65 and −0.73, p < 0.01 for both). **Fig. S61.**
+5. **MBF1c (LOC100249249) has no direct biochemical correlate at harvest** (partial rho Brix = +0.04). HSF-axis dampening does not translate to measurable juice chemistry at this stage.
+
+## SPS1 reframe (applied this session)
+
+Higher SPS1 correlates with **lower** Brix within-season (2021 ρ=−0.73, p=0.002). This rules out the naive "SPS1 makes sugar" reading. SPS1 is interpreted as a compensatory upregulation in metabolically-stressed infected berries, with phloem loading / transport as the plausible rate-limiting step. The mediator status (multi-threshold HIMA + main-paper mediation sweep) stands unchanged.
+
+**Edits applied:**
+
+- `figures/scripts_R/main10_biology_cascade.R` (line 42): sugar-pathway cascade box — replaced "SPS1 is a robust temperature mediator (Main 5)" with biochem finding "Brix suppressed 4-9.8 °Bx in infected berries, with TA / Malic inverted between 2021 cool and 2022 hot seasons (S63)". `Main10_biology_cascade.png + .svg` regenerated.
+- `docs/METHODS_ADDENDUM.md` (fix11 gene table): "Robust mediator; direct molecular link to sugar-accumulation phenotype" → "Robust temperature-titer mediator. S61 shows SPS1 correlates negatively with Brix within-season (2021 ρ=−0.73), i.e., up-regulated in low-Brix infected berries. Interpret as compensatory response, not rate-limiting step."
+- `docs/MANUSCRIPT_DRAFT_v1.md`: Discussion paragraph on "Temperature, titer and MBF1c" reworked to include Fig. S61 finding and the phloem-loading alternative; added new Results subsection "Harvest juice chemistry tracks the transcriptomic inverted trajectory"; added S61 / S62 / S63 captions.
+
+**Not edited (still accurate):**
+
+- `figures/scripts_R/main05_mediation.R`: SPS1 appears in the top-10 mediators panel C. The mediator-by-joint-significance claim is statistical and stands. No figure change needed.
+- `docs/EXTENDED_RESULTS_REPORT.md` and `docs/SENSITIVITY_REPORT.md`: treat SPS1 as mediator without causal sugar claim; already defensible.
+- `docs/HSFA2_VIGS_EXPERIMENT_PLAN.md`: lists SPS1 among secondary qPCR readouts. Mediator claim intact.
+
+## File locations (final)
+
+| Artifact | Path |
+|---|---|
+| Biochem source | `Biochemical_Data.xlsx` |
+| Prep script (Python) | `biochemistry_harvest_prep.py` |
+| Figure script (R) | `figures/scripts_R/supp_biochem.R` |
+| Tidy + stats CSVs | `biochemistry_*.csv` (5 files, repo root) |
+| Figures | `figures/supp/S61_biochem_validation.{png,svg}`, `S62_biochem_cohort_trajectory.{png,svg}`, `S63_biochem_season_infection.{png,svg}` |
+| Full atlas (73 pages) | `figures/GRBV_Full_Figure_Atlas.pdf` |
+| Report | `docs/BIOCHEM_HARVEST_VALIDATION.md` |
+
+## Pending
+
+- Consider adding harvest biochemistry as a 4th factor in the MOFA integration (rule 07) on FARM for a formal multi-omics alignment.
+- qPCR panel for VIGS follow-up: LOC100266309 now confirmed as strongest host validation, alongside MBF1c (statistical primary) and SPS1 (as compensatory marker).
