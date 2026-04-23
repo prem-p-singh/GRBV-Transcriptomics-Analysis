@@ -16,7 +16,7 @@ suppressPackageStartupMessages({
   library(ggplot2); library(dplyr); library(tidyr); library(readr)
   library(patchwork); library(scales); library(data.table); library(ggrepel)
 })
-HERE <- "/Users/prempratapsingh/Data_Analysis/.claude/worktrees/gallant-sinoussi-04711f/farm_pipeline/scripts/figures"
+HERE <- "/Users/prempratapsingh/Data_Analysis/figures/scripts_R"
 source(file.path(HERE, "theme_grbv.R"))
 DATA_ROOT <- "/Users/prempratapsingh/Data_Analysis"
 OUT_DIR   <- "/Users/prempratapsingh/Data_Analysis/figures/supp"

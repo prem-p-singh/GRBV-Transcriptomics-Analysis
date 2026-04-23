@@ -8,7 +8,7 @@ suppressPackageStartupMessages({
   library(ggplot2); library(dplyr); library(grid)
 })
 
-HERE <- "/Users/prempratapsingh/Data_Analysis/.claude/worktrees/gallant-sinoussi-04711f/farm_pipeline/scripts/figures"
+HERE <- "/Users/prempratapsingh/Data_Analysis/figures/scripts_R"
 source(file.path(HERE, "theme_grbv.R"))
 
 OUT_DIR   <- "/Users/prempratapsingh/Data_Analysis/figures/main"

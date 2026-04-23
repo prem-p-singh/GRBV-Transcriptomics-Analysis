@@ -6,7 +6,7 @@ suppressPackageStartupMessages({
   library(patchwork); library(scales); library(data.table); library(ggrepel)
 })
 
-HERE <- "/Users/prempratapsingh/Data_Analysis/.claude/worktrees/gallant-sinoussi-04711f/farm_pipeline/scripts/figures"
+HERE <- "/Users/prempratapsingh/Data_Analysis/figures/scripts_R"
 source(file.path(HERE, "theme_grbv.R"))
 
 RESULTS <- "/Users/prempratapsingh/Data_Analysis/farm_pipeline/results"

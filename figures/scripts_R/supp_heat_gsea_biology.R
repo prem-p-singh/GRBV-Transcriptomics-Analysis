@@ -12,7 +12,7 @@ suppressPackageStartupMessages({
   library(patchwork); library(scales); library(data.table)
   library(grid); library(ggrepel)
 })
-HERE <- "/Users/prempratapsingh/Data_Analysis/.claude/worktrees/gallant-sinoussi-04711f/farm_pipeline/scripts/figures"
+HERE <- "/Users/prempratapsingh/Data_Analysis/figures/scripts_R"
 source(file.path(HERE, "theme_grbv.R"))
 DATA_ROOT <- "/Users/prempratapsingh/Data_Analysis"
 OUT_DIR   <- file.path(DATA_ROOT, "figures", "supp")
