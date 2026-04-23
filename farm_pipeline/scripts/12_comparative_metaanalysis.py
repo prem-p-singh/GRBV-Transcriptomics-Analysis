@@ -138,8 +138,11 @@ for a_name, b_name in itertools.combinations(names, 2):
     if both:
         fcA = A.set_index("LOC_id").loc[list(both), "log2FC"]
         fcB = B.set_index("LOC_id").loc[list(both), "log2FC"]
-        same_sign = int(np.sign(fcA.values) == np.sign(fcB.values)).mean() if isinstance(
-            np.sign(fcA.values) == np.sign(fcB.values), np.ndarray) else float((np.sign(fcA.values) == np.sign(fcB.values)).mean())
+        mask = fcA.notna() & fcB.notna()
+        if mask.any():
+            same_sign = float((np.sign(fcA[mask].values) == np.sign(fcB[mask].values)).mean())
+        else:
+            same_sign = np.nan
     else:
         same_sign = np.nan
 
