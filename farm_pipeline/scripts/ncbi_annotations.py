@@ -13,7 +13,7 @@ import pandas as pd
 
 ap = argparse.ArgumentParser()
 ap.add_argument("--gff", default="/Users/prempratapsingh/Data_Analysis/farm_pipeline/resources/genome/genome.gff")
-ap.add_argument("--out", default="/Users/prempratapsingh/Data_Analysis/farm_pipeline/results/fix11_annotations/gene_annotations.csv")
+ap.add_argument("--out", default="/Users/prempratapsingh/Data_Analysis/farm_pipeline/results/annotations/gene_annotations.csv")
 args = ap.parse_args()
 Path(args.out).parent.mkdir(parents=True, exist_ok=True)
 
@@ -22,7 +22,7 @@ Path(args.out).parent.mkdir(parents=True, exist_ok=True)
 KEY_GENES = [
     # Host biomarkers (paper Fig 20-22)
     "LOC100854143", "LOC100256964", "LOC104881857", "LOC100268011", "LOC100257913",
-    # Top subtype DE (paper Fig 10, fix04)
+    # Top subtype DE (paper Fig 10, biomarker_loso_cv)
     "LOC100260258", "LOC100257403", "LOC100261580", "LOC109121469", "LOC100258410",
     "LOC100241782", "LOC100257854", "LOC100252646", "LOC100254233", "LOC100262782",
     "LOC100255325", "LOC100241410",
@@ -44,7 +44,7 @@ KEY_GENES = [
     "LOC100853778", "LOC100261367", "LOC100854026", "LOC100247528",
     # HIMA SIS pool (top few)
     "LOC100264214", "LOC100255569", "LOC100264704", "LOC132253503",
-    # ML stability (fix04)
+    # ML stability (biomarker_loso_cv)
     "LOC100261750", "LOC100241372", "LOC100258268", "LOC100249883", "LOC100233114",
     "LOC100244812", "LOC100267121",
     # Symbols & named genes for completeness
@@ -52,7 +52,7 @@ KEY_GENES = [
     "GRIP61", "GRIP22", "RD22-C", "CBF4", "PIP1;2",
 ]
 KEY_GENES = sorted(set(KEY_GENES))
-print(f"[fix11] resolving {len(KEY_GENES)} gene identifiers", file=sys.stderr)
+print(f"[ann] resolving {len(KEY_GENES)} gene identifiers", file=sys.stderr)
 
 # Parse GFF for gene records
 annotations = {}
@@ -103,7 +103,7 @@ for g in KEY_GENES:
 df = pd.DataFrame(rows)
 df.to_csv(args.out, index=False)
 resolved = df["resolved"].sum()
-print(f"[fix11] resolved {resolved}/{len(df)} gene identifiers; wrote {args.out}", file=sys.stderr)
+print(f"[ann] resolved {resolved}/{len(df)} gene identifiers; wrote {args.out}", file=sys.stderr)
 print("\nUnresolved (likely non-canonical names or viral genes):", file=sys.stderr)
 for g in df[~df["resolved"]]["gene_id"]:
     print(f"   {g}", file=sys.stderr)

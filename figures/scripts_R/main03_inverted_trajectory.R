@@ -6,7 +6,7 @@
 #   C  Mean viral titer per stage x season; biphasic temperature effect.
 #
 # Inputs:
-#   farm_pipeline/results/fix01c_de_extras/Q2x_*_deseq2.csv
+#   farm_pipeline/results/de_extras/Q2x_*_deseq2.csv
 #   /Users/prempratapsingh/Data_Analysis/Virus titer.txt
 
 suppressPackageStartupMessages({
@@ -18,7 +18,7 @@ HERE <- "/Users/prempratapsingh/Data_Analysis/figures/scripts_R"
 source(file.path(HERE, "theme_grbv.R"))
 
 ROOT      <- "/Users/prempratapsingh/Data_Analysis"
-RESULTS   <- file.path(ROOT, "farm_pipeline/results/fix01c_de_extras")
+RESULTS   <- file.path(ROOT, "farm_pipeline/results/de_extras")
 TITER_F   <- file.path(ROOT, "Virus titer.txt")
 OUT_DIR   <- "/Users/prempratapsingh/Data_Analysis/figures/main"
 dir.create(OUT_DIR, recursive = TRUE, showWarnings = FALSE)

@@ -10,7 +10,7 @@ HERE <- "/Users/prempratapsingh/Data_Analysis/figures/scripts_R"
 source(file.path(HERE, "theme_grbv.R"))
 
 RESULTS <- "/Users/prempratapsingh/Data_Analysis/farm_pipeline/results"
-ANN_F   <- file.path(RESULTS, "fix11_annotations/gene_annotations.csv")
+ANN_F   <- file.path(RESULTS, "annotations/gene_annotations.csv")
 OUT_DIR <- "/Users/prempratapsingh/Data_Analysis/figures/supp"
 dir.create(OUT_DIR, recursive = TRUE, showWarnings = FALSE)
 
@@ -19,9 +19,9 @@ stages  <- GRBV_STAGES
 
 # --------- load ---------
 all_de <- rbindlist(lapply(c(
-  list.files(file.path(RESULTS, "fix01_de_redo"),
+  list.files(file.path(RESULTS, "de_redo"),
              pattern = "_deseq2\\.csv$", full.names = TRUE),
-  list.files(file.path(RESULTS, "fix01c_de_extras"),
+  list.files(file.path(RESULTS, "de_extras"),
              pattern = "_deseq2\\.csv$", full.names = TRUE)
 ), function(f) { d <- fread(f); d$file <- basename(f); d }),
 fill = TRUE) %>% as.data.frame()
@@ -285,7 +285,7 @@ s32_df <- bind_rows(lapply(names(sampling_dates), function(sn) {
 
 # DEG counts (Q2x)
 deg_cnt <- q2x_counts <- q2x_counts_builder <- NULL  # placeholder
-q2x_files <- list.files(file.path(RESULTS, "fix01c_de_extras"),
+q2x_files <- list.files(file.path(RESULTS, "de_extras"),
                         pattern = "^Q2x_", full.names = TRUE)
 q2x_all <- rbindlist(lapply(q2x_files, function(f) {
   d <- fread(f); d$file <- basename(f); d
@@ -330,7 +330,7 @@ p32 <- ggplot(s32_long,
   scale_x_discrete(labels = GRBV_STAGE_LABEL) +
   labs(x = NULL, y = NULL,
        title = "S32. Integrated temperature - viral titer - DEG count",
-       subtitle = "Three parallel trajectories across stages, by season (DESeq2 DEG counts from fix01c Q2x)") +
+       subtitle = "Three parallel trajectories across stages, by season (DESeq2 DEG counts from de_deseq2_extras Q2x)") +
   theme_grbv() +
   theme(plot.title    = element_text(size = 13, face = "bold", hjust = 0.5),
         plot.subtitle = element_text(size = 9, hjust = 0.5, color = "grey25",

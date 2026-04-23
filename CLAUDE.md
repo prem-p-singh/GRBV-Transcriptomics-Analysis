@@ -396,7 +396,7 @@ User provided pointers to three files that plug the major "unknown" gaps:
 
 ### Fix #1 — DESeq2 + limma-voom with covariate adjustment (DONE)
 
-Script: `scripts/fix01_de_deseq2_voom.R`. Design `~ Maturity_stage + Sampling_Season + Infection_Group`. FARM job 32497371, 15 min.
+Script: `scripts/de_deseq2_voom.R`. Design `~ Maturity_stage + Sampling_Season + Infection_Group`. FARM job 32497371, 15 min.
 
 | Comparison | DESeq2 DEGs | voom DEGs | Shared | Welch-t (paper) |
 |---|---|---|---|---|
@@ -413,7 +413,7 @@ Script: `scripts/fix01_de_deseq2_voom.R`. Design `~ Maturity_stage + Sampling_Se
 
 ### Fix #1b — Repeated-measures limma-voom (DONE)
 
-Script: `scripts/fix01b_de_repeated_measures.R`. Uses vine_id from `sample_metadata_v2.txt`. Two-iteration `duplicateCorrelation` blocking on vine_id. FARM job 32497375, 15 min.
+Script: `scripts/de_repeated_measures_voom.R`. Uses vine_id from `sample_metadata_v2.txt`. Two-iteration `duplicateCorrelation` blocking on vine_id. FARM job 32497375, 15 min.
 
 | Comparison | Within-vine ρ̂ | RM DEGs | non-RM voom DEGs | Δ |
 |---|---|---|---|---|
@@ -423,15 +423,15 @@ Script: `scripts/fix01b_de_repeated_measures.R`. Uses vine_id from `sample_metad
 | Q2 Post-véraison | +0.041 | 529 | 532 | −3 |
 | Q2 Harvest | −0.008 | 964 | 964 | 0 |
 
-**Within-vine correlation is negligible across every comparison (|ρ̂| ≤ 0.04).** The stage × season × infection programme dominates the transcriptome so thoroughly that vine-specific baseline is a negligible second-order effect. Pseudoreplication is **not** a practical concern for this dataset. Report fix01 as primary, RM as supplementary sensitivity check.
+**Within-vine correlation is negligible across every comparison (|ρ̂| ≤ 0.04).** The stage × season × infection programme dominates the transcriptome so thoroughly that vine-specific baseline is a negligible second-order effect. Pseudoreplication is **not** a practical concern for this dataset. Report de_deseq2_voom as primary, RM as supplementary sensitivity check.
 
 ### Fix #3 — Main-paper causal mediation rerun at tv=2000 (DONE)
 
-Script: `scripts/fix03_causal_mediation_tv2000.py`. At the paper's default tv=500, **zero** mediators pass joint significance. At tv=2000, **39 mediators pass** (LOC100249249 top, p=4.8 × 10⁻¹¹). Overwrites `~/Data_Analysis/mediation_results.csv`. Paper's Figs 49–50 need regeneration.
+Script: `scripts/mediation_tv2000.py`. At the paper's default tv=500, **zero** mediators pass joint significance. At tv=2000, **39 mediators pass** (LOC100249249 top, p=4.8 × 10⁻¹¹). Overwrites `~/Data_Analysis/mediation_results.csv`. Paper's Figs 49–50 need regeneration.
 
 ### Fix #4 + #13 — ML biomarker reframe + Leave-one-season-out CV (DONE)
 
-Script: `scripts/fix04_biomarker_reframed.py`.
+Script: `scripts/biomarker_loso_cv.py`.
 
 | Panel | Random 5-fold AUC | **Leave-one-season-out AUC** |
 |---|---|---|
@@ -442,11 +442,11 @@ Script: `scripts/fix04_biomarker_reframed.py`.
 
 ### Fix #10 — QTL permutation null (DONE)
 
-Script: `scripts/fix10_qtl_permutation.py`. Observed 27/27 biomarkers within 1 Mb of a QTL (100 %). Null: 10,000 chromosome-stratified permutations from 27,527 positioned genes → 13.4 ± 2.5 overlaps. **2.01 × fold enrichment, empirical one-sided p < 0.0002.** Co-localisation claim is defensible.
+Script: `scripts/qtl_permutation_null.py`. Observed 27/27 biomarkers within 1 Mb of a QTL (100 %). Null: 10,000 chromosome-stratified permutations from 27,527 positioned genes → 13.4 ± 2.5 overlaps. **2.01 × fold enrichment, empirical one-sided p < 0.0002.** Co-localisation claim is defensible.
 
 ### Fix #11 — NCBI gene annotations (DONE)
 
-Script: `scripts/fix11_ncbi_annotations.py`. 82 of 86 key LOC IDs resolved. Headline biological identities:
+Script: `scripts/ncbi_annotations.py`. 82 of 86 key LOC IDs resolved. Headline biological identities:
 
 | LOC ID | NCBI annotation | Significance |
 |---|---|---|
@@ -489,7 +489,7 @@ Across INTEGRATED_ANALYSIS, EXTENDED_RESULTS_REPORT, PLAIN_LANGUAGE, HSFA2_VIGS_
 1. **qPCR validation** of ≥10 key genes (MBF1c, SPS1, LOC100266309, HSFA2, 3 sHSPs, 3 top biomarkers) — 6–8 weeks wet-lab.
 2. **Sequencing platform / core facility / RIN values** in Methods — minutes to pull from lab records.
 3. **GEO / SRA deposition** — 2–4 weeks submission time.
-4. ~~**Regenerate main-paper Figs 49–50**~~ DONE 2026-04-21. Script `farm_pipeline/scripts/fix04b_regen_figs49_50.py` reads the fix03 tv=2000 mediation_results.csv + fix11 NCBI annotations and overwrites `49_mediation_diagrams.png` and `50_direct_vs_indirect_effects.png`. Top-6 panel order: MBF1c → phytosulfokine 6 → F-box PP2-B15 → DREB1E → uncharacterised LOC100854026 → glutaredoxin-C9. 39 / 2,000 joint-significant mediators displayed in Fig 50.
+4. ~~**Regenerate main-paper Figs 49–50**~~ DONE 2026-04-21. Script `farm_pipeline/scripts/regen_figs49_50.py` reads the mediation tv=2000 mediation_results.csv + ncbi_annotations NCBI annotations and overwrites `49_mediation_diagrams.png` and `50_direct_vs_indirect_effects.png`. Top-6 panel order: MBF1c → phytosulfokine 6 → F-box PP2-B15 → DREB1E → uncharacterised LOC100854026 → glutaredoxin-C9. 39 / 2,000 joint-significant mediators displayed in Fig 50.
 5. **Tier-1 literature meta-analysis** — populate `farm_pipeline/data/literature/` with 5 supp tables, rule 11–12 already scaffolded.
 6. **VIGS experiment** per `HSFA2_VIGS_EXPERIMENT_PLAN.md` (targets now: MBF1c, SPS1, LOC100266309).
 
@@ -558,7 +558,7 @@ Higher SPS1 correlates with **lower** Brix within-season (2021 ρ=−0.73, p=0.0
 **Edits applied:**
 
 - `figures/scripts_R/main10_biology_cascade.R` (line 42): sugar-pathway cascade box — replaced "SPS1 is a robust temperature mediator (Main 5)" with biochem finding "Brix suppressed 4-9.8 °Bx in infected berries, with TA / Malic inverted between 2021 cool and 2022 hot seasons (S63)". `Main10_biology_cascade.png + .svg` regenerated.
-- `docs/METHODS_ADDENDUM.md` (fix11 gene table): "Robust mediator; direct molecular link to sugar-accumulation phenotype" → "Robust temperature-titer mediator. S61 shows SPS1 correlates negatively with Brix within-season (2021 ρ=−0.73), i.e., up-regulated in low-Brix infected berries. Interpret as compensatory response, not rate-limiting step."
+- `docs/METHODS_ADDENDUM.md` (ncbi_annotations gene table): "Robust mediator; direct molecular link to sugar-accumulation phenotype" → "Robust temperature-titer mediator. S61 shows SPS1 correlates negatively with Brix within-season (2021 ρ=−0.73), i.e., up-regulated in low-Brix infected berries. Interpret as compensatory response, not rate-limiting step."
 - `docs/MANUSCRIPT_DRAFT_v1.md`: Discussion paragraph on "Temperature, titer and MBF1c" reworked to include Fig. S61 finding and the phloem-loading alternative; added new Results subsection "Harvest juice chemistry tracks the transcriptomic inverted trajectory"; added S61 / S62 / S63 captions.
 
 **Not edited (still accurate):**

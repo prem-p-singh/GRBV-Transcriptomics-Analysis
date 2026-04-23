@@ -34,24 +34,24 @@ The 17 Python analysis scripts that generated the pre-fix figures,
 plus two helpers (`scale_fonts.py`, `gsea_analysis.slurm`).
 All use Welch's t-test without covariate adjustment, so their DE
 outputs are superseded by the DESeq2 rerun in
-`../farm_pipeline/results/fix01_de_redo/` and `fix01c_de_extras/`.
+`../farm_pipeline/results/de_redo/` and `de_extras/`.
 
 | Script | Pre-fix role |
 |---|---|
 | `analysis.py` | Core DE for Q1–Q6 (Welch-t) |
 | `pathway_enrichment.py` | GO/KEGG ORA, UP/DOWN + age-bin split |
-| `causal_mediation_analysis.py` | Temperature → Titer → Gene (tv=500; superseded by fix03 tv=2,000) |
-| `advanced_ml_biomarkers.py` | Random 5-fold AUC=1.000 (superseded by fix04 LOSO) |
+| `causal_mediation_analysis.py` | Temperature → Titer → Gene (tv=500; superseded by mediation tv=2,000) |
+| `advanced_ml_biomarkers.py` | Random 5-fold AUC=1.000 (superseded by biomarker_loso_cv LOSO) |
 | `biomarker_discovery.py` | Pre-fix biomarker ranking |
 | `chromosome_deg_hotspots.py` | Genome-wide DEG density (no permutation null) |
 | `coexpression_network.py` | WGCNA (module assignments still used) |
 | `environment_titer_integration.py` | Weather + titer + DEG integration |
 | `grbv_biology_diagram.py` | Legacy mechanism diagram (superseded by Main10 cascade) |
 | `gsea_analysis.py` | GSEA across 8 conditions (outputs still current) |
-| `gwas_qtl_crossref.py` | QTL overlap (no permutation null; superseded by fix10) |
+| `gwas_qtl_crossref.py` | QTL overlap (no permutation null; superseded by qtl_permutation_null) |
 | `heat_stress_signatures.py` | Heat gene curation (outputs still current) |
 | `multifactor_interaction_model.py` | Per-gene ANOVA (outputs still current) |
-| `seasonal_maturity_progression.py` | Stage × season DE (superseded by fix01c Q2x) |
+| `seasonal_maturity_progression.py` | Stage × season DE (superseded by de_deseq2_extras Q2x) |
 | `stratified_vs_pooled_comparison.py` | Pooled vs stratified concordance |
 | `tf_family_analysis.py` | TF family profiling (outputs still current) |
 | `analysis_schematic.py` | Pipeline flowchart |
@@ -76,8 +76,9 @@ Pre-fix deliverables now superseded:
 
 Output tables from the pre-fix Python scripts that **no current R
 script reads**. Kept for provenance only. Replacements (where
-applicable) are the `_FIX04` versions and `fix01*/` / `fix03*/` /
-`fix10*/` results tables.
+applicable) are the `_FIX04` versions at repo root and the
+`de_redo/`, `de_extras/`, `mediation/`, `qtl/`, `annotations/`
+results tables.
 
 | Archived CSV | Status |
 |---|---|
@@ -112,7 +113,7 @@ but are **actively read by the current R figure scripts**:
 - `multifactor_anova_results.csv`, `interaction_gene_categories.csv`
   (S40–S42)
 - `tf_family_DE_summary.csv`, `tf_family_gene_details.csv` (Main07, S43–S45)
-- `mediation_results.csv` (Main05, S49, S50) — post-fix, fix03 tv=2,000 rerun
+- `mediation_results.csv` (Main05, S49, S50) — post-fix, mediation tv=2,000 rerun
 - `stability_selection_FIX04.csv`, `advanced_ml_comparison_FIX04.csv` (Main06, S47)
 - `MEs.csv`, `hub_genes_per_module.csv`, `module_trait_correlations.csv`,
   `coexpression_modules.csv` (Main07, S53–S55)

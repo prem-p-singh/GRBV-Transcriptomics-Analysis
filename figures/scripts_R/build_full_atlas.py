@@ -43,15 +43,15 @@ MAINS = [
 # --- 55 source figures with title + data-currency status -------------
 # DATA STATUS:
 #   current  = data underlying figure unchanged by fix passes
-#   DESeq2   = figure should be refreshed using fix01/fix01c DESeq2 results
+#   DESeq2   = figure should be refreshed using de_redo/de_deseq2_extras DESeq2 results
 #   reframed = figure is superseded by a Main composite (here for completeness)
 SOURCE_FIGS = [
     ( 1, "01_global_pca_overview.png",                "Global PCA overview",                                "current",  "See Main 1 (panel B)"),
-    ( 2, "02_Q1_infection_years.png",                 "Q1 infection-duration DEGs",                         "DESeq2",   "See Main 2; refit with fix01c Q1a/Q1b"),
-    ( 3, "03_Q2_maturity_stages.png",                 "Q2 maturity-stage DEGs",                             "DESeq2",   "See Main 2 + fix01 Q2"),
-    ( 4, "04_Q3_seasonal_effects.png",                "Q3 seasonal effects in RB+",                         "DESeq2",   "See Main 2 + fix01 Q3"),
-    ( 5, "05_Q4_environmental_effects.png",           "Q4 environmental modulation",                        "DESeq2",   "See Main 2 + fix01c Q4d"),
-    ( 6, "06_Q5_uninfected_environment.png",          "Q5 baseline seasonal change in RB-",                 "DESeq2",   "See fix01 Q5"),
+    ( 2, "02_Q1_infection_years.png",                 "Q1 infection-duration DEGs",                         "DESeq2",   "See Main 2; refit with de_deseq2_extras Q1a/Q1b"),
+    ( 3, "03_Q2_maturity_stages.png",                 "Q2 maturity-stage DEGs",                             "DESeq2",   "See Main 2 + de_deseq2_voom Q2"),
+    ( 4, "04_Q3_seasonal_effects.png",                "Q3 seasonal effects in RB+",                         "DESeq2",   "See Main 2 + de_deseq2_voom Q3"),
+    ( 5, "05_Q4_environmental_effects.png",           "Q4 environmental modulation",                        "DESeq2",   "See Main 2 + de_deseq2_extras Q4d"),
+    ( 6, "06_Q5_uninfected_environment.png",          "Q5 baseline seasonal change in RB-",                 "DESeq2",   "See de_deseq2_voom Q5"),
     ( 7, "07_Q6_transcriptome_trajectory.png",        "Q6 pooled transcriptome trajectory",                 "DESeq2",   "See Main 2 panel B"),
     ( 8, "08_Q1_pathway_enrichment.png",              "Q1 pathway enrichment",                              "DESeq2",   "Recompute on Q1a/Q1b DEG sets"),
     ( 9, "09_Q2_pathway_enrichment.png",              "Q2 pathway enrichment",                              "DESeq2",   "Recompute on Q2 DEG sets"),
@@ -61,7 +61,7 @@ SOURCE_FIGS = [
     (13, "13_Q6_pathway_enrichment.png",              "Q6 pathway enrichment",                              "DESeq2",   "Recompute on Q6 DEG sets"),
     (14, "14_master_pathway_landscape.png",           "Master pathway landscape (all questions)",           "DESeq2",   "Aggregate of S8-S13"),
     (15, "15_seasonal_maturity_DEG_comparison.png",   "Inverted seasonal trajectory (key)",                 "DESeq2",   "See Main 3 panel A"),
-    (16, "16_seasonal_maturity_pathway_enrichment.png","Stage \u00d7 season pathway enrichment grid",       "DESeq2",   "Recompute from fix01c Q2x"),
+    (16, "16_seasonal_maturity_pathway_enrichment.png","Stage \u00d7 season pathway enrichment grid",       "DESeq2",   "Recompute from de_deseq2_extras Q2x"),
     (17, "17_seasonal_maturity_pathway_landscape.png","Per-season pathway landscape heatmaps",              "DESeq2",   "Recompute"),
     (18, "18_seasonal_maturity_transitions_PCA.png",  "Stage transitions PCA",                              "current",  ""),
     (19, "19_seasonal_maturity_pathway_detail.png",   "Pathway detail per stage",                           "DESeq2",   "Recompute"),
@@ -71,13 +71,13 @@ SOURCE_FIGS = [
     (23, "23_analysis_schematic.png",                 "Pipeline analysis schematic",                        "current",  ""),
     (24, "24_biomarker_QTL_chromosome_map.png",       "Biomarker positions on chromosome map",              "current",  "See Main 8 panel B"),
     (25, "25_biomarker_QTL_crossref_summary.png",     "QTL overlap summary (no permutation null)",          "reframed", "See Main 8 panel C"),
-    (26, "26_pooled_vs_stratified_comparison.png",    "Pooled vs stratified DE concordance",                "DESeq2",   "Recompute with fix01"),
-    (27, "27_overlap_connectivity_heatmap.png",       "DEG overlap across questions",                       "DESeq2",   "Recompute with fix01/fix01c"),
+    (26, "26_pooled_vs_stratified_comparison.png",    "Pooled vs stratified DE concordance",                "DESeq2",   "Recompute with de_deseq2_voom"),
+    (27, "27_overlap_connectivity_heatmap.png",       "DEG overlap across questions",                       "DESeq2",   "Recompute with de_redo/ + de_extras"),
     (28, "28_Q1Q2_vs_Q3Q4_crossreference.png",        "Cross-question DEG cross-reference",                 "DESeq2",   "Recompute"),
     (29, "29_comprehensive_summary_dashboard.png",    "Integrated findings dashboard",                      "DESeq2",   "Recompute"),
     (30, "30_weather_overview_sampling.png",          "Weather overview at sampling",                       "current",  ""),
     (31, "31_virus_titer_analysis.png",               "Viral titer dynamics",                               "current",  "See Main 3 panel C"),
-    (32, "32_integrated_temp_titer_DEG.png",          "Integrated temperature-titer-DEG",                   "DESeq2",   "Recompute with fix01c"),
+    (32, "32_integrated_temp_titer_DEG.png",          "Integrated temperature-titer-DEG",                   "DESeq2",   "Recompute with de_deseq2_extras"),
     (33, "33_temperature_titer_shift.png",            "Temperature-titer correlations",                     "current",  ""),
     (34, "34_heat_stress_gene_landscape.png",         "Heat-gene landscape across categories",              "current",  "See Main 4 panel A"),
     (35, "35_heat_vs_virus_disentanglement.png",      "Heat vs virus disentanglement (HSF-sHSP axis)",      "current",  "See Main 4 panel B"),
@@ -136,7 +136,7 @@ def render_supp_page(num: int, png_path: Path, title: str,
     # Status badge
     badge = {
         "current":     "Data current (kept as-is, restyle pending)",
-        "DESeq2":      "DATA UPDATE NEEDED \u2014 refit with DESeq2 (fix01/fix01c)",
+        "DESeq2":      "DATA UPDATE NEEDED \u2014 refit with DESeq2 (de_redo/ + de_extras)",
         "regenerated": "Regenerated under DESeq2, R/ggplot2, Arial",
         "reframed":    "Reframed in Main composite (see note)",
     }[status]

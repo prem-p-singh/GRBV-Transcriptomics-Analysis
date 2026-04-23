@@ -26,7 +26,7 @@ suppressPackageStartupMessages({
 opts <- parse_args(OptionParser(option_list = list(
   make_option("--counts", default = "data/counts_matrix.txt"),
   make_option("--meta",   default = "data/sample_metadata.txt"),
-  make_option("--out_dir",default = "results/fix01_de_redo"),
+  make_option("--out_dir",default = "results/de_redo"),
   make_option("--padj_thresh", type = "double", default = 0.05),
   make_option("--lfc_thresh",  type = "double", default = 1.0),
   make_option("--cores", type = "integer", default = 8)
@@ -34,7 +34,7 @@ opts <- parse_args(OptionParser(option_list = list(
 
 dir.create(opts$out_dir, recursive = TRUE, showWarnings = FALSE)
 
-cat("[fix01] loading counts + metadata\n")
+cat("[de] loading counts + metadata\n")
 counts <- fread(opts$counts, data.table = FALSE)
 rownames(counts) <- counts[, 1]; counts[, 1] <- NULL
 counts <- as.matrix(counts); storage.mode(counts) <- "integer"
@@ -54,7 +54,7 @@ meta$Maturity_stage   <- factor(meta$Maturity_stage,
 # Gene-level filter: >=10 counts in >=10% samples (same as main paper)
 keep <- rowSums(counts >= 10) >= 0.10 * ncol(counts)
 counts <- counts[keep, ]
-cat(sprintf("[fix01] %d genes x %d samples after filter\n",
+cat(sprintf("[de] %d genes x %d samples after filter\n",
             nrow(counts), ncol(counts)))
 
 run_DESeq2 <- function(counts_sub, meta_sub, design_formula, contrast, comp_name) {
@@ -106,7 +106,7 @@ write_results <- function(df, comp_name, method) {
 # -----------------------------------------------------------------------------
 # Q6 : pooled RB+ vs RB- (headline comparison)
 # -----------------------------------------------------------------------------
-cat("\n[fix01] ==== Q6: pooled RB+ vs RB- ====\n")
+cat("\n[de] ==== Q6: pooled RB+ vs RB- ====\n")
 design_q6 <- ~ Maturity_stage + Sampling_Season + Infection_Group
 ds_q6 <- run_DESeq2(counts, meta, design_q6,
                     c("Infection_Group", "pos", "neg"), "Q6_pooled")
@@ -121,7 +121,7 @@ write_results(vm_q6, "Q6_pooled", "voom")
 # -----------------------------------------------------------------------------
 # Q2 : per-stage RB+ vs RB-
 # -----------------------------------------------------------------------------
-cat("\n[fix01] ==== Q2: per-stage RB+ vs RB- ====\n")
+cat("\n[de] ==== Q2: per-stage RB+ vs RB- ====\n")
 for (st in levels(meta$Maturity_stage)) {
   ss <- which(meta$Maturity_stage == st)
   if (length(unique(meta$Infection_Group[ss])) < 2 ||
@@ -144,7 +144,7 @@ for (st in levels(meta$Maturity_stage)) {
 # -----------------------------------------------------------------------------
 # Q3 : 2021 vs 2022 in RB+
 # -----------------------------------------------------------------------------
-cat("\n[fix01] ==== Q3: seasonal effects in RB+ ====\n")
+cat("\n[de] ==== Q3: seasonal effects in RB+ ====\n")
 ss3 <- which(meta$Infection_Group == "pos")
 meta_3 <- droplevels(meta[ss3, ]); cnt_3 <- counts[, ss3]
 ds3 <- run_DESeq2(cnt_3, meta_3,
@@ -160,7 +160,7 @@ write_results(vm3, "Q3_seasonRBpos", "voom")
 # -----------------------------------------------------------------------------
 # Q5 : baseline seasonal effects in RB- controls
 # -----------------------------------------------------------------------------
-cat("\n[fix01] ==== Q5: seasonal effects in RB- ====\n")
+cat("\n[de] ==== Q5: seasonal effects in RB- ====\n")
 ss5 <- which(meta$Infection_Group == "neg")
 if (length(ss5) > 10 && length(unique(meta$Sampling_Season[ss5])) > 1) {
   meta_5 <- droplevels(meta[ss5, ]); cnt_5 <- counts[, ss5]
@@ -178,7 +178,7 @@ if (length(ss5) > 10 && length(unique(meta$Sampling_Season[ss5])) > 1) {
 # -----------------------------------------------------------------------------
 # Q4 : Season x Infection interaction (pooled)
 # -----------------------------------------------------------------------------
-cat("\n[fix01] ==== Q4: Season x Infection interaction ====\n")
+cat("\n[de] ==== Q4: Season x Infection interaction ====\n")
 dds4 <- DESeqDataSetFromMatrix(counts, colData = meta,
                                design = ~ Maturity_stage + Sampling_Season * Infection_Group)
 dds4 <- DESeq(dds4, test = "LRT",
@@ -200,7 +200,7 @@ write_results(q4, "Q4_seasonXinfection", "deseq2")
 # -----------------------------------------------------------------------------
 # Summary
 # -----------------------------------------------------------------------------
-cat("\n[fix01] ==== summary ====\n")
+cat("\n[de] ==== summary ====\n")
 files <- list.files(opts$out_dir, pattern = "\\.csv$", full.names = TRUE)
 summ <- rbindlist(lapply(files, function(f) {
   d <- fread(f)
@@ -216,4 +216,4 @@ summ <- rbindlist(lapply(files, function(f) {
 }))
 fwrite(summ, file.path(opts$out_dir, "SUMMARY.csv"))
 print(summ)
-cat("\n[fix01] done; outputs in", opts$out_dir, "\n")
+cat("\n[de] done; outputs in", opts$out_dir, "\n")

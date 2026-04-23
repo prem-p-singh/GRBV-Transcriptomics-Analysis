@@ -1,5 +1,5 @@
 # Supplementary batch: regenerate per-question DE overview figures (S2 - S7)
-# using DESeq2 results from fix01 and fix01c. Each figure is a 4-panel
+# using DESeq2 results from de_deseq2_voom and de_deseq2_extras. Each figure is a 4-panel
 # composite: DEG counts bar, volcano plot, log2FC histogram, top-20 DEG table.
 #
 # Output: farm_pipeline/figures/supp/S{02..07}_*.{png,pdf}
@@ -13,7 +13,7 @@ HERE <- "/Users/prempratapsingh/Data_Analysis/figures/scripts_R"
 source(file.path(HERE, "theme_grbv.R"))
 
 RESULTS <- "/Users/prempratapsingh/Data_Analysis/farm_pipeline/results"
-ANN_F   <- file.path(RESULTS, "fix11_annotations/gene_annotations.csv")
+ANN_F   <- file.path(RESULTS, "annotations/gene_annotations.csv")
 OUT_DIR <- "/Users/prempratapsingh/Data_Analysis/figures/supp"
 dir.create(OUT_DIR, recursive = TRUE, showWarnings = FALSE)
 
@@ -21,9 +21,9 @@ PADJ <- 0.05; LFC <- 1.0
 
 # --------- load ---------
 all_de <- rbindlist(lapply(c(
-  list.files(file.path(RESULTS, "fix01_de_redo"),
+  list.files(file.path(RESULTS, "de_redo"),
              pattern = "_deseq2\\.csv$", full.names = TRUE),
-  list.files(file.path(RESULTS, "fix01c_de_extras"),
+  list.files(file.path(RESULTS, "de_extras"),
              pattern = "_deseq2\\.csv$", full.names = TRUE)
 ), function(f) { d <- fread(f); d$file <- basename(f); d }),
 fill = TRUE) %>% as.data.frame()

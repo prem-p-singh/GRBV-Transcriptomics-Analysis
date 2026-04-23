@@ -1,5 +1,5 @@
 # Supplementary batch: stratified + direction-resolved pathway enrichment
-# per research question (S8 - S14) using DESeq2 fix01 / fix01c contrasts.
+# per research question (S8 - S14) using DESeq2 de_deseq2_voom / de_deseq2_extras contrasts.
 #
 # 2026-04-22 rewrite:
 #   * Every enrichment is now run separately on UP- and DOWN-regulated DEGs
@@ -33,9 +33,9 @@ N_MASTER <- 25     # terms shown in master / stratified heatmaps
 # Load every DESeq2 table
 # -----------------------------------------------------------------
 all_de <- rbindlist(lapply(c(
-  list.files(file.path(RESULTS, "fix01_de_redo"),
+  list.files(file.path(RESULTS, "de_redo"),
              pattern = "_deseq2\\.csv$", full.names = TRUE),
-  list.files(file.path(RESULTS, "fix01c_de_extras"),
+  list.files(file.path(RESULTS, "de_extras"),
              pattern = "_deseq2\\.csv$", full.names = TRUE)
 ), function(f) { d <- fread(f); d$file <- basename(f); d }),
 fill = TRUE) %>% as.data.frame()

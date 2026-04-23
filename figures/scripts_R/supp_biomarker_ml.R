@@ -91,7 +91,7 @@ save_grbv(S21, file.path(OUT_DIR, "S21_biomarker_profiles"),
 # S22 — biomarker FC consistency across conditions
 # -----------------------------------------------------------------
 # Load DESeq2 results to compute per-biomarker FC across the 8 stage x season
-q2x_dir <- file.path(DATA_ROOT, "farm_pipeline/results/fix01c_de_extras")
+q2x_dir <- file.path(DATA_ROOT, "farm_pipeline/results/de_extras")
 q2x_files <- list.files(q2x_dir, pattern = "Q2x_.*_deseq2\\.csv", full.names = TRUE)
 q2x <- rbindlist(lapply(q2x_files, function(f) {
   d <- fread(f); parts <- strsplit(basename(f), "_")[[1]]

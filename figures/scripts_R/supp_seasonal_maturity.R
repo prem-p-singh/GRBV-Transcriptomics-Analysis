@@ -1,5 +1,5 @@
 # Supplementary batch: seasonal-maturity series (S15, S16, S17, S19)
-# refit on fix01c Q2x contrasts (per-stage x per-season RB+ vs RB-).
+# refit on de_deseq2_extras Q2x contrasts (per-stage x per-season RB+ vs RB-).
 
 suppressPackageStartupMessages({
   library(ggplot2); library(dplyr); library(tidyr); library(readr)
@@ -10,7 +10,7 @@ HERE <- "/Users/prempratapsingh/Data_Analysis/figures/scripts_R"
 source(file.path(HERE, "theme_grbv.R"))
 
 RESULTS <- "/Users/prempratapsingh/Data_Analysis/farm_pipeline/results"
-ANN_F   <- file.path(RESULTS, "fix11_annotations/gene_annotations.csv")
+ANN_F   <- file.path(RESULTS, "annotations/gene_annotations.csv")
 OUT_DIR <- "/Users/prempratapsingh/Data_Analysis/figures/supp"
 dir.create(OUT_DIR, recursive = TRUE, showWarnings = FALSE)
 
@@ -22,7 +22,7 @@ seasons <- c("2021","2022")
 load_q2x <- function() {
   rows <- list()
   for (sn in seasons) for (st in stages) {
-    f <- file.path(RESULTS, "fix01c_de_extras",
+    f <- file.path(RESULTS, "de_extras",
                    sprintf("Q2x_%s_%s_deseq2.csv", sn, st))
     d <- fread(f) %>% as.data.frame()
     d$Sampling_Season <- sn; d$Maturity_stage <- st

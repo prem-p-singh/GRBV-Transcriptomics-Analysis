@@ -236,7 +236,7 @@ flowchart LR
 ├── farm_pipeline/
 │   ├── Snakefile           13 rules, 24 DE contrasts, sensitivity sweeps
 │   ├── scripts/
-│   ├── results/            fix01, fix01c, fix03, fix10, fix11 + rules 00-10
+│   ├── results/            de_redo, de_extras, mediation, qtl, annotations + rules 00-12
 │   ├── data/, resources/
 │   └── docs/
 │       └── LITERATURE_SCHEMA.md

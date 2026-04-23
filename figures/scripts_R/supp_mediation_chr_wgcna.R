@@ -24,7 +24,7 @@ stages <- GRBV_STAGES
 # -----------------------------------------------------------------
 med <- fread(file.path(DATA_ROOT, "mediation_results.csv")) %>% as.data.frame()
 ann <- fread(file.path(DATA_ROOT,
-                       "farm_pipeline/results/fix11_annotations/gene_annotations.csv")) %>%
+                       "farm_pipeline/results/annotations/gene_annotations.csv")) %>%
   as.data.frame()
 name_map <- setNames(ann$product, ann$gene_id)
 

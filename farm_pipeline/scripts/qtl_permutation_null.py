@@ -17,7 +17,7 @@ ap.add_argument("--crossref", default="/Users/prempratapsingh/Data_Analysis/GRBV
 ap.add_argument("--gff",      default="/Users/prempratapsingh/Data_Analysis/farm_pipeline/resources/genome/genome.gff")
 ap.add_argument("--window_mb", type=float, default=1.0)
 ap.add_argument("--n_perm",    type=int,   default=5000)
-ap.add_argument("--out", default="/Users/prempratapsingh/Data_Analysis/farm_pipeline/results/fix10_qtl/qtl_permutation_null.csv")
+ap.add_argument("--out", default="/Users/prempratapsingh/Data_Analysis/farm_pipeline/results/qtl/qtl_permutation_null.csv")
 args = ap.parse_args()
 Path(args.out).parent.mkdir(parents=True, exist_ok=True)
 
@@ -25,15 +25,15 @@ cx = pd.read_csv(args.crossref)
 bm = cx[["gene_id","gene_chr","gene_pos_Mb"]].dropna().drop_duplicates("gene_id").reset_index(drop=True)
 bm.columns = ["gene_id","chromosome","start_Mb"]
 bm["chromosome"] = bm["chromosome"].astype(str)
-print(f"[fix10] {len(bm)} unique biomarkers with positions", file=sys.stderr)
+print(f"[qtl-perm] {len(bm)} unique biomarkers with positions", file=sys.stderr)
 
 qtl = cx[["qtl_locus","gene_chr","qtl_start_Mb","qtl_end_Mb"]].dropna().drop_duplicates(["qtl_locus","gene_chr"])
 qtl["gene_chr"] = qtl["gene_chr"].astype(str)
-print(f"[fix10] {qtl['qtl_locus'].nunique()} unique QTL intervals on {qtl['gene_chr'].nunique()} chromosomes", file=sys.stderr)
+print(f"[qtl-perm] {qtl['qtl_locus'].nunique()} unique QTL intervals on {qtl['gene_chr'].nunique()} chromosomes", file=sys.stderr)
 
 # Build universe from GFF
 if not Path(args.gff).exists():
-    sys.exit(f"[fix10] GFF missing: {args.gff}. Pull from FARM (rsync farm:~/grbv_extended/resources/genome/).")
+    sys.exit(f"[qtl-perm] GFF missing: {args.gff}. Pull from FARM (rsync farm:~/grbv_extended/resources/genome/).")
 
 # Map NCBI chromosome accessions (NC_*.*) to integer chromosomes used in the paper
 univ_rows = []
@@ -50,7 +50,7 @@ with open(args.gff) as f:
                 chrom_ids.append(parts[1])
 # Heuristic: first N NC_* accessions are chromosomes 1..N
 chrom_map = {cid: str(i + 1) for i, cid in enumerate(chrom_ids[:19])}
-print(f"[fix10] chromosome map: {len(chrom_map)} NC_ -> 1..N", file=sys.stderr)
+print(f"[qtl-perm] chromosome map: {len(chrom_map)} NC_ -> 1..N", file=sys.stderr)
 
 with open(args.gff) as f:
     for ln in f:
@@ -65,7 +65,7 @@ with open(args.gff) as f:
         start_mb = float(p[3]) / 1e6
         univ_rows.append((name, chrom, start_mb))
 universe = pd.DataFrame(univ_rows, columns=["gene_id","chromosome","start_Mb"]).drop_duplicates("gene_id")
-print(f"[fix10] universe: {len(universe)} positioned genes across chromosomes {sorted(universe['chromosome'].unique(), key=lambda x: int(x))}", file=sys.stderr)
+print(f"[qtl-perm] universe: {len(universe)} positioned genes across chromosomes {sorted(universe['chromosome'].unique(), key=lambda x: int(x))}", file=sys.stderr)
 
 bm_chr_counts = bm["chromosome"].value_counts().to_dict()
 
@@ -81,7 +81,7 @@ def overlaps(sample_df):
     return n
 
 obs = overlaps(bm)
-print(f"[fix10] observed: {obs}/{len(bm)} ({100*obs/len(bm):.1f}%) biomarkers within {args.window_mb} Mb of a QTL", file=sys.stderr)
+print(f"[qtl-perm] observed: {obs}/{len(bm)} ({100*obs/len(bm):.1f}%) biomarkers within {args.window_mb} Mb of a QTL", file=sys.stderr)
 
 rng = np.random.RandomState(42)
 null = np.zeros(args.n_perm, dtype=int)
@@ -100,9 +100,9 @@ null_frac = null / max(len(bm), 1)
 p_emp = (null >= obs).mean()
 fold_enrich = obs / max(null.mean(), 0.5)
 
-print(f"[fix10] null mean = {null.mean():.2f}  sd = {null.std():.2f}", file=sys.stderr)
-print(f"[fix10] observed fraction {obs_frac:.3f} vs null mean {null_frac.mean():.3f}", file=sys.stderr)
-print(f"[fix10] empirical one-sided p = {p_emp:.4f}  |  fold enrichment = {fold_enrich:.2f}x", file=sys.stderr)
+print(f"[qtl-perm] null mean = {null.mean():.2f}  sd = {null.std():.2f}", file=sys.stderr)
+print(f"[qtl-perm] observed fraction {obs_frac:.3f} vs null mean {null_frac.mean():.3f}", file=sys.stderr)
+print(f"[qtl-perm] empirical one-sided p = {p_emp:.4f}  |  fold enrichment = {fold_enrich:.2f}x", file=sys.stderr)
 
 pd.DataFrame([{
     "n_biomarkers_with_position": len(bm),
@@ -120,4 +120,4 @@ pd.DataFrame([{
     "empirical_p_one_sided": float(p_emp),
     "fold_enrichment": fold_enrich,
 }]).to_csv(args.out, index=False)
-print(f"[fix10] wrote {args.out}", file=sys.stderr)
+print(f"[qtl-perm] wrote {args.out}", file=sys.stderr)

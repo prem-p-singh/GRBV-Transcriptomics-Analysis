@@ -38,7 +38,7 @@ meta = meta.loc[samples]; y = (meta["Infection_Group"] == "RB(+)").astype(int).v
 var_genes = lcpm.var(axis=1).nlargest(args.top_var).index.tolist()
 viral = [g for g in var_genes if g.startswith("N761_") or g.startswith("ViviM_")]
 host  = [g for g in var_genes if g not in viral]
-print(f"[fix04] tv={args.top_var}: {len(viral)} viral + {len(host)} host features", file=sys.stderr)
+print(f"[biomarker] tv={args.top_var}: {len(viral)} viral + {len(host)} host features", file=sys.stderr)
 
 def scale(X): return StandardScaler().fit_transform(X)
 def feats(panel): return scale(lcpm.loc[panel, samples].T.values)
@@ -78,7 +78,7 @@ classifiers = {
 year_infected = (meta["Sampling_Season"].astype(int) - meta["Years_Since_Infection"].astype(int)).astype(str)
 year_infected.loc[meta["Infection_Group"] == "RB(-)"] = "control"
 groups = year_infected.values
-print(f"[fix04] LOCO groups: {np.unique(groups, return_counts=True)}", file=sys.stderr)
+print(f"[biomarker] LOCO groups: {np.unique(groups, return_counts=True)}", file=sys.stderr)
 
 # Alternate grouping: leave-one-sampling-season-out (2 folds: 2021, 2022)
 season_groups = meta["Sampling_Season"].astype(str).values
@@ -101,7 +101,7 @@ for panel_name, panel in [("all_vars", var_genes), ("host_only", host)]:
         })
 auc_df = pd.DataFrame(rows)
 auc_df.to_csv(args.out_auc, index=False)
-print("[fix04] AUC table:")
+print("[biomarker] AUC table:")
 print(auc_df.to_string(index=False))
 
 # Stability selection on HOST-only
@@ -117,4 +117,4 @@ freq /= n_sub
 stab = pd.DataFrame({"panel":"host_only", "gene": host, "lasso_selection_freq": freq})\
           .sort_values("lasso_selection_freq", ascending=False)
 stab.to_csv(args.out_stab, index=False)
-print(f"[fix04] stable host genes (freq>=0.6): {(freq>=0.6).sum()}")
+print(f"[biomarker] stable host genes (freq>=0.6): {(freq>=0.6).sum()}")

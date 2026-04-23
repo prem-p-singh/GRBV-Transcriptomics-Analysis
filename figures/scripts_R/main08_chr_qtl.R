@@ -1,5 +1,5 @@
 # Main Composite 8 — Genome-wide DEG hotspots + biomarker x QTL co-localisation
-# (with permutation null from fix10).
+# (with permutation null from qtl_permutation_null).
 #
 # Panels:
 #   A  Chromosome ideogram with DEG density per 1 Mb window (Manhattan-like)
@@ -10,7 +10,7 @@
 # Inputs:
 #   /Users/prempratapsingh/Data_Analysis/chromosome_deg_density.csv
 #   /Users/prempratapsingh/Data_Analysis/GRBV_biomarker_QTL_crossref.csv
-#   /Users/prempratapsingh/Data_Analysis/farm_pipeline/results/fix10_qtl/qtl_permutation_null.csv
+#   /Users/prempratapsingh/Data_Analysis/farm_pipeline/results/qtl/qtl_permutation_null.csv
 
 suppressPackageStartupMessages({
   library(ggplot2); library(dplyr); library(tidyr); library(readr)
@@ -27,7 +27,7 @@ OUT_STEM  <- file.path(OUT_DIR, "Main08_chr_qtl")
 
 deg_dens <- fread(file.path(DATA_ROOT, "chromosome_deg_density.csv")) %>% as.data.frame()
 qtl      <- fread(file.path(DATA_ROOT, "GRBV_biomarker_QTL_crossref.csv")) %>% as.data.frame()
-perm     <- fread(file.path(DATA_ROOT, "farm_pipeline/results/fix10_qtl/qtl_permutation_null.csv")) %>% as.data.frame()
+perm     <- fread(file.path(DATA_ROOT, "farm_pipeline/results/qtl/qtl_permutation_null.csv")) %>% as.data.frame()
 
 # -----------------------------------------------------------------
 # Panel A — DEG density Manhattan

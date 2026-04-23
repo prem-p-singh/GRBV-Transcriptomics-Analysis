@@ -1,5 +1,5 @@
 # Main Composite 2 — Differential expression landscape across Q1-Q6
-# under covariate-adjusted DESeq2 (fix01 + fix01c).
+# under covariate-adjusted DESeq2 (de_deseq2_voom + de_deseq2_extras).
 #
 # Panels:
 #   A  DEG counts per comparison (UP vs DOWN), all 6 research questions
@@ -8,9 +8,9 @@
 #   D  Per-stage DEG counts (Q2; 4 stages, both seasons combined)
 #
 # Inputs:
-#   farm_pipeline/results/fix01_de_redo/
-#   farm_pipeline/results/fix01c_de_extras/
-#   farm_pipeline/results/fix11_annotations/gene_annotations.csv
+#   farm_pipeline/results/de_redo/
+#   farm_pipeline/results/de_extras/
+#   farm_pipeline/results/annotations/gene_annotations.csv
 
 suppressPackageStartupMessages({
   library(ggplot2); library(dplyr); library(tidyr); library(readr)
@@ -21,7 +21,7 @@ HERE <- "/Users/prempratapsingh/Data_Analysis/figures/scripts_R"
 source(file.path(HERE, "theme_grbv.R"))
 
 ROOT     <- "/Users/prempratapsingh/Data_Analysis/farm_pipeline/results"
-ANN_F    <- file.path(ROOT, "fix11_annotations/gene_annotations.csv")
+ANN_F    <- file.path(ROOT, "annotations/gene_annotations.csv")
 OUT_DIR   <- "/Users/prempratapsingh/Data_Analysis/figures/main"
 dir.create(OUT_DIR, recursive = TRUE, showWarnings = FALSE)
 OUT_STEM <- file.path(OUT_DIR, "Main02_de_landscape")
@@ -35,9 +35,9 @@ read_de <- function(path) {
 }
 
 de_files <- c(
-  list.files(file.path(ROOT, "fix01_de_redo"),
+  list.files(file.path(ROOT, "de_redo"),
              pattern = "_deseq2\\.csv$", full.names = TRUE),
-  list.files(file.path(ROOT, "fix01c_de_extras"),
+  list.files(file.path(ROOT, "de_extras"),
              pattern = "_deseq2\\.csv$", full.names = TRUE)
 )
 all_de <- rbindlist(lapply(de_files, function(f) {

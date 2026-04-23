@@ -242,7 +242,7 @@ host_mat <- lcpm[host_top, rbpos_samples, drop = FALSE]
 
 # Load NCBI annotations so labels are interpretable
 ann_path <- file.path(DATA_ROOT,
-                      "farm_pipeline/results/fix11_annotations/gene_annotations.csv")
+                      "farm_pipeline/results/annotations/gene_annotations.csv")
 ann <- tryCatch(fread(ann_path) %>% as.data.frame(), error = function(e) NULL)
 name_map <- if (!is.null(ann)) setNames(ann$product, ann$gene_id) else character(0)
 

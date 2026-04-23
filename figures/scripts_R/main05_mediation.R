@@ -8,8 +8,8 @@
 #   D  Category counts
 #
 # Inputs:
-#   /Users/prempratapsingh/Data_Analysis/mediation_results.csv  (fix03 tv=2000)
-#   /Users/prempratapsingh/Data_Analysis/farm_pipeline/results/fix11_annotations/gene_annotations.csv
+#   /Users/prempratapsingh/Data_Analysis/mediation_results.csv  (mediation tv=2000)
+#   /Users/prempratapsingh/Data_Analysis/farm_pipeline/results/annotations/gene_annotations.csv
 
 suppressPackageStartupMessages({
   library(ggplot2); library(dplyr); library(readr)
@@ -21,7 +21,7 @@ source(file.path(HERE, "theme_grbv.R"))
 
 DATA_ROOT <- "/Users/prempratapsingh/Data_Analysis"
 MED <- file.path(DATA_ROOT, "mediation_results.csv")
-ANN <- file.path(DATA_ROOT, "farm_pipeline/results/fix11_annotations/gene_annotations.csv")
+ANN <- file.path(DATA_ROOT, "farm_pipeline/results/annotations/gene_annotations.csv")
 OUT_DIR   <- "/Users/prempratapsingh/Data_Analysis/figures/main"
 dir.create(OUT_DIR, recursive = TRUE, showWarnings = FALSE)
 OUT_STEM <- file.path(OUT_DIR, "Main05_mediation")

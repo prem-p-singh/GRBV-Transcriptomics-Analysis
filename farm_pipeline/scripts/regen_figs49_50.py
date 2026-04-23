@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 """Regenerate main-paper Figures 49 (mediation diagrams) and 50 (direct vs
-indirect effects) from the fix03 tv=2000 mediation_results.csv.
+indirect effects) from the mediation tv=2000 mediation_results.csv.
 
 The original causal_mediation_analysis.py wrote both figures using a column
-schema that fix03 replaced (gene/total_c/path_b_padj/sig_joint instead of
+schema that mediation replaced (gene/total_c/path_b_padj/sig_joint instead of
 gene/total_effect_c/total_padj/category). It also used anonymous LOC IDs as
-panel titles. This script reads the new CSV plus the fix11 NCBI annotations
+panel titles. This script reads the new CSV plus the ncbi_annotations NCBI annotations
 and writes drop-in replacements alongside the rest of the main-paper PNGs.
 
 Run from any directory; paths are absolute.
@@ -24,7 +24,7 @@ from matplotlib.patches import FancyBboxPatch
 
 ap = argparse.ArgumentParser()
 ap.add_argument("--mediation", default="/Users/prempratapsingh/Data_Analysis/mediation_results.csv")
-ap.add_argument("--annot",     default="/Users/prempratapsingh/Data_Analysis/farm_pipeline/results/fix11_annotations/gene_annotations.csv")
+ap.add_argument("--annot",     default="/Users/prempratapsingh/Data_Analysis/farm_pipeline/results/annotations/gene_annotations.csv")
 ap.add_argument("--fig49",     default="/Users/prempratapsingh/Data_Analysis/49_mediation_diagrams.png")
 ap.add_argument("--fig50",     default="/Users/prempratapsingh/Data_Analysis/50_direct_vs_indirect_effects.png")
 ap.add_argument("--top_var",   type=int, default=2000)

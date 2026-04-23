@@ -20,7 +20,7 @@ ap.add_argument("--w2021",  default="/Users/prempratapsingh/Data_Analysis/daily_
 ap.add_argument("--w2022",  default="/Users/prempratapsingh/Data_Analysis/daily_2022.csv")
 ap.add_argument("--top_var", type=int, default=2000)
 ap.add_argument("--out_full", default="/Users/prempratapsingh/Data_Analysis/mediation_results.csv")
-ap.add_argument("--out_summary", default="/Users/prempratapsingh/Data_Analysis/farm_pipeline/results/fix03_mediation/mediation_summary_tv2000.csv")
+ap.add_argument("--out_summary", default="/Users/prempratapsingh/Data_Analysis/farm_pipeline/results/mediation/mediation_summary_tv2000.csv")
 args = ap.parse_args()
 
 Path(args.out_full).parent.mkdir(parents=True, exist_ok=True)
@@ -67,7 +67,7 @@ m = m.merge(titer_avg, left_on=["Sampling_Season","Years_Since_Infection","Matur
 
 samples = [s for s in m.index if s in lcpm.columns
            and not pd.isna(m.loc[s,"Temperature"]) and not pd.isna(m.loc[s,"titer"])]
-print(f"[fix03] n={len(samples)} complete-data RB+ samples", file=sys.stderr)
+print(f"[mediation] n={len(samples)} complete-data RB+ samples", file=sys.stderr)
 
 top = lcpm[samples].var(axis=1).nlargest(args.top_var).index
 T = m.loc[samples,"Temperature"].values; M = m.loc[samples,"titer"].values
@@ -86,7 +86,7 @@ def rm(X,y):
     t=b[1:]/np.where(se[1:]>0,se[1:],1e-10); return b[1:], 2*(1-stats.t.cdf(np.abs(t),n-k))
 
 a, ap_ = r1(T, M)
-print(f"[fix03] path a (T->titer): beta={a:.4f}, p={ap_:.4g}", file=sys.stderr)
+print(f"[mediation] path a (T->titer): beta={a:.4f}, p={ap_:.4g}", file=sys.stderr)
 
 rows = []
 for g in top:
@@ -106,7 +106,7 @@ df = df.sort_values("path_b_padj")
 df.to_csv(args.out_full, index=False)
 
 sig = df[df["sig_joint"]]
-print(f"[fix03] {len(sig)} significant mediators at BH FDR<0.05 + |ab|>0.05", file=sys.stderr)
+print(f"[mediation] {len(sig)} significant mediators at BH FDR<0.05 + |ab|>0.05", file=sys.stderr)
 
 summary = {
     "n_samples": len(samples), "top_var": args.top_var,
@@ -119,4 +119,4 @@ summary = {
     "prior_tv500_n_sig": 0,
 }
 pd.DataFrame([summary]).to_csv(args.out_summary, index=False)
-print(f"[fix03] wrote {args.out_full}  and  {args.out_summary}", file=sys.stderr)
+print(f"[mediation] wrote {args.out_full}  and  {args.out_summary}", file=sys.stderr)

@@ -14,7 +14,7 @@
 # Inputs:
 #   /Users/prempratapsingh/Data_Analysis/advanced_ml_comparison_FIX04.csv
 #   /Users/prempratapsingh/Data_Analysis/stability_selection_FIX04.csv
-#   /Users/prempratapsingh/Data_Analysis/farm_pipeline/results/fix11_annotations/gene_annotations.csv
+#   /Users/prempratapsingh/Data_Analysis/farm_pipeline/results/annotations/gene_annotations.csv
 
 suppressPackageStartupMessages({
   library(ggplot2); library(dplyr); library(tidyr); library(readr)
@@ -33,7 +33,7 @@ auc <- read_csv(file.path(DATA_ROOT, "advanced_ml_comparison_FIX04.csv"),
                 show_col_types = FALSE)
 stab <- read_csv(file.path(DATA_ROOT, "stability_selection_FIX04.csv"),
                  show_col_types = FALSE)
-ann  <- fread(file.path(DATA_ROOT, "farm_pipeline/results/fix11_annotations/gene_annotations.csv")) %>% as.data.frame()
+ann  <- fread(file.path(DATA_ROOT, "farm_pipeline/results/annotations/gene_annotations.csv")) %>% as.data.frame()
 name_map <- setNames(ann$product, ann$gene_id)
 
 # -----------------------------------------------------------------

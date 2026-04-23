@@ -1,7 +1,7 @@
 #!/usr/bin/env Rscript
 .libPaths(c(Sys.getenv("GRBV_RLIBS","~/grbv_extended/Rlibs"), .libPaths()))
 # Fix #1b: re-run DE with a *repeated-measures* model (limma-voom + duplicate
-# Correlation on vine_id). Paired with fix01, this is the reviewer-proof
+# Correlation on vine_id). Paired with de_deseq2_voom, this is the reviewer-proof
 # version of Q6 pooled and Q2 per-stage comparisons.
 #
 # Design:  ~ Maturity_stage + Sampling_Season + Infection_Group
@@ -16,13 +16,13 @@ suppressPackageStartupMessages({
 opts <- parse_args(OptionParser(option_list = list(
   make_option("--counts", default = "data/counts_matrix.txt"),
   make_option("--meta",   default = "data/sample_metadata_v2.txt"),
-  make_option("--out_dir",default = "results/fix01b_de_repeated_measures"),
+  make_option("--out_dir",default = "results/de_repeated_measures"),
   make_option("--padj_thresh", type="double", default=0.05),
   make_option("--lfc_thresh",  type="double", default=1.0)
 )))
 dir.create(opts$out_dir, recursive=TRUE, showWarnings=FALSE)
 
-cat("[fix01b] loading\n")
+cat("[de-rm] loading\n")
 counts <- fread(opts$counts, data.table=FALSE)
 rownames(counts) <- counts[,1]; counts[,1] <- NULL
 counts <- as.matrix(counts); storage.mode(counts) <- "integer"
@@ -36,12 +36,12 @@ meta$Sampling_Season <- factor(meta$Sampling_Season)
 meta$Maturity_stage  <- factor(meta$Maturity_stage,
   levels=c("Pre_veraison","Veraison","Post_veraison","Harvest"))
 
-cat(sprintf("[fix01b] %d samples; %d unique vines\n",
+cat(sprintf("[de-rm] %d samples; %d unique vines\n",
             nrow(meta), length(unique(meta$vine_id))))
 
 keep <- rowSums(counts >= 10) >= 0.10*ncol(counts)
 counts <- counts[keep,]
-cat(sprintf("[fix01b] %d genes x %d samples after filter\n",
+cat(sprintf("[de-rm] %d genes x %d samples after filter\n",
             nrow(counts), ncol(counts)))
 
 run_voom_rm <- function(counts_sub, meta_sub, design_formula, contrast_name, comp_name) {
@@ -77,14 +77,14 @@ run_voom_rm <- function(counts_sub, meta_sub, design_formula, contrast_name, com
 }
 
 # Q6 pooled
-cat("\n[fix01b] Q6 pooled RB+ vs RB- (repeated-measures)\n")
+cat("\n[de-rm] Q6 pooled RB+ vs RB- (repeated-measures)\n")
 q6 <- run_voom_rm(counts, meta,
                   ~ Maturity_stage + Sampling_Season + Infection_Group,
                   "Infection_Grouppos", "Q6_pooled_RM")
 fwrite(q6, file.path(opts$out_dir, "Q6_pooled_RM.csv"))
 
 # Q2 per-stage
-cat("\n[fix01b] Q2 per-stage (repeated-measures)\n")
+cat("\n[de-rm] Q2 per-stage (repeated-measures)\n")
 for (st in levels(meta$Maturity_stage)) {
   ss <- which(meta$Maturity_stage == st)
   meta_s <- droplevels(meta[ss, ])
@@ -104,7 +104,7 @@ for (st in levels(meta$Maturity_stage)) {
   if (!is.null(res)) fwrite(res, file.path(opts$out_dir, paste0(comp, ".csv")))
 }
 
-cat("\n[fix01b] summary\n")
+cat("\n[de-rm] summary\n")
 files <- list.files(opts$out_dir, pattern="\\.csv$", full.names=TRUE)
 summ <- rbindlist(lapply(files, function(f) {
   d <- fread(f)
@@ -117,4 +117,4 @@ summ <- rbindlist(lapply(files, function(f) {
 }))
 fwrite(summ, file.path(opts$out_dir, "SUMMARY.csv"))
 print(summ)
-cat("\n[fix01b] done\n")
+cat("\n[de-rm] done\n")
