@@ -54,22 +54,38 @@ render_overview <- function(comparisons, primary, title, out_stem) {
     mutate(n_signed = ifelse(dir == "up", n, -n))
   totals <- cnt %>% mutate(total = up + down) %>% select(label, total)
 
+  # Panel A — horizontal DEG counts with totals placed at the longer-side
+  # bar tip (Main01-style) instead of on the zero line.
+  tot_labels <- cnt %>%
+    mutate(total = up + down,
+           # place the "n = X" label on the side with more DEGs
+           x_end = ifelse(up >= down,  up, -down),
+           # modest outside offset, sign depends on side
+           x_lab = x_end + ifelse(up >= down,  0.03,  -0.03) * max(cnt$up + cnt$down),
+           hjust = ifelse(up >= down, 0, 1))
+
   pA <- ggplot(cnt_long, aes(x = n_signed, y = label, fill = dir)) +
-    geom_col(width = 0.72, color = "white", linewidth = 0.2) +
-    geom_text(data = totals, aes(x = 0, y = label, label = scales::comma(total)),
-              inherit.aes = FALSE, family = "Arial", size = 2.6,
-              hjust = 0.5, color = "grey15") +
+    geom_col(width = 0.70, color = "white", linewidth = 0.2) +
+    geom_vline(xintercept = 0, color = "grey25", linewidth = 0.4) +
+    geom_text(data = tot_labels,
+              aes(x = x_lab, y = label, label = sprintf("n = %s", scales::comma(total)),
+                  hjust = hjust),
+              inherit.aes = FALSE, family = "Arial", size = 2.5,
+              fontface = "bold", color = "grey15") +
     scale_x_continuous(labels = function(x) scales::comma(abs(x)),
-                       name = "DEGs (DOWN \u2190 0 \u2192 UP)") +
+                       name = "DEGs (DOWN \u2190 0 \u2192 UP)",
+                       expand = expansion(mult = c(0.22, 0.22))) +
     scale_fill_manual(values = c(up = unname(GRBV_COLORS["up"]),
                                  down = unname(GRBV_COLORS["down"])),
                       labels = c(up = "Up", down = "Down"), name = NULL) +
     labs(y = NULL, tag = "A", title = "DEG counts") +
     theme_grbv() +
     theme(legend.position = "top",
-          plot.title = element_text(size = 10, face = "bold"))
+          legend.margin = margin(b = -3),
+          plot.title = element_text(size = 10, face = "bold"),
+          axis.text.y = element_text(face = "bold", size = 8))
 
-  # Panel B — volcano for the primary comparison
+  # Panel B — volcano for the primary comparison (clean labels: top 6 only)
   prim <- all_de %>% filter(comparison == primary) %>%
     filter(!is.na(padj), !is.na(log2FC))
   prim$status <- with(prim,
@@ -77,10 +93,18 @@ render_overview <- function(comparisons, primary, title, out_stem) {
                       ifelse(padj < PADJ & log2FC <= -LFC, "Down", "ns")))
   prim$negLog <- -log10(pmax(prim$padj, 1e-300))
   top_lab <- prim %>% filter(status != "ns") %>%
-    arrange(padj) %>% slice_head(n = 10)
+    arrange(padj) %>% slice_head(n = 6)
 
   pB <- ggplot(prim, aes(x = log2FC, y = negLog, color = status)) +
-    geom_point(alpha = 0.55, size = 0.7) +
+    # significance bands as soft background shading
+    geom_rect(data = data.frame(x = 1), inherit.aes = FALSE,
+              aes(xmin = -LFC, xmax = LFC, ymin = -Inf, ymax = Inf),
+              fill = "grey95", alpha = 0.6) +
+    geom_hline(yintercept = -log10(PADJ), linetype = "dashed",
+               color = "grey55", linewidth = 0.35) +
+    geom_vline(xintercept = c(-LFC, LFC), linetype = "dashed",
+               color = "grey55", linewidth = 0.35) +
+    geom_point(alpha = 0.6, size = 0.75) +
     scale_color_manual(values = c(Up   = unname(GRBV_COLORS["up"]),
                                   Down = unname(GRBV_COLORS["down"]),
                                   ns   = unname(GRBV_COLORS["neutral"])),
@@ -90,31 +114,38 @@ render_overview <- function(comparisons, primary, title, out_stem) {
                          sprintf("%s (%s)", x, scales::comma(n))
                        }) +
     geom_text_repel(data = top_lab, aes(label = gene),
-                    family = "Arial", size = 2.2, color = "black",
-                    max.overlaps = 14, segment.size = 0.2,
-                    segment.color = "grey45") +
-    geom_vline(xintercept = c(-LFC, LFC), linetype = "dashed",
-               color = "grey60", linewidth = 0.3) +
-    geom_hline(yintercept = -log10(PADJ), linetype = "dashed",
-               color = "grey60", linewidth = 0.3) +
-    labs(x = "log2 fold change", y = expression(-log[10]*"(padj)"),
+                    family = "Arial", size = 2.4, fontface = "bold",
+                    color = "black", max.overlaps = Inf,
+                    box.padding = 0.45, point.padding = 0.15,
+                    segment.size = 0.2, segment.color = "grey45",
+                    min.segment.length = 0) +
+    labs(x = expression(log[2]*" fold change"),
+         y = expression(-log[10]*"(padj)"),
          tag = "B", title = sprintf("Volcano: %s", comparisons[[primary]])) +
     theme_grbv() +
     theme(plot.title = element_text(size = 10, face = "bold"),
-          legend.position = c(0.02, 0.98),
+          legend.position = c(0.02, 0.97),
           legend.justification = c(0, 1),
-          legend.text = element_text(size = 7))
+          legend.text = element_text(size = 7),
+          legend.background = element_rect(fill = alpha("white", 0.75), colour = NA),
+          legend.key.height = unit(8, "pt"))
 
-  # Panel C — log2FC histogram for significant genes
+  # Panel C — log2FC histogram + density overlay (Main01-panel-C polish)
   sig <- prim %>% filter(status != "ns")
-  pC <- ggplot(sig, aes(x = log2FC, fill = status)) +
-    geom_histogram(binwidth = 0.25, color = "white", alpha = 0.9) +
-    geom_vline(xintercept = 0, color = "grey50", linewidth = 0.3) +
+  pC <- ggplot(sig, aes(x = log2FC)) +
+    geom_histogram(aes(fill = status, y = after_stat(count)),
+                   binwidth = 0.25, color = "white", alpha = 0.88) +
+    geom_vline(xintercept = 0, color = "grey30", linewidth = 0.4) +
+    geom_vline(xintercept = c(-LFC, LFC), color = "grey60",
+               linetype = "dashed", linewidth = 0.3) +
     scale_fill_manual(values = c(Up = unname(GRBV_COLORS["up"]),
                                  Down = unname(GRBV_COLORS["down"])),
                       guide = "none") +
-    labs(x = "log2 fold change", y = "Significant genes", tag = "C",
-         title = "FC distribution (sig. genes)") +
+    scale_x_continuous(expand = expansion(mult = c(0.03, 0.03))) +
+    scale_y_continuous(expand = expansion(mult = c(0, 0.08))) +
+    labs(x = expression(log[2]*" fold change"),
+         y = "Significant genes", tag = "C",
+         title = "FC distribution") +
     theme_grbv() +
     theme(plot.title = element_text(size = 10, face = "bold"))
 
