@@ -4,7 +4,7 @@ from pathlib import Path
 import pandas as pd, numpy as np
 
 ROOT = Path("/Users/prempratapsingh/Data_Analysis/farm_pipeline/results/sensitivity")
-OUT  = Path("/Users/prempratapsingh/Data_Analysis/farm_pipeline/docs/SENSITIVITY_REPORT.md")
+OUT  = Path("/Users/prempratapsingh/Data_Analysis/docs/SENSITIVITY_REPORT.md")
 
 lines = ["# Sensitivity analysis — all variance-filter bottlenecks",
          "",

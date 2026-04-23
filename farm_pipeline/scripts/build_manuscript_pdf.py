@@ -1,7 +1,7 @@
 """Build a PDF of MANUSCRIPT_DRAFT_v1.md with all 10 Main figures embedded.
 
 Output:
-    /Users/prempratapsingh/Data_Analysis/farm_pipeline/docs/MANUSCRIPT_DRAFT_v1.pdf
+    /Users/prempratapsingh/Data_Analysis/docs/MANUSCRIPT_DRAFT_v1.pdf
 
 Figure placement:
     After each Results subsection that references a figure, the corresponding
@@ -17,9 +17,9 @@ import matplotlib
 from fpdf import FPDF
 
 ROOT   = Path("/Users/prempratapsingh/Data_Analysis")
-MD     = ROOT / "farm_pipeline" / "docs" / "MANUSCRIPT_DRAFT_v1.md"
+MD     = ROOT / "docs" / "MANUSCRIPT_DRAFT_v1.md"
 FIGDIR = ROOT / "figures" / "main"
-OUT    = ROOT / "farm_pipeline" / "docs" / "MANUSCRIPT_DRAFT_v1.pdf"
+OUT    = ROOT / "docs" / "MANUSCRIPT_DRAFT_v1.pdf"
 
 # Unicode-capable font (DejaVu Sans ships with matplotlib)
 _MPL_FONTS = Path(os.path.dirname(matplotlib.__file__)) / "mpl-data" / "fonts" / "ttf"
