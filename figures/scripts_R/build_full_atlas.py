@@ -109,6 +109,8 @@ SOURCE_FIGS = [
     (61, "S61_biochem_validation.png",                "Harvest biochem x transcriptome validation",         "regenerated", "Per-season + partial rho for SPS1, MBF1c, LOC100266309, sHSP, titer vs Brix / Malic"),
     (62, "S62_biochem_cohort_trajectory.png",         "Harvest biochem vs years-since-infection",           "regenerated", "Brix / pH / TA / Malic vs YSI per season; 2021 Brix recovery +0.10 \u00b0Bx / yr (r=0.76, p=0.0045)"),
     (63, "S63_biochem_season_infection.png",          "Season x Infection ANOVA on juice chemistry",        "regenerated", "TA interaction \u03b7\u00b2=0.77; cool 2021 +0.62 g/L vs hot 2022 -0.79 g/L; Brix 2.6x stronger in 2022"),
+    (64, "S64_tier1_overlap_summary.png",             "Tier 1 DEG overlap: size, intersections, enrichment","regenerated", "Signature sizes (log-x), GRBV intersections (35 unique / 13 Botrytis-shared / 7 multi), Fisher q=2.1e-5 vs Blanco-Ulate Zinfandel"),
+    (65, "S65_tier1_fc_concordance.png",              "Tier 1 log2FC Spearman concordance heatmap",         "regenerated", "GRBV (Merlot) x Blanco-Ulate GRBV (Zinfandel) rho=0.47; Blanco-Ulate x Song GLRaV-3 rho=-0.21; other cells \u2248 0"),
 ]
 
 PAGE_W, PAGE_H = LETTER  # 8.5 x 11 inches

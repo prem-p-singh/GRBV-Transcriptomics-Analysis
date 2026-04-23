@@ -31,12 +31,17 @@ ap.add_argument("--counts",       required=True)
 ap.add_argument("--meta",         required=True)
 ap.add_argument("--harmonized_dir", required=True)
 ap.add_argument("--coverage",     required=True)
-ap.add_argument("--out_dir",      required=True)
+ap.add_argument("--out_dir",      required=True,
+                help="intermediate working dir (farm_pipeline/results/12_metaanalysis)")
+ap.add_argument("--publish_dir",  default=None,
+                help="repo-root CSV destination; files renamed with tier1_ prefix")
 ap.add_argument("--padj_thresh",  type=float, default=0.05)
 ap.add_argument("--lfc_thresh",   type=float, default=1.0)
 args = ap.parse_args()
 
 os.makedirs(args.out_dir, exist_ok=True)
+if args.publish_dir:
+    os.makedirs(args.publish_dir, exist_ok=True)
 
 
 # -----------------------------------------------------------------------------
@@ -223,7 +228,32 @@ if len(cls):
 
 
 # -----------------------------------------------------------------------------
-# Short, legible display labels (strip prefixes + slim contrast tags)
+# Publish CSVs to repo root with tier1_ prefix (for R figure scripts / user-facing)
+# -----------------------------------------------------------------------------
+if args.publish_dir:
+    import shutil
+    pub = Path(args.publish_dir)
+    moves = {
+        "GRBV_signature.csv":       "tier1_grbv_signature.csv",
+        "overlap_matrix.csv":       "tier1_overlap_matrix.csv",
+        "specificity_classes.csv":  "tier1_specificity_classes.csv",
+        "specificity_summary.csv":  "tier1_specificity_summary.csv",
+        "fc_correlation_matrix.csv":"tier1_fc_correlation_matrix.csv",
+    }
+    for src_name, dst_name in moves.items():
+        src = Path(args.out_dir) / src_name
+        if src.exists():
+            shutil.copy2(src, pub / dst_name)
+    # Also publish the coverage report (rule 11 output) next to these
+    cov_src = Path(args.coverage)
+    if cov_src.exists():
+        shutil.copy2(cov_src, pub / "tier1_coverage_report.csv")
+    print(f"[12] published CSVs to {pub}", file=sys.stderr)
+
+
+# -----------------------------------------------------------------------------
+# Short, legible display labels (used only by the legacy matplotlib plots below;
+# figures are now regenerated in R via figures/scripts_R/supp_tier1.R).
 # -----------------------------------------------------------------------------
 def short_label(name: str) -> str:
     if name == "GRBV":
@@ -239,6 +269,14 @@ def short_label(name: str) -> str:
     return tag
 
 short_names = {n: short_label(n) for n in names}
+
+
+# If publishing for R, skip all matplotlib plots (R is the canonical figure
+# renderer; see figures/scripts_R/supp_tier1.R).
+if args.publish_dir:
+    print("[12] done. (plots skipped; R produces the canonical figures)",
+          file=sys.stderr)
+    sys.exit(0)
 
 
 # -----------------------------------------------------------------------------
