@@ -1,295 +1,192 @@
 <p align="center">
-  <img src="assets/banner.png" alt="GRBV Transcriptomics Analysis Banner" width="100%">
+  <img src="assets/banner.png" alt="GRBV Transcriptomics Analysis" width="100%">
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Python-3.6%2B-blue?style=for-the-badge&logo=python&logoColor=white" alt="Python">
-  <img src="https://img.shields.io/badge/License-MIT-green?style=for-the-badge" alt="License">
-  <img src="https://img.shields.io/badge/Status-Complete-brightgreen?style=for-the-badge" alt="Status">
-  <img src="https://img.shields.io/badge/Figures-55-orange?style=for-the-badge" alt="Figures">
-  <img src="https://img.shields.io/badge/Scripts-20-purple?style=for-the-badge" alt="Scripts">
+  <img src="https://img.shields.io/badge/Samples-327-1E2761?style=for-the-badge" alt="327 samples">
+  <img src="https://img.shields.io/badge/Genes-14,604-B2182B?style=for-the-badge" alt="14604 genes">
+  <img src="https://img.shields.io/badge/Seasons-2021%20%2B%202022-009E73?style=for-the-badge" alt="Two seasons">
+  <img src="https://img.shields.io/badge/Pipeline-Snakemake%20%2B%20R-CC79A7?style=for-the-badge" alt="Snakemake + R">
+  <img src="https://img.shields.io/badge/Status-Pre--submission%20(Nature%20Plants)-D55E00?style=for-the-badge" alt="Pre-submission">
 </p>
 
-A comprehensive RNA-Seq transcriptomics pipeline for studying **Grapevine Red Blotch Virus (GRBV)** effects on *Vitis vinifera* (Merlot). The analysis covers 327 field samples across 2 growing seasons and 4 maturity stages, producing 55 publication-quality figures, 26+ data tables, and automated reports.
+---
+
+> A 327-sample RNA-Seq study asking how Grapevine Red Blotch Virus (GRBV) rewires the *Vitis vinifera* (Merlot) transcriptome, how temperature modulates that rewiring, and which host genes carry the causal weight between the two.
+
+Two consecutive seasons in the same vineyard turned this project into a natural experiment: 2021 was cool and typical; 2022 was hot, with a +7.6 °C mean excess at Harvest. The disease pattern flipped. Cool years peaked at Harvest, hot years peaked at Post-véraison, and once we looked hard enough to see why, the biology got specific.
+
+The headline is not that GRBV is fighting the plant. It is that GRBV is quieting one specific arm of the plant's stress biology, the small heat-shock protein axis, while slipping past canonical immune defense without triggering it at all.
 
 ---
 
-## Table of Contents
+## Study at a glance
 
-- [Study Overview](#study-overview)
-- [Repository Structure](#repository-structure)
-- [Input Data Requirements](#input-data-requirements)
-- [Installation](#installation)
-- [Usage](#usage)
-- [Output Files](#output-files)
-- [Key Findings](#key-findings)
-- [Citation](#citation)
-- [License](#license)
-
----
-
-## Study Overview
-
-| Parameter | Details |
-|-----------|---------|
-| **Species** | *Vitis vinifera* cv. Merlot |
-| **Pathogen** | Grapevine Red Blotch Virus (GRBV) |
-| **Samples** | 327 total (264 RB+ infected, 63 RB- control) |
-| **Genes** | 28,168 raw &rarr; 14,604 after filtering |
-| **Seasons** | 2021 (cooler) and 2022 (hotter, +7.6 &deg;C at Harvest) |
-| **Maturity Stages** | Pre-veraison, Veraison, Post-veraison, Harvest |
-| **Infection Cohorts** | 7 years (2016-2022) |
-| **DE Thresholds** | adj. p-value < 0.05, \|log2FC\| &ge; 1 |
-
-The pipeline addresses six core research questions:
-1. **Q1** - How does infection duration affect transcriptome responses?
-2. **Q2** - Are GRBV effects maturity-stage dependent?
-3. **Q3** - Do seasonal conditions modulate GRBV responses?
-4. **Q4** - Does environment amplify or dampen viral effects?
-5. **Q5** - What seasonal variation exists in uninfected vines?
-6. **Q6** - How does transcriptome trajectory shift with infection age?
+| | |
+|---|---|
+| Species | *Vitis vinifera* cv. Merlot, one commercial vineyard, 10+ blocks |
+| Samples | 327 (264 RB+, 63 RB-) |
+| Seasons | 2021 (cool), 2022 (hot, +7.6 °C at Harvest) |
+| Maturity stages | Pre-véraison, Véraison, Post-véraison, Harvest |
+| Infection cohorts | 7 onset years (2016 – 2022), n = 105 – 214 DEGs each |
+| Sequencing | TAG-seq (UMI-indexed) · STAR · Pinot Noir reference ASM3070453v1 |
+| Primary DE design | DESeq2 Wald, `~ Maturity_stage + Sampling_Season + Infection_Group`, BH-FDR < 0.05, \|log₂FC\| ≥ 1 |
+| Figures | 10 Main composites + 47 Supplementary, PNG + SVG |
 
 <p align="center">
-  <img src="assets/pipeline_overview.png" alt="Analysis Pipeline Overview" width="100%">
+  <img src="figures/main/Main03_inverted_trajectory.png" alt="Main03 — Inverted seasonal DEG trajectory" width="95%">
 </p>
 
----
-
-## Repository Structure
-
-### Analysis Scripts (run in order)
-
-| # | Script | Description |
-|---|--------|-------------|
-| 1 | `analysis.py` | Core differential expression analysis for 6 research questions (Welch's t-test, BH FDR) |
-| 2 | `pathway_enrichment.py` | GO (BP/MF/CC) and KEGG pathway enrichment for all 6 questions |
-| 3 | `seasonal_maturity_progression.py` | Season-stratified DE across 4 maturity stages; reveals inverted response trajectory |
-| 4 | `biomarker_discovery.py` | Multi-condition biomarker scoring; 3-gene panel with AUC = 1.0 |
-| 5 | `gwas_qtl_crossref.py` | Cross-references biomarkers with 121 published GWAS/QTL loci |
-| 6 | `stratified_vs_pooled_comparison.py` | Robustness validation: season-stratified vs pooled DE consistency |
-| 7 | `environment_titer_integration.py` | Integrates weather data, viral titer, and DEGs across seasons/stages |
-| 8 | `heat_stress_signatures.py` | Heat-stress gene analysis (115 genes, 9 categories); sHSP suppression by GRBV |
-
-### Extended Analysis Scripts
-
-| # | Script | Description |
-|---|--------|-------------|
-| 9 | `analysis_schematic.py` | Publication-quality pipeline flowchart diagram |
-| 10 | `grbv_biology_diagram.py` | Data-driven biological infographic of molecular disruption cascade |
-| 11 | `gsea_analysis.py` | NumPy-vectorized GSEA (500 perm, HPC-optimized) across 8 season × stage conditions |
-| 12 | `multifactor_interaction_model.py` | Infection × Season × Stage ANOVA with variance decomposition |
-| 13 | `tf_family_analysis.py` | Transcription factor family profiling (WRKY, MYB, NAC, bHLH, ERF/AP2, HSF) |
-| 14 | `advanced_ml_biomarkers.py` | Multi-method ML comparison (LR, RF, LASSO, SVM, GBM) + stability selection |
-| 15 | `causal_mediation_analysis.py` | Temperature → Titer → Gene expression mediation analysis |
-| 16 | `chromosome_deg_hotspots.py` | Genome-wide DEG density and chromosomal hotspot analysis |
-| 17 | `coexpression_network.py` | WGCNA co-expression module analysis (Python wrapper for R outputs) |
-
-### Report Generation Scripts
-
-| # | Script | Description |
-|---|--------|-------------|
-| 18 | `generate_report_pdf.py` | Automated PDF report with embedded figures and discussion |
-| 19 | `generate_presentation.py` | Conference PowerPoint deck with all figures |
-| 20 | `generate_workflow_pdf.py` | Paper-writing workflow guide (6 phases, journal targets) |
+*Main Figure 3. The inverted seasonal DEG trajectory. 2021 peaks at Harvest (1,567 DEGs); 2022 peaks earlier at Post-véraison (772). Viral titer runs 3.6× higher in the hot year at Pre-véraison and 0.18× at Harvest: the biphasic titer pattern is the mechanistic hinge behind the inverted transcriptome.*
 
 ---
 
-## Input Data Requirements
+## Three threads, one story
 
-The following files are required in the working directory but are **not included** in this repository due to size:
+### 1. Inverted seasonal trajectory (Q3, Q4)
 
-| File | Description | Size |
-|------|-------------|------|
-| `counts_matrix.txt` | Raw RNA-Seq count matrix (28,168 genes x 327 samples), tab-separated | ~23 MB |
-| `sample_metadata.txt` | Sample metadata with columns: Sample, Infection_Group, Sampling_Season, Maturity_stage, Infection_YSI | ~12 KB |
-| `org.Vvinifera.eg.db/` | SQLite annotation database (GO terms, KEGG pathways, gene symbols) | ~12 MB |
-| `go-basic.obo` | Gene Ontology OBO file (required by goatools) | ~30 MB |
-| `daily_2021.csv` | Daily weather data for 2021 growing season | - |
-| `daily_2022.csv` | Daily weather data for 2022 growing season | - |
-| `Virus titer.txt` | Viral titer measurements across seasons and stages | ~4 KB |
-| `MEs.csv` | WGCNA module eigengenes (from R analysis) | - |
-| `Module_genes.xlsx` | WGCNA module gene assignments (14 sheets) | - |
+2021 DEG counts peak at Harvest with 1,567 genes. 2022 peaks earlier at Post-véraison with 772, falling back to 759 by Harvest. Cross-season fold-change correlation rises with maturity: r = 0.34 at Pre-véraison, r = 0.67 at Post-véraison. The direction switch is not seasonal noise. It is mechanistically driven by biphasic viral titer: higher titer early in hot years, lower titer late, flipping the timing of disease expression.
+
+### 2. Thermal defense silenced, canonical immunity untouched (sHSP axis)
+
+29 of 36 small heat-shock proteins (sHSPs) are down-regulated in infected vines, the largest single-category signal in the 115-gene heat-responsive set. HSF ↔ sHSP coordination stays coherent within each infection group (r = 0.625, p = 7.2 × 10⁻³⁷) but the sHSP module score drops from +1.64 in healthy vines to +0.74 in infected, a 55% reduction. Meanwhile, every single one of 10 canonical plant-immunity categories (NLR, PRR, PR, SA, JA, ET, WRKY, callose, ROS, R-adapters) shows \|log₂FC\| < 0.08. GRBV is not triggering effector-triggered or pattern-triggered immunity. It is dampening thermal defense.
+
+### 3. MBF1c, SPS1, and 37 other mediators (Q4 mechanism)
+
+Causal-mediation sweep on the top 2,000 most variable genes returns 39 temperature → titer → gene mediators at joint BH-FDR < 0.05. The top hit, LOC100249249, turns out to be multiprotein-bridging factor 1c (MBF1c), a known HSF co-activator: joint p = 4.8 × 10⁻¹¹, 61.8% of the temperature effect mediated by viral titer. The second-tier robust mediator is LOC100232974, sucrose-phosphate synthase 1 (SPS1), the enzyme that makes sucrose: a direct molecular link from viral titer to the sugar-deficit phenotype.
 
 ---
 
-## Installation
+## What changed under the reanalysis
 
-### Prerequisites
+Before submission, the project ran its own reviewer-style critical review (`docs/CRITICAL_REVIEW.md`). Thirteen methodological issues surfaced; all thirteen were addressed. Four of the corrections meaningfully moved published claims:
 
-- Python 3.6 or higher
-- pip package manager
+| Claim | Pre-fix | Post-fix |
+|---|---|---|
+| "Universal DEGs" | 908 from Welch-t, no covariate adjustment | 126 under DESeq2 with `~ Maturity_stage + Sampling_Season + Infection_Group`. Only 13.6% of the original set replicated. |
+| ML biomarker AUC | 1.000 across 5 methods | 1.000 only when viral N761 transcripts are in the feature pool. Honest host-only LOSO AUC is 0.73 – 0.88. |
+| Causal mediators | Zero significant at tv = 500 | 39 at tv = 2,000, with MBF1c as the cross-pipeline robust top hit. |
+| QTL overlap | 27/27 inside 1 Mb of a QTL, no null | Same 27/27, now with a 10,000-permutation null: fold = 2.01, empirical p < 0.0002. |
 
-### Setup
+The fix pass is documented in `docs/DE_REANALYSIS_REPORT.md`, `docs/SENSITIVITY_REPORT.md`, and `docs/METHODS_ADDENDUM.md`. The data layer came out of it richer (24 covariate-adjusted contrasts, including per-stage × per-season Q2x); the manuscript claims came out honest.
 
-```bash
-# Clone the repository
-git clone https://github.com/prem-p-singh/GRBV-Transcriptomics-Analysis.git
-cd GRBV-Transcriptomics-Analysis
+---
 
-# Install dependencies
-pip install -r requirements.txt
+## Repository layout
+
+```
+.
+├── figures/
+│   ├── main/              Main01–Main10 composite figures, PNG + SVG
+│   ├── supp/              S02–S55 supplementary figures, PNG + SVG
+│   ├── scripts_R/         R/ggplot2 scripts for every figure
+│   ├── GRBV_Main_Figures_Atlas.pdf     10-page main atlas
+│   └── GRBV_Full_Figure_Atlas.pdf      65-page full atlas
+├── farm_pipeline/
+│   ├── Snakefile          13 rules, 24 DE contrasts, sensitivity sweeps
+│   ├── scripts/
+│   ├── results/           fix01, fix01c, fix03, fix10, fix11 + rules 00–10
+│   ├── data/, resources/
+│   └── docs/LITERATURE_SCHEMA.md
+├── docs/
+│   ├── MANUSCRIPT_DRAFT_v1.{md,pdf}
+│   ├── INTEGRATED_ANALYSIS.{md,pdf}
+│   ├── CRITICAL_REVIEW.{md,pdf}
+│   ├── DE_REANALYSIS_REPORT.md
+│   ├── METHODS_ADDENDUM.md
+│   ├── HSFA2_VIGS_EXPERIMENT_PLAN.md
+│   ├── SENSITIVITY_REPORT.{md,pdf}
+│   ├── EXTENDED_RESULTS_REPORT.{md,pdf}
+│   └── PLAIN_LANGUAGE_SUMMARY.md
+├── Old-Analysis/          Pre-fix archive (55 old PNGs, 19 Python scripts,
+│                          8 legacy deliverables, 11 superseded CSVs)
+├── GRBV_Funding_Committee_Presentation.pptx   48-slide committee deck
+├── counts_matrix.txt + sample_metadata.txt + 19 active-pipeline CSVs
+├── org.Vvinifera.eg.db/, go-basic.obo
+├── CLAUDE.md              Project memory / session context
+└── README.md              This file
 ```
 
-### Dependencies
-
-| Package | Purpose |
-|---------|---------|
-| numpy | Numerical computing |
-| pandas | Data manipulation |
-| scipy | Statistical tests (Welch's t-test, Fisher's exact, Spearman) |
-| scikit-learn | PCA, ROC-AUC, cross-validation, Random Forest |
-| matplotlib | Figure generation |
-| seaborn | Statistical visualizations |
-| goatools | Gene Ontology enrichment analysis |
-| fpdf2 | PDF report generation |
-| python-pptx | PowerPoint presentation generation |
-| openpyxl | Reading Excel files (WGCNA module gene lists) |
-
 ---
 
-## Usage
+## Running it
 
-### Full Pipeline Execution
+### Figures
 
-Run scripts sequentially in the numbered order. Each script reads its required inputs and produces outputs used by downstream scripts.
+Every figure is an R/ggplot2 script in `figures/scripts_R/`. Each script is self-contained: it sources `theme_grbv.R` (the project palette + save helper) and writes a PNG + SVG pair to `figures/main/` or `figures/supp/`.
 
 ```bash
-# Step 1: Core differential expression (produces plots 01-07, base DE results)
-python analysis.py
+# One figure
+Rscript figures/scripts_R/main03_inverted_trajectory.R
 
-# Step 2: Pathway enrichment (produces plots 08-14)
-python pathway_enrichment.py
+# A whole supplementary batch
+Rscript figures/scripts_R/supp_de_overview.R          # S02 through S07
 
-# Step 3: Seasonal x maturity analysis (produces plots 15-19)
-python seasonal_maturity_progression.py
-
-# Step 4: Biomarker discovery (produces plots 20-22, biomarker CSVs)
-python biomarker_discovery.py
-
-# Step 5: GWAS/QTL cross-reference (produces plots 24-25)
-python gwas_qtl_crossref.py
-
-# Step 6: Robustness validation (produces plots 26-29)
-python stratified_vs_pooled_comparison.py
-
-# Step 7: Environment-titer integration (produces plots 30-33)
-python environment_titer_integration.py
-
-# Step 8: Heat-stress analysis (produces plots 34-35)
-python heat_stress_signatures.py
-
-# Step 9: Pipeline schematic + biology diagram (produces plots 23, 36)
-python analysis_schematic.py
-python grbv_biology_diagram.py
-
-# Step 10: GSEA analysis (produces plots 37-39)
-python gsea_analysis.py
-
-# Step 11: Multi-factor ANOVA (produces plots 40-42)
-python multifactor_interaction_model.py
-
-# Step 12: TF family analysis (produces plots 43-45)
-python tf_family_analysis.py
-
-# Step 13: Advanced ML biomarkers (produces plots 46-48)
-python advanced_ml_biomarkers.py
-
-# Step 14: Causal mediation (produces plots 49-50)
-python causal_mediation_analysis.py
-
-# Step 15: Chromosome DEG hotspots (produces plots 51-52)
-python chromosome_deg_hotspots.py
-
-# Step 16: Co-expression network (produces plots 53-55)
-python coexpression_network.py
-
-# Step 17: Generate outputs
-python generate_report_pdf.py        # PDF report
-python generate_presentation.py      # PowerPoint deck
-python generate_workflow_pdf.py      # Paper-writing guide
+# Rebuild the atlases from the current PNG set
+python figures/scripts_R/build_atlas.py               # 10-page main atlas
+python figures/scripts_R/build_full_atlas.py          # 65-page full atlas
 ```
 
-### Individual Script Execution
+Figure exports default to **PNG (600 dpi via ragg)** and **SVG (via svglite)**. SVG opens cleanly in Illustrator, Inkscape, or Figma if you want to hand-tweak a panel. PDF is an opt-in: `save_grbv(..., formats = c("png","pdf"))`.
 
-Each analysis script can be run independently if its required input files are present. See the input data requirements above.
+### FARM HPC pipeline
 
----
+The extended analysis (DESeq2 stratified contrasts, mediation, WGCNA, GSEA, QTL permutation, NCBI annotation) runs as a Snakemake pipeline on UC Davis FARM.
 
-## Output Files
+```bash
+cd farm_pipeline
+bash setup_farm.sh         # install R packages + annotation resources
+bash run_farm.sh           # submit to partition low, account publicgrp
+bash pull.sh               # rsync results back to local figures/
+```
 
-### Figures (55 PNGs)
+### Funding-committee deck
 
-| Plots | Source Script | Content |
-|-------|--------------|---------|
-| 01-07 | `analysis.py` | PCA overview, DE results for Q1-Q6 |
-| 08-14 | `pathway_enrichment.py` | Pathway enrichment heatmaps for Q1-Q6, master landscape |
-| 15-19 | `seasonal_maturity_progression.py` | Season x stage DEG grids, PCA transitions, pathway detail |
-| 20-22 | `biomarker_discovery.py` | Biomarker scores, expression profiles, robustness |
-| 23 | `analysis_schematic.py` | Pipeline flowchart |
-| 24-25 | `gwas_qtl_crossref.py` | Chromosome ideogram, QTL cross-reference summary |
-| 26-29 | `stratified_vs_pooled_comparison.py` | Pooled vs stratified, overlap heatmap, cross-question, dashboard |
-| 30-33 | `environment_titer_integration.py` | Weather, titer dynamics, integrated multi-parameter plots |
-| 34-35 | `heat_stress_signatures.py` | Heat-stress gene landscape, heat vs virus disentanglement |
-| 36 | `grbv_biology_diagram.py` | Data-driven molecular disruption infographic |
-| 37-39 | `gsea_analysis.py` | GSEA enrichment scores, Fisher concordance, NES heatmap |
-| 40-42 | `multifactor_interaction_model.py` | Variance decomposition, interaction sets, expression profiles |
-| 43-45 | `tf_family_analysis.py` | TF family heatmap, enrichment balloon, expression boxplots |
-| 46-48 | `advanced_ml_biomarkers.py` | ML AUC comparison, stability selection, consensus panel |
-| 49-50 | `causal_mediation_analysis.py` | Mediation diagrams, direct vs indirect effects |
-| 51-52 | `chromosome_deg_hotspots.py` | Chromosome ideogram DEG density, Manhattan plot |
-| 53-55 | `coexpression_network.py` | Module-trait correlations, eigengene profiles, hub gene heatmaps |
-
-### Data Tables (26+ CSVs)
-
-| File | Content |
-|------|---------|
-| `GRBV_biomarkers_top50.csv` | Top 50 biomarkers with multi-condition scores and AUC values |
-| `GRBV_biomarker_QTL_crossref.csv` | Biomarker-QTL co-localization details |
-| `biomarker_genomic_locations.csv` | Genomic coordinates for biomarker genes |
-| `heat_stress_DEGs_all_conditions.csv` | Heat-stress gene DE results across all conditions |
-| `heat_gene_temperature_correlations.csv` | Spearman correlations of heat genes with temperature |
-| `heat_DEGs_recurrence.csv` | Recurrent heat DEGs across conditions |
-| `universal_DEGs_across_approaches.csv` | 908 robust consensus DEGs |
-| `integrated_environment_titer_DEG.csv` | Temperature-titer-DEG integration table |
-| `temperature_at_sampling.csv` | Temperature data at sampling timepoints |
-| `Q1_pooled_vs_stratified.csv` | Q1 pooled vs stratified DE comparison |
-| `Q2_pooled_vs_stratified.csv` | Q2 pooled vs stratified DE comparison |
-
-### Reports
-
-| File | Content |
-|------|---------|
-| `GRBV_Transcriptomics_Report.pdf` | 55-page comprehensive report with all figures and discussion |
-| `GRBV_Transcriptomics_Presentation.pptx` | 64-slide conference-ready presentation |
-| `PAPER_WRITING_WORKFLOW.pdf` | 6-phase paper-writing guide with journal targets |
+Generated by `pptxgenjs` via a Node.js script. Output is 48 slides, 19 MB, with 10 Main + 6 Supp figures embedded and a Q-tag in the top-right of every result slide showing which research question each figure answers.
 
 ---
 
-## Key Findings
+## Deliverables
 
-<p align="center">
-  <img src="assets/key_findings.png" alt="Key Findings at a Glance" width="100%">
-</p>
+| | |
+|---|---|
+| Manuscript draft | `docs/MANUSCRIPT_DRAFT_v1.pdf` (9.6 MB, 10 figures embedded) |
+| Figure atlases | `figures/GRBV_Main_Figures_Atlas.pdf`, `GRBV_Full_Figure_Atlas.pdf` |
+| Methods addendum | `docs/METHODS_ADDENDUM.md` (reviewer-facing) |
+| Committee deck | `GRBV_Funding_Committee_Presentation.pptx` |
+| Wet-lab protocol | `docs/HSFA2_VIGS_EXPERIMENT_PLAN.md` (7-month VIGS plan) |
+| Integrated analysis | `docs/INTEGRATED_ANALYSIS.pdf` |
 
-- **Stage-dependent viral impact**: GRBV effects are strongest at Post-veraison and Harvest, with up to 1,873 DEGs in a single condition
-- **Inverted seasonal trajectory**: 2021 DEG counts peak at Harvest; 2022 peaks at Post-veraison, driven by a +7.6 &deg;C temperature differential
-- **Heat-stress suppression**: GRBV downregulates 29/36 small heat-shock proteins (sHSPs), reducing the sHSP module score by ~55%
-- **Diagnostic biomarkers**: A 3-gene panel achieves AUC = 1.000 across 5-fold cross-validation; 12 universal biomarkers significant in all conditions
-- **Genomic validation**: 60% of biomarker genes co-localize within 1 Mb of known GWAS/QTL loci for berry quality traits
-- **Pathway disruption**: Consistent downregulation of phenylpropanoid, flavonoid, and stilbenoid biosynthesis across seasons and stages
-- **270 GSEA enrichments**: Permutation-based GSEA (500 perm) reveals 77% down-regulation; KEGG:Ribosome significant in 6/8 conditions; cross-season NES mirrors inverted trajectory
-- **13 co-expression modules**: WGCNA identifies stage-dominated networks; black module most infection-correlated (r=+0.126, p=0.022); 130 hub genes
+## What's next
+
+1. qPCR validation of 10 key genes: MBF1c, SPS1, LOC100266309, 3 sHSPs, HSFA2, and 3 top host biomarkers. Six to eight weeks wet-lab.
+2. GEO + SRA data deposition. Two to four weeks.
+3. Nature Plants submission. Ready after (1) and (2).
+4. VIGS agroinoculation of MBF1c and SPS1 in *N. benthamiana* and grapevine, per `docs/HSFA2_VIGS_EXPERIMENT_PLAN.md`. Seven months, elevates the bid to PNAS-competitive.
+5. Tier-1 literature meta-analysis across 5 published Vitis stress studies (GLRaV-3, GPGV, powdery mildew, downy mildew, heat). Schema already scaffolded at `farm_pipeline/docs/LITERATURE_SCHEMA.md`.
+
+---
+
+## Acknowledgments
+
+The founding PI of this study, **Dr. Anita Oberholster** (UC Davis Viticulture & Enology, 1980 – 2025), passed away in January 2025. Her lab built the field sampling design, ran the wet-lab work, and framed the year-one manuscript. Every result in this repository sits on that foundation.
+
+Current mentorship from **Dr. David E. Block** (UC Davis V&E). GRBV virology co-authorship and field-site liaison from **Dr. Mysore R. Sudarshana** (USDA-ARS / UC Davis Plant Pathology). RNA-Seq pipeline execution by **Bradley N. Jenner** (UC Davis Bioinformatics Core, 2025-04-15 to 2025-05-12).
+
+Funding: USDA-ARS grapevine pathology programs; California Department of Food and Agriculture (CDFA) specialty-crop block grants.
+
+Compute: UC Davis FARM HPC, partition `low`, account `publicgrp`.
+
+Annotation resources: NCBI, `org.Vvinifera.eg.db`, Gene Ontology Consortium, KEGG.
 
 ---
 
-## Citation
+## Citing
 
-If you use this pipeline or its results, please cite:
+> Singh, P.P., Block, D.E., Sudarshana, M.R., Oberholster, A. (in preparation). *Biphasic temperature drives viral titer dynamics and silences thermal defense in* Vitis vinifera *cv. Merlot under Grapevine Red Blotch Virus infection: a 327-sample transcriptomic study.*
 
-> Singh, P.P. (2026). Comprehensive transcriptomic analysis of Grapevine Red Blotch Virus effects on *Vitis vinifera* cv. Merlot across seasons and maturity stages. *[Journal TBD]*.
-
----
+Contact: [ppssingh@ucdavis.edu](mailto:ppssingh@ucdavis.edu) · ORCID [0000-0001-7921-9379](https://orcid.org/0000-0001-7921-9379) · [prempsingh.com](https://prempsingh.com)
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+MIT. See [LICENSE](LICENSE).
