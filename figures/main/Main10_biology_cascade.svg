@@ -1,0 +1,80 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='518.74pt' height='623.62pt' viewBox='0 0 518.74 623.62'>
+<g class='svglite'>
+<defs>
+  <style type='text/css'><![CDATA[
+    .svglite line, .svglite polyline, .svglite polygon, .svglite path, .svglite rect, .svglite circle {
+      fill: none;
+      stroke: #000000;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke-miterlimit: 10.00;
+    }
+    .svglite text {
+      white-space: pre;
+    }
+    .svglite g.glyphgroup path {
+      fill: inherit;
+      stroke: none;
+    }
+  ]]></style>
+</defs>
+<rect width='100%' height='100%' style='stroke: none; fill: #FFFFFF;'/>
+<defs>
+  <clipPath id='cpMC4wMHw1MTguNzR8MC4wMHw2MjMuNjI='>
+    <rect x='0.00' y='0.00' width='518.74' height='623.62' />
+  </clipPath>
+</defs>
+<g clip-path='url(#cpMC4wMHw1MTguNzR8MC4wMHw2MjMuNjI=)'>
+<rect x='0.00' y='0.00' width='518.74' height='623.62' style='stroke-width: 0.00; stroke: none;' />
+</g>
+<defs>
+  <clipPath id='cpNy45N3w1MTAuNzd8NTAuOTR8NjAyLjI2'>
+    <rect x='7.97' y='50.94' width='502.80' height='551.32' />
+  </clipPath>
+</defs>
+<g clip-path='url(#cpNy45N3w1MTAuNzd8NTAuOTR8NjAyLjI2)'>
+<rect x='28.08' y='76.00' width='462.58' height='72.67' style='stroke-width: 1.07; stroke-linecap: butt; stroke-linejoin: miter; fill: #440154; fill-opacity: 0.95;' />
+<rect x='28.08' y='176.87' width='462.58' height='72.67' style='stroke-width: 1.07; stroke-linecap: butt; stroke-linejoin: miter; fill: #3B528B; fill-opacity: 0.95;' />
+<rect x='28.08' y='277.73' width='462.58' height='72.67' style='stroke-width: 1.07; stroke-linecap: butt; stroke-linejoin: miter; fill: #21908C; fill-opacity: 0.95;' />
+<rect x='28.08' y='378.60' width='462.58' height='72.67' style='stroke-width: 1.07; stroke-linecap: butt; stroke-linejoin: miter; fill: #5DC863; fill-opacity: 0.95;' />
+<rect x='28.08' y='479.47' width='462.58' height='72.67' style='stroke-width: 1.07; stroke-linecap: butt; stroke-linejoin: miter; fill: #FDE725; fill-opacity: 0.95;' />
+<text x='43.17' y='94.35' style='font-size: 10.24px; font-weight: bold;fill: #FFFFFF; font-family: "Arial";' textLength='144.97px' lengthAdjust='spacingAndGlyphs'>1. GRBV infection establishes</text>
+<text x='43.17' y='195.22' style='font-size: 10.24px; font-weight: bold;fill: #FFFFFF; font-family: "Arial";' textLength='189.86px' lengthAdjust='spacingAndGlyphs'>2. Canonical plant immunity dampened</text>
+<text x='43.17' y='296.08' style='font-size: 10.24px; font-weight: bold;fill: #FFFFFF; font-family: "Arial";' textLength='239.19px' lengthAdjust='spacingAndGlyphs'>3. HSF ↔ sHSP thermal-defence axis suppressed</text>
+<text x='43.17' y='396.95' style='font-size: 10.24px; font-weight: bold;fill: #1A1A1A; font-family: "Arial";' textLength='205.23px' lengthAdjust='spacingAndGlyphs'>4. Sugar-metabolism transcription rewired</text>
+<text x='43.17' y='497.81' style='font-size: 10.24px; font-weight: bold;fill: #1A1A1A; font-family: "Arial";' textLength='232.81px' lengthAdjust='spacingAndGlyphs'>5. Disease phenotype: red blotch + sugar deficit</text>
+<text x='43.17' y='107.56' style='font-size: 7.68px;fill: #FFFFFF; font-family: "Arial";' textLength='112.98px' lengthAdjust='spacingAndGlyphs'>Geminivirus replicates in phloem;</text>
+<text x='43.17' y='117.51' style='font-size: 7.68px;fill: #FFFFFF; font-family: "Arial";' textLength='163.72px' lengthAdjust='spacingAndGlyphs'>N761_gp1–3 dominate the Q6 volcano (Main 2);</text>
+<text x='43.17' y='127.47' style='font-size: 7.68px;fill: #FFFFFF; font-family: "Arial";' textLength='188.05px' lengthAdjust='spacingAndGlyphs'>biphasic titer dynamics across stages (Main 3, panel C)</text>
+<text x='43.17' y='208.42' style='font-size: 7.68px;fill: #FFFFFF; font-family: "Arial";' textLength='160.67px' lengthAdjust='spacingAndGlyphs'>All 10 immune categories show |log2FC| &lt; 0.08</text>
+<text x='43.17' y='218.38' style='font-size: 7.68px;fill: #FFFFFF; font-family: "Arial";' textLength='216.34px' lengthAdjust='spacingAndGlyphs'>(NLR, PRR, PR, SA, JA, ET, WRKY, callose, ROS, R-adapters);</text>
+<text x='43.17' y='228.34' style='font-size: 7.68px;fill: #FFFFFF; font-family: "Arial";' textLength='228.56px' lengthAdjust='spacingAndGlyphs'>WGCNA modules preserved across infected vines (Zsum 5.8–36.4)</text>
+<text x='43.17' y='309.29' style='font-size: 7.68px;fill: #FFFFFF; font-family: "Arial";' textLength='223.38px' lengthAdjust='spacingAndGlyphs'>29 / 36 sHSPs down-regulated in infected vines (Main 4, panel A);</text>
+<text x='43.17' y='319.25' style='font-size: 7.68px;fill: #FFFFFF; font-family: "Arial";' textLength='186.33px' lengthAdjust='spacingAndGlyphs'>HSF ↔ sHSP coordinated, r = 0.625 (Main 4, panel B);</text>
+<text x='43.17' y='329.20' style='font-size: 7.68px;fill: #FFFFFF; font-family: "Arial";' textLength='179.11px' lengthAdjust='spacingAndGlyphs'>MBF1c (LOC100249249) is the cross-pipeline robust</text>
+<text x='43.17' y='339.16' style='font-size: 7.68px;fill: #FFFFFF; font-family: "Arial";' textLength='128.30px' lengthAdjust='spacingAndGlyphs'>temperature → titer mediator (Main 5)</text>
+<text x='43.17' y='410.16' style='font-size: 7.68px;fill: #1A1A1A; font-family: "Arial";' textLength='238.94px' lengthAdjust='spacingAndGlyphs'>DOF3.6 / DOF1.7 motifs enriched in brown + yellow modules (Main 7);</text>
+<text x='43.17' y='420.11' style='font-size: 7.68px;fill: #1A1A1A; font-family: "Arial";' textLength='226.38px' lengthAdjust='spacingAndGlyphs'>SPS1 (LOC100232974) is a robust temperature mediator (Main 5);</text>
+<text x='43.17' y='430.07' style='font-size: 7.68px;fill: #1A1A1A; font-family: "Arial";' textLength='238.91px' lengthAdjust='spacingAndGlyphs'>top host biomarker maps to sugar-accumulation QTL on chr 1 (Main 8)</text>
+<text x='43.17' y='511.02' style='font-size: 7.68px;fill: #1A1A1A; font-family: "Arial";' textLength='155.97px' lengthAdjust='spacingAndGlyphs'>Visible red blotching;  reduced °Brix and yield;</text>
+<text x='43.17' y='520.98' style='font-size: 7.68px;fill: #1A1A1A; font-family: "Arial";' textLength='249.36px' lengthAdjust='spacingAndGlyphs'>≥1,500 stage-specific DEGs at Harvest in cool seasons (Main 3, panel A);</text>
+<text x='43.17' y='530.93' style='font-size: 7.68px;fill: #1A1A1A; font-family: "Arial";' textLength='176.12px' lengthAdjust='spacingAndGlyphs'>biomarker panel co-localises with known grape QTL</text>
+<text x='43.17' y='540.89' style='font-size: 7.68px;fill: #1A1A1A; font-family: "Arial";' textLength='222.31px' lengthAdjust='spacingAndGlyphs'>(Main 8, panel C;  2.0× enrichment over a 5,000-permutation null)</text>
+<line x1='259.37' y1='148.68' x2='259.37' y2='176.87' style='stroke-width: 1.49; stroke: #404040; stroke-linecap: butt;' />
+<polygon points='255.88,170.83 259.37,176.87 262.86,170.83 ' style='stroke-width: 1.49; stroke: #404040; stroke-linecap: butt; fill: #404040;' />
+<line x1='259.37' y1='249.54' x2='259.37' y2='277.73' style='stroke-width: 1.49; stroke: #404040; stroke-linecap: butt;' />
+<polygon points='255.88,271.69 259.37,277.73 262.86,271.69 ' style='stroke-width: 1.49; stroke: #404040; stroke-linecap: butt; fill: #404040;' />
+<line x1='259.37' y1='350.41' x2='259.37' y2='378.60' style='stroke-width: 1.49; stroke: #404040; stroke-linecap: butt;' />
+<polygon points='255.88,372.56 259.37,378.60 262.86,372.56 ' style='stroke-width: 1.49; stroke: #404040; stroke-linecap: butt; fill: #404040;' />
+<line x1='259.37' y1='451.27' x2='259.37' y2='479.47' style='stroke-width: 1.49; stroke: #404040; stroke-linecap: butt;' />
+<polygon points='255.88,473.43 259.37,479.47 262.86,473.43 ' style='stroke-width: 1.49; stroke: #404040; stroke-linecap: butt; fill: #404040;' />
+</g>
+<g clip-path='url(#cpMC4wMHw1MTguNzR8MC4wMHw2MjMuNjI=)'>
+<text x='259.37' y='33.36' text-anchor='middle' style='font-size: 9.00px;fill: #404040; font-family: "Arial";' textLength='275.34px' lengthAdjust='spacingAndGlyphs'>Viral establishment → silent immunity → thermal-defence dampening</text>
+<text x='259.37' y='43.08' text-anchor='middle' style='font-size: 9.00px;fill: #404040; font-family: "Arial";' textLength='194.00px' lengthAdjust='spacingAndGlyphs'>→ sugar-pathway rewiring → disease phenotype</text>
+<text x='259.37' y='21.98' text-anchor='middle' style='font-size: 14.00px; font-weight: bold; font-family: "Arial";' textLength='241.89px' lengthAdjust='spacingAndGlyphs'>GRBV molecular disruption cascade</text>
+<text x='259.37' y='613.97' text-anchor='middle' style='font-size: 8.00px;fill: #595959; font-family: "Arial";' textLength='466.34px' lengthAdjust='spacingAndGlyphs'>Robust temp → titer mediators (multi-pipeline): MBF1c (LOC100249249), SPS1 (LOC100232974), uncharacterised LOC100266309</text>
+</g>
+</g>
+</svg>

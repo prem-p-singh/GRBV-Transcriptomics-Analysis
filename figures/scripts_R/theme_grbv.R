@@ -170,16 +170,24 @@ theme_grbv_pub <- function(base_size = 8, base_family = "Arial") {
 }
 
 # -----------------------------------------------------------------
-# Save helper: PNG + PDF at the given mm x mm size, 600 DPI
+# Save helper: PNG (raster, 600 DPI) + SVG (vector, editable in Illustrator /
+# Inkscape / Figma).  Default stack is PNG + SVG; pass formats = c("png","pdf")
+# to keep the legacy Cairo PDF export.
 # -----------------------------------------------------------------
 save_grbv <- function(plot, stem, width_mm, height_mm,
-                      formats = c("png","pdf")) {
+                      formats = c("png","svg")) {
   for (fmt in formats) {
     out <- paste0(stem, ".", fmt)
     if (fmt == "pdf") {
       ggsave(out, plot = plot, width = width_mm, height = height_mm,
              units = "mm", device = cairo_pdf, limitsize = FALSE)
-    } else {
+    } else if (fmt == "svg") {
+      if (!requireNamespace("svglite", quietly = TRUE))
+        stop("svglite is required for SVG export; install.packages('svglite')")
+      ggsave(out, plot = plot, width = width_mm, height = height_mm,
+             units = "mm", bg = "white", limitsize = FALSE,
+             device = svglite::svglite)
+    } else {   # png
       ggsave(out, plot = plot, width = width_mm, height = height_mm,
              units = "mm", dpi = 600, bg = "white", limitsize = FALSE,
              device = ragg::agg_png)

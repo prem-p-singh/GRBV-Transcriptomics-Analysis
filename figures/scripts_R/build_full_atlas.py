@@ -167,14 +167,37 @@ def render_supp_page(num: int, png_path: Path, title: str,
     return buf.getvalue()
 
 # --------- assemble -------------------------------------------------
+# Main-figure page renderer — builds a fresh PDF page from the PNG.
+# (Main figures are no longer shipped as PDF; PNG + SVG only.)
+def render_main_page(stem: str) -> bytes:
+    buf = io.BytesIO()
+    c = canvas.Canvas(buf, pagesize=LETTER)
+    c.setTitle(stem.replace("_", " "))
+    png = MAIN_DIR / f"{stem}.png"
+    if not png.exists():
+        raise SystemExit(f"missing main composite PNG: {png}")
+    img = ImageReader(str(png))
+    iw, ih = img.getSize()
+    avail_w = PAGE_W - 2 * MARGIN
+    avail_h = PAGE_H - 2 * MARGIN - 20
+    scale = min(avail_w / iw, avail_h / ih)
+    w = iw * scale; h = ih * scale
+    x = (PAGE_W - w) / 2
+    y = (PAGE_H - h) / 2
+    c.drawImage(img, x, y, width=w, height=h, preserveAspectRatio=True, anchor='c')
+    c.setFont("Helvetica", 8)
+    c.setFillGray(0.4)
+    c.drawString(MARGIN, MARGIN, stem.replace("_", " "))
+    c.showPage()
+    c.save()
+    return buf.getvalue()
+
 writer = PdfWriter()
 
-# 10 Main composites
+# 10 Main composites — rendered from PNG
 for stem in MAINS:
-    p = MAIN_DIR / f"{stem}.pdf"
-    if not p.exists():
-        raise SystemExit(f"missing main composite: {p}")
-    writer.append(str(p))
+    page_pdf = render_main_page(stem)
+    writer.append(io.BytesIO(page_pdf))
 
 # 55 Supplementary pages
 for num, fname, title, status, note in SOURCE_FIGS:
