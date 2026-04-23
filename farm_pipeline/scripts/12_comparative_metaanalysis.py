@@ -242,19 +242,84 @@ short_names = {n: short_label(n) for n in names}
 
 
 # -----------------------------------------------------------------------------
-# 5. UpSet plot of DEG set overlaps
+# 5. GRBV-focused DEG overlap figure (replaces uninformative UpSet with 1600+
+#    uniques dominating the axis). Two panels:
+#      A. Per-dataset DEG set size (horizontal bars, log x-axis)
+#      B. GRBV intersections: GRBV-only, GRBV ∩ each comparator, GRBV ∩ multi
 # -----------------------------------------------------------------------------
 try:
-    contents = {short_names[n]: sig_set(datasets[n]) for n in names if len(sig_set(datasets[n]))}
-    up_data = from_contents({k: v for k, v in contents.items() if len(v)})
-    fig = plt.figure(figsize=(12, 6))
-    UpSet(up_data, subset_size="count", sort_by="cardinality", show_counts=True,
-          element_size=None).plot(fig=fig)
-    fig.suptitle("DEG overlaps across Vitis stress datasets", y=1.00, fontsize=12)
+    sig_by = {n: sig_set(datasets[n]) for n in names}
+    grbv_set = sig_by["GRBV"]
+    others = [n for n in names if n != "GRBV" and len(sig_by[n])]
+
+    # Build intersection rows involving GRBV
+    rows = []
+    # 1) GRBV-only (not in any other set)
+    union_others = set().union(*[sig_by[o] for o in others]) if others else set()
+    rows.append({"label": "GRBV-only", "n": len(grbv_set - union_others),
+                 "partners": []})
+    # 2) GRBV + each single comparator (exclusive of all others)
+    for o in others:
+        only_with_o = grbv_set & sig_by[o]
+        # exclusive: remove genes also in any other set
+        excluded_from = [p for p in others if p != o]
+        if excluded_from:
+            only_with_o = only_with_o - set().union(*[sig_by[p] for p in excluded_from])
+        rows.append({"label": f"GRBV ∩ {short_names[o].split(chr(10))[0]}",
+                     "n": len(only_with_o), "partners": [o]})
+    # 3) Any multi-way intersection with GRBV + 2 or more comparators
+    from itertools import combinations
+    multi = set()
+    for k in range(2, len(others) + 1):
+        for combo in combinations(others, k):
+            inter = grbv_set.copy()
+            for c in combo:
+                inter &= sig_by[c]
+            multi |= inter
+    rows.append({"label": "GRBV ∩ ≥2 others", "n": len(multi), "partners": others})
+
+    # Drop zero-sized rows, sort descending
+    rows = [r for r in rows if r["n"] > 0]
+    rows.sort(key=lambda r: r["n"], reverse=True)
+
+    fig, axes = plt.subplots(1, 2, figsize=(13, 4.2),
+                             gridspec_kw={"width_ratios": [1.0, 1.5]})
+    # --- Panel A: per-dataset DEG count ------------------------------------
+    sizes = [(short_names[n], len(sig_by[n])) for n in names]
+    sizes.sort(key=lambda x: x[1])
+    ax = axes[0]
+    ax.barh([s[0] for s in sizes], [s[1] for s in sizes], color="#6c7a89")
+    for y, (lbl, n) in enumerate(sizes):
+        ax.text(n + max(1, n*0.03), y, str(n), va="center", fontsize=9)
+    ax.set_xlabel("DEGs at padj<0.05, |log2FC|≥1")
+    ax.set_title("Signature size per dataset", fontsize=11, pad=6)
+    ax.set_xscale("log")
+    ax.set_xlim(1, max(s[1] for s in sizes) * 2.2)
+    ax.tick_params(axis="y", labelsize=9)
+
+    # --- Panel B: GRBV intersection breakdown -----------------------------
+    ax = axes[1]
+    colors = ["#2b7bba" if r["label"] == "GRBV-only"
+              else "#e4572e" if "≥2" in r["label"]
+              else "#5DC863" for r in rows]
+    ax.barh([r["label"] for r in rows], [r["n"] for r in rows], color=colors)
+    for y, r in enumerate(rows):
+        ax.text(r["n"] + max(0.5, r["n"]*0.02), y, f'{r["n"]}',
+                va="center", fontsize=9)
+    ax.set_xlabel("Number of GRBV DEGs (n=%d total)" % len(grbv_set))
+    ax.set_title("GRBV signature intersections with each comparator", fontsize=11, pad=6)
+    ax.tick_params(axis="y", labelsize=9)
+    ax.set_xlim(0, max(r["n"] for r in rows) * 1.2 + 2)
+
+    fig.suptitle("DEG overlaps: GRBV signature in the context of 6-paper Tier 1 panel",
+                 fontsize=12, y=1.02)
+    fig.tight_layout()
     fig.savefig(Path(args.out_dir) / "upset_plot.png", dpi=200, bbox_inches="tight")
     plt.close(fig)
 except Exception as e:
-    print(f"[12] UpSet plot failed ({e})", file=sys.stderr)
+    import traceback
+    traceback.print_exc()
+    print(f"[12] overlap plot failed ({e})", file=sys.stderr)
 
 
 # -----------------------------------------------------------------------------
