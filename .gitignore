@@ -7,6 +7,8 @@
 *.pdf
 !farm_pipeline/docs/*.pdf
 *.pptx
+*.svg
+.Rhistory
 
 # Markdown (except README, CLAUDE.md, and repo docs/)
 *.md
