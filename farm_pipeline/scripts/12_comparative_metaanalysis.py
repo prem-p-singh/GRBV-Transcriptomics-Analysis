@@ -223,14 +223,34 @@ if len(cls):
 
 
 # -----------------------------------------------------------------------------
+# Short, legible display labels (strip prefixes + slim contrast tags)
+# -----------------------------------------------------------------------------
+def short_label(name: str) -> str:
+    if name == "GRBV":
+        return "GRBV (this study)"
+    import re
+    m = re.match(r"^([A-Za-z]+)(\d{4})_([^_]+)_([^_]+)_([^_]+)(?:_(.+))?$", name)
+    if not m:
+        return name
+    author, year, stress, cultivar, tissue, stage = m.groups()
+    tag = f"{author} {year}\n{stress}, {cultivar.replace('CabernetSauvignon','CS').replace('CabernetFranc','CF').replace('Zinfandel','Zin').replace('Trincadeira','Trin').replace('Vvinifera','Vv')} {tissue}"
+    if stage:
+        tag += f" {stage}"
+    return tag
+
+short_names = {n: short_label(n) for n in names}
+
+
+# -----------------------------------------------------------------------------
 # 5. UpSet plot of DEG set overlaps
 # -----------------------------------------------------------------------------
 try:
-    contents = {labels[n]: sig_set(datasets[n]) for n in names if len(sig_set(datasets[n]))}
+    contents = {short_names[n]: sig_set(datasets[n]) for n in names if len(sig_set(datasets[n]))}
     up_data = from_contents({k: v for k, v in contents.items() if len(v)})
-    fig = plt.figure(figsize=(11, 5))
-    UpSet(up_data, subset_size="count", sort_by="cardinality", show_counts=True).plot(fig=fig)
-    fig.suptitle("DEG overlaps across Vitis stress datasets", y=1.02, fontsize=11)
+    fig = plt.figure(figsize=(12, 6))
+    UpSet(up_data, subset_size="count", sort_by="cardinality", show_counts=True,
+          element_size=None).plot(fig=fig)
+    fig.suptitle("DEG overlaps across Vitis stress datasets", y=1.00, fontsize=12)
     fig.savefig(Path(args.out_dir) / "upset_plot.png", dpi=200, bbox_inches="tight")
     plt.close(fig)
 except Exception as e:
@@ -247,13 +267,15 @@ for _, r in overlap_df.iterrows():
 np.fill_diagonal(mat.values, 1.0)
 mat.to_csv(Path(args.out_dir) / "fc_correlation_matrix.csv")
 
-fig, ax = plt.subplots(figsize=(7, 5.5))
-sns.heatmap(mat.astype(float), annot=True, fmt=".2f", center=0, vmin=-1, vmax=1,
+mat_disp = mat.rename(index=short_names, columns=short_names)
+fig, ax = plt.subplots(figsize=(max(7.0, 1.3 * len(names)), max(6.0, 1.1 * len(names))))
+sns.heatmap(mat_disp.astype(float), annot=True, fmt=".2f", center=0, vmin=-1, vmax=1,
             cmap="RdBu_r", cbar_kws={"label": "Spearman rho (log2FC)"}, ax=ax,
             square=True, linewidths=0.5)
-ax.set_title("Fold-change concordance across Vitis stress datasets", fontsize=11)
-fig.tight_layout()
-fig.savefig(Path(args.out_dir) / "fc_correlation_heatmap.png", dpi=200)
+ax.set_title("Fold-change concordance across Vitis stress datasets", fontsize=12, pad=10)
+ax.set_xticklabels(ax.get_xticklabels(), rotation=45, ha="right", fontsize=8)
+ax.set_yticklabels(ax.get_yticklabels(), rotation=0, fontsize=8)
+fig.savefig(Path(args.out_dir) / "fc_correlation_heatmap.png", dpi=200, bbox_inches="tight")
 plt.close(fig)
 
 
@@ -264,18 +286,26 @@ if len(overlap_df):
     grbv_rows = overlap_df[(overlap_df["dataset_A"] == "GRBV") | (overlap_df["dataset_B"] == "GRBV")].copy()
     grbv_rows["other"] = np.where(grbv_rows["dataset_A"] == "GRBV",
                                   grbv_rows["dataset_B"], grbv_rows["dataset_A"])
+    grbv_rows["other_label"] = grbv_rows["other"].map(short_names)
     grbv_rows = grbv_rows.sort_values("odds_ratio", ascending=True)
 
-    fig, ax = plt.subplots(figsize=(7, 3.2 + 0.3 * max(1, len(grbv_rows))))
-    ax.barh(grbv_rows["other"], np.log2(grbv_rows["odds_ratio"].replace([np.inf, 0], np.nan)))
+    fig, ax = plt.subplots(figsize=(9, 2.5 + 0.55 * max(1, len(grbv_rows))))
+    log_or = np.log2(grbv_rows["odds_ratio"].replace([np.inf, 0], np.nan))
+    ax.barh(grbv_rows["other_label"], log_or, color="#2b7bba")
     ax.axvline(0, color="black", linewidth=0.8)
     ax.set_xlabel("log2 odds ratio (GRBV vs dataset overlap)")
-    ax.set_title("DEG overlap enrichment of GRBV signature with each comparator")
+    ax.set_title("DEG overlap enrichment of GRBV signature with each comparator",
+                 fontsize=11, pad=10)
+    # q-value labels at the right end of each bar
     for y, row in enumerate(grbv_rows.itertuples()):
-        ax.text(0.02, y, f"q={row.fisher_q:.2e}", transform=ax.get_yaxis_transform(),
-                va="center", fontsize=8, color="dimgray")
-    fig.tight_layout()
-    fig.savefig(Path(args.out_dir) / "grbv_vs_others_barplot.png", dpi=200)
+        v = log_or.iloc[y]
+        if np.isfinite(v):
+            ax.text(v + 0.1, y, f"q={row.fisher_q:.2e}",
+                    va="center", fontsize=8, color="dimgray")
+    # Leave room on the right for q-value labels
+    xmax = float(np.nanmax(log_or)) if np.isfinite(np.nanmax(log_or)) else 1.0
+    ax.set_xlim(0, xmax * 1.35 + 0.5)
+    fig.savefig(Path(args.out_dir) / "grbv_vs_others_barplot.png", dpi=200, bbox_inches="tight")
     plt.close(fig)
 
 print("[12] done.", file=sys.stderr)
