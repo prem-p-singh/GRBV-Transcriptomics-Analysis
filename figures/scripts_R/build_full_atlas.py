@@ -105,6 +105,7 @@ SOURCE_FIGS = [
     (57, "S57_viral_titer_coherence.png",             "Virus-titer coherence check",                        "regenerated", "RNA-Seq CPM vs RT-qPCR titer, r = 0.07 overall"),
     (58, "S58_per_ORF_host_correlates.png",           "Per-ORF host-gene correlate landscape",              "regenerated", "Top 15 host Spearman correlates per viral gene"),
     (59, "S59_viral_host_scatter_grid.png",           "Viral-host co-expression grid",                      "regenerated", "5 viral ORFs \u00d7 5 host anchors (MBF1c, SPS1, etc.)"),
+    (60, "S60_viral_biology_diagram.png",             "Viral-gene function atlas (biology explainer)",      "regenerated", "Genome schematic + function cards + virus-host impact map"),
 ]
 
 PAGE_W, PAGE_H = LETTER  # 8.5 x 11 inches
