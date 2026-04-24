@@ -91,6 +91,41 @@ flowchart LR
 | 11 | `harmonize_literature_degs` | pandas + crosswalk | Maps literature DEG tables to NCBI `LOC_*` space |
 | 12 | `comparative_metaanalysis` | Fisher + Spearman | Tier 1 overlap + FC concordance vs GRBV signature |
 
+### FARM outputs consumed by the new three-axis cube figures (S66–S72)
+
+Several post-2026-04 supplementary figures are built on top of the FARM
+pipeline results without modifying any rule. The mapping:
+
+| Figure (in `../figures/supp/`) | Consumes |
+|---|---|
+| `S66_disease_progression_cube` | `../multifactor_anova_results.csv` + `../biochemistry_harvest.csv` + counts |
+| `S67_rbminus_baseline_cube` | counts matrix + sample metadata (RB(−) subset) |
+| `S68_enrichment_season_stage` | `../gsea_results_all_conditions.csv` (rule-agnostic) |
+| `S69_enrichment_cohort` | `results/de_extras/Q1b_cohort*_vs_neg_deseq2.csv` + heat-gene catalog |
+| `S70_literature_curated_pathways` | `../gsea_results_all_conditions.csv` + literature curation |
+| `S71_transcriptional_response_strength` | counts matrix + PCA-based distance metric |
+| `S72_variance_decomposition_ternary` | `../multifactor_anova_results.csv` + `../tier1_grbv_signature.csv` |
+
+### Tier 2 meta-analysis roadmap (updated)
+
+The Tier 1 6-paper panel (rule 12) can be extended with two recent bioRxiv
+preprints from the Kliebenstein lab at UC Davis (Ritu Singh et al.):
+
+- **Singh et al. 2025 (bioRxiv 10.1101/2025.07.24.666639):** *Botrytis cinerea*
+  fungal-side transcriptome across 72 isolates × 10 eudicots at 48 hpi;
+  variance partition ternary (our S72 is the adapted single-species replica).
+- **Singh et al. 2026 (bioRxiv 10.64898/2026.01.14.699558):** host-side
+  response — 12 core conserved orthogroups across all 10 eudicots
+  (WRKY75, CIPK11, chitinase, …).
+
+Vitis is **not** in their panel, so direct cross-pathogen-on-Vitis
+comparison requires raw-count re-analysis of their BioProject
+`PRJNA1217477` (currently embargoed pending publication). The 12 core
+orthogroups can already be mapped to Vitis via `resources/id_crosswalk.tsv`
+(86 AT → LOC matches in the current snapshot).
+
+---
+
 Post-hoc review-response scripts (historically named `fix01`–`fix11`; see [`../docs/CRITICAL_REVIEW.md`](../docs/CRITICAL_REVIEW.md) for the naming-provenance mapping):
 
 | Script | Replaces | Why |

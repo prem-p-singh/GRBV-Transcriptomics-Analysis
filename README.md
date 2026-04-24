@@ -56,9 +56,11 @@ flowchart TD
 
 <blockquote align="center">
 <b>The headline is not that GRBV is fighting the plant.</b><br/>
-<b>It is that GRBV is quieting one specific arm of the plant's stress biology,<br/>
-the small heat-shock protein axis, while slipping past canonical immune defense<br/>
-without triggering it at all.</b>
+<b>It is that GRBV is <em>blocking the plant's heat-induced defence programme from running</em> —</b><br/>
+<b>a passive failure, not an active suppression — while slipping past canonical immune<br/>
+defence without triggering it at all. Uninfected vines at the hottest harvest cell reach<br/>
+sHSP module z = <b>+1.64</b>; infected vines at the same cell reach <b>−0.67</b>.<br/>
+The 2.3-unit deficit is failure-to-activate, not active downregulation.</b>
 </blockquote>
 
 ---
@@ -74,7 +76,8 @@ without triggering it at all.</b>
 | Infection cohorts | 7 onset years (2016–2022), n = 105–214 DEGs each |
 | Sequencing | TAG-seq (UMI-indexed) · STAR · Pinot Noir ASM3070453v1 |
 | Primary DE design | DESeq2 Wald, `~ Maturity_stage + Sampling_Season + Infection_Group`, BH-FDR < 0.05, \|log₂FC\| ≥ 1 |
-| Figures | 10 Main composites + 47 Supplementary, PNG + SVG |
+| Figures | **12 Main** (incl. MoA schematic + graphical abstract) + **64 Supplementary** (S02–S72), PNG + SVG |
+| Presentation | **71-slide** funding committee deck, 5 PLUS sections, 2 graphical-abstract slides |
 
 <p align="center">
   <img src="figures/main/Main03_inverted_trajectory.png" alt="Main03 — Inverted seasonal DEG trajectory" width="95%">
@@ -84,7 +87,7 @@ without triggering it at all.</b>
 
 ---
 
-## Three threads, one story
+## Seven threads, one story
 
 <table>
 <tr><td align="center" width="50"><b>1</b></td><td>
@@ -113,6 +116,27 @@ Causal-mediation sweep on the top 2,000 variable genes returns **39 temperature 
 ### Harvest juice chemistry mirrors the inverted seasonal trajectory
 
 Two-way Season × Infection ANOVA on n = 33 paired harvest samples confirms the transcriptomic inversion in the phenotype. **TA** is the cleanest mirror: no main effect of season (p = 0.69) or infection (p = 0.16), but the Season × Infection interaction reaches **η² = 0.77, p = 4.3 × 10⁻¹¹**. GRBV raises TA by **+0.62 g/L in 2021 cool** and lowers it by **−0.79 g/L in 2022 hot**; malic acid follows the same inversion (+398 vs −195 mg/L). Brix is suppressed in both seasons but **2.6× stronger in 2022** (−9.83 vs −3.77 °Bx). In 2021 a biphasic cohort-age recovery appears at harvest: Brix rises +0.10 °Bx / yr with years-since-infection (r = 0.76, p = 0.0045) while nitrogen markers decline.
+
+</td></tr>
+<tr><td align="center"><b>5</b></td><td>
+
+### sHSP effect is **passive failure**, not active suppression *(S66 + S67 + S72)*
+
+The disease progression cube (S66) puts RB(+) vines at sHSP module z = **−0.67** at 2022 Harvest. The matched-condition RB(−) baseline cube (S67) puts uninfected vines at **+1.64** in the same cell — the strongest natural heat-induced sHSP activation anywhere in the grid. The 2.3-unit deficit is not active downregulation from neutral; it is the vine failing to mount the normal heat response. The gene-level variance decomposition ternary (S72, methodologically after Singh et al. 2025 bioRxiv Fig 5) confirms it at the gene level: sHSP genes carry environmental variance share **0.33** (vs 0.19 baseline) but viral variance share **0.11 ≈ 0.12 baseline**, indistinguishable from background. GRBV doesn't repress sHSPs — it prevents the cell from running the heat-induced HSF/MBF1c transactivation programme. The wet-lab target shifts accordingly.
+
+</td></tr>
+<tr><td align="center"><b>6</b></td><td>
+
+### Chronic infection has three temporal phases *(S69 + S71)*
+
+The 7-year cohort span (2016–2022 onset) separates into three phases. **Acute** (2022 cohort, year 1): 214 DEGs — the largest count — but the **weakest pathway enrichment** (≤ 5× fold for most curated families). **Peak** (2020 cohort, years 3–5): strongest PC-space drift from the matched RB(−) centroid (**21.9** distance at 2021 Harvest, top-ranked cell across all 40 cube cells). **Chronic** (2016 cohort, years 6–7): only 105 DEGs but hyper-focused enrichment — **65× for sHSP, 138× for HSP100/ClpB, 49× for GO:response to heat**. The GRBV 55-gene signature is the one family enriched 52–100× in every cohort as the persistent transcriptomic fingerprint. Pattern: acute **diffuse** → peak **drift** → chronic **narrow**. No prior GRBV study has had the cohort span to see this.
+
+</td></tr>
+<tr><td align="center"><b>7</b></td><td>
+
+### Disease cost is temperature-amplified **2.6×** at the phenotype level *(S66 panel D + S67 panel C)*
+
+RB(−) controls reach **26.7 °Bx in cool 2021** and **34.4 °Bx in hot 2022**. Infected RB(+) vines reach 22.8–23.4 and 23.5–25.0 °Bx respectively. Disease cost: **≈ 4 °Bx in the cool year, ≈ 10 °Bx in the hot year — 2.6× amplification**. This translates the transcriptional inverted-trajectory finding into a crop-value number a grower can act on: in a hot year, an infected vine costs the grower ten Brix points at harvest.
 
 </td></tr>
 </table>
@@ -227,12 +251,14 @@ flowchart LR
 ```
 .
 ├── figures/
-│   ├── main/               Main01-Main10 composite figures (PNG + SVG)
-│   ├── supp/               S02-S55 supplementary figures (PNG + SVG)
-│   ├── scripts_R/          R / ggplot2 scripts for every figure
+│   ├── main/               Main01-Main10 + MoA_GRBV_mechanism + Summary_study_design (PNG + SVG)
+│   ├── supp/               S02-S72 supplementary figures (PNG + SVG, 64 figures)
+│   ├── assets/icons/       15 Firefly-generated PNG icons used by Main10, MoA, Summary
+│   ├── scripts_R/          R / ggplot2 scripts for every figure (28 scripts)
 │   │   └── theme_grbv.R    Shared theme + palette + save_grbv() helper
 │   ├── GRBV_Main_Figures_Atlas.pdf       10-page main atlas
-│   └── GRBV_Full_Figure_Atlas.pdf        65-page full atlas
+│   ├── GRBV_Full_Figure_Atlas.pdf        75-page full atlas
+│   └── UPGRADE_NOTES.md                  changelog + three-new-dimensions summary
 ├── farm_pipeline/
 │   ├── Snakefile           13 rules, 24 DE contrasts, sensitivity sweeps
 │   ├── scripts/
@@ -257,8 +283,9 @@ flowchart LR
 │   ├── reports/            8 legacy deliverables
 │   ├── superseded_csvs/    11 CSVs with zero current-R-script references
 │   └── farm_sensitivity_archive/        58 MB raw threshold sweeps
-├── GRBV_Funding_Committee_Presentation.pptx     48-slide committee deck
-├── counts_matrix.txt + sample_metadata.txt + 19 active-pipeline CSVs
+├── GRBV_Funding_Committee_Presentation.pptx     71-slide committee deck
+├── scripts/                Python PPTX updaters (add_ppt_new_analyses, refresh_ppt_figures, ...)
+├── counts_matrix.txt + sample_metadata.txt + 20 active-pipeline CSVs
 ├── org.Vvinifera.eg.db/, go-basic.obo
 ├── CLAUDE.md               Project memory / session context
 └── README.md               This file
@@ -280,6 +307,15 @@ Rscript figures/scripts_R/main03_inverted_trajectory.R
 
 # A whole supplementary batch (S02 through S07)
 Rscript figures/scripts_R/supp_de_overview.R
+
+# The new three-axis cube figures (S66, S67) + variance ternary (S72)
+Rscript figures/scripts_R/S66_disease_progression_cube.R
+Rscript figures/scripts_R/S67_rbminus_baseline_cube.R
+Rscript figures/scripts_R/S72_variance_decomposition_ternary.R
+
+# The two graphical-abstract Main figures (use icons from figures/assets/icons/)
+Rscript figures/scripts_R/moa_grbv_mechanism.R
+Rscript figures/scripts_R/summary_study_design.R
 
 # Rebuild the atlases from the current PNG set
 python figures/scripts_R/build_atlas.py
@@ -309,7 +345,20 @@ bash pull.sh            # rsync results back to local figures/
 
 ### Funding-committee deck
 
-Generated by [pptxgenjs](https://gitbrent.github.io/PptxGenJS/) via a Node.js script. Output is 48 slides, 19 MB, with 10 Main + 6 Supp figures embedded and a Q-tag in the top-right of every result slide showing which research question each figure answers.
+The 71-slide deck is maintained by a set of in-place Python updater scripts in `scripts/`:
+
+```bash
+# Replace stale figures + insert Summary + MoA graphical-abstract slides
+python scripts/refresh_ppt_figures.py
+
+# Add the 4 "new-dimension" slides (passive failure, 3 phases, 2.6x cost)
+python scripts/update_ppt_new_dimensions.py
+
+# Add the 5 "new-analysis" PLUS slides (S29, S68, S69, S70, S72)
+python scripts/add_ppt_new_analyses.py
+```
+
+Each script clones an existing 2-column template slide, swaps the image, overwrites the title + bullets, and positions the new slide in the correct section. Hash-audit confirms every embedded PNG matches the current `figures/` folder.
 
 ---
 
@@ -319,14 +368,17 @@ Generated by [pptxgenjs](https://gitbrent.github.io/PptxGenJS/) via a Node.js sc
 
 | Asset | Location | Size |
 |---|---|---|
-| Manuscript draft (with figures embedded) | [`docs/MANUSCRIPT_DRAFT_v1.pdf`](docs/MANUSCRIPT_DRAFT_v1.pdf) | 9.6 MB |
+| Manuscript draft (with figures embedded, ≈ 5,400-word running total) | [`docs/MANUSCRIPT_DRAFT_v1.pdf`](docs/MANUSCRIPT_DRAFT_v1.pdf) | 11 MB |
 | Main figures atlas | [`figures/GRBV_Main_Figures_Atlas.pdf`](figures/GRBV_Main_Figures_Atlas.pdf) | 11 MB |
 | Full atlas (main + supp) | [`figures/GRBV_Full_Figure_Atlas.pdf`](figures/GRBV_Full_Figure_Atlas.pdf) | 36 MB |
+| Figure upgrade notes (incl. three-new-dimensions summary) | [`figures/UPGRADE_NOTES.md`](figures/UPGRADE_NOTES.md) | 5 KB |
 | Methods addendum | [`docs/METHODS_ADDENDUM.md`](docs/METHODS_ADDENDUM.md) | 16 KB |
-| Committee deck | [`GRBV_Funding_Committee_Presentation.pptx`](GRBV_Funding_Committee_Presentation.pptx) | 19 MB |
+| Committee deck (71 slides) | [`GRBV_Funding_Committee_Presentation.pptx`](GRBV_Funding_Committee_Presentation.pptx) | 30 MB |
 | Wet-lab plan (VIGS) | [`docs/HSFA2_VIGS_EXPERIMENT_PLAN.md`](docs/HSFA2_VIGS_EXPERIMENT_PLAN.md) | 17 KB |
 | Critical review + fix log | [`docs/CRITICAL_REVIEW.pdf`](docs/CRITICAL_REVIEW.pdf) | 23 KB |
-| Integrated analysis | [`docs/INTEGRATED_ANALYSIS.pdf`](docs/INTEGRATED_ANALYSIS.pdf) | 28 KB |
+| Integrated analysis (incl. Thread 10) | [`docs/INTEGRATED_ANALYSIS.pdf`](docs/INTEGRATED_ANALYSIS.pdf) | 41 KB |
+| Extended results report (incl. claims 10–12) | [`docs/EXTENDED_RESULTS_REPORT.pdf`](docs/EXTENDED_RESULTS_REPORT.pdf) | 41 KB |
+| Plain-language summary | [`docs/PLAIN_LANGUAGE_SUMMARY.md`](docs/PLAIN_LANGUAGE_SUMMARY.md) | 15 KB |
 
 </div>
 

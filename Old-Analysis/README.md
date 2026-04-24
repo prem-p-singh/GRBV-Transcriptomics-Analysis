@@ -48,7 +48,7 @@ flowchart LR
 
     subgraph post ["Current pipeline"]
         N1["DESeq2 + voom (de_deseq2_voom.R)"]:::new
-        N2["10 Main + 65 Supp (R + ggplot2)"]:::new
+        N2["12 Main + 64 Supp (R + ggplot2)<br/>incl. MoA + Summary + S66-S72"]:::new
         N3["MANUSCRIPT_DRAFT_v1.pdf"]:::new
         N4["tier1_*.csv + FIX04 tables"]:::new
     end
