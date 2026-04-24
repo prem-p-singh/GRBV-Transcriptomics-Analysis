@@ -1,5 +1,7 @@
 # GRBV Transcriptomics Analysis — Project Context
 
+@Rules.md
+
 ## Study Overview
 - **Species**: *Vitis vinifera* cv. Merlot
 - **Pathogen**: Grapevine Red Blotch Virus (GRBV), family Geminiviridae
@@ -625,3 +627,77 @@ Paper-ready findings from Tier 1:
 - Affymetrix Vitis GeneChip probeset → VIT crosswalk (would unlock Fung 2008 + Liu 2012; ~1–2 days of work or fetch vitis.db Bioconductor annotation if still hosted).
 - TIGR Tentative Consensus → VIT crosswalk (unlocks Polesani 2010).
 - Raw-count re-analysis from GEO / SRA for all six papers under a unified DESeq2 pipeline. Most robust but 1–2 weeks of work.
+
+# SESSION STATE UPDATE 2026-04-23 (very late): Figure-upgrade pass + 3 new scientific dimensions
+
+## Figure pass summary
+
+Reviewed the full atlas with SciAgent-Skills (Nature figure guide + scientific-visualization + critical-thinking), built 9 upgrades + 7 new supplementary figures + 2 new Main figures, staged in `Figure_upgrades/`, then merged everything into `figures/` and deleted the staging folder.
+
+**Canonical layout after merge:**
+- `figures/main/` — 10 original Main + **MoA_GRBV_mechanism** + **Summary_study_design** = 12 PNG + 12 SVG
+- `figures/supp/` — all supp up to S72 (includes new S66–S72) = 64 PNG + 64 SVG
+- `figures/assets/icons/` — 15 Firefly-generated PNG icons used by Main10, MoA, Summary
+- `figures/scripts_R/` — 18 upgraded/new R scripts, `Figure_upgrades` references cleaned
+- `figures/UPGRADE_NOTES.md` — changelog + per-figure upgrade notes + three-new-dimensions summary
+- `S70_top4_per_category_NES.csv` — companion CSV sits at repo root with the other 30 project CSVs
+
+**Legacy S29 block** in `figures/scripts_R/supp_robust_and_env.R` wrapped in `if (FALSE) {...}` with a pointer to the new standalone `S29_concordance_table.R`.
+
+## Three NEW scientific dimensions unlocked
+
+These are claims the previous manuscript draft did not articulate. Each has a paragraph in `docs/MANUSCRIPT_DRAFT_v1.md` (new Results subsection + new Discussion subsection + expanded Contribution, now 6 items instead of 4). Captured as Thread 10 in `docs/INTEGRATED_ANALYSIS.md` and claims 10–12 in `docs/EXTENDED_RESULTS_REPORT.md`.
+
+### 1. GRBV is a passive-failure pathogen, not an active-suppression pathogen (S66+S67+S72)
+
+- RB(−) vines at 2022 Harvest: sHSP module z = **+1.64** (strong natural heat upregulation).
+- RB(+) vines at same cohort × season × stage: sHSP z = **−0.67** (2.3-unit deficit).
+- S72 gene-level variance decomposition: sHSPs carry environmental variance share 0.33 (vs 0.19 baseline) but viral share **0.11 ≈ 0.12 baseline** — viral contribution indistinguishable from background noise.
+- Reading: GRBV does not repress sHSPs; it prevents the normal HSF-driven upregulation of sHSPs under heat. Wet-lab target shifts from HSP genes themselves to **HSFA2 / MBF1c transactivation machinery**.
+
+### 2. Three temporal phases of chronic infection (S69+S71)
+
+- 2022 cohort (year 1): **214 DEGs**, broad/shallow, ≤ 5× fold enrichment for most curated families.
+- 2020 cohort (years 3–5): strongest PC-space drift (**21.9** distance at 2021 Harvest), 157–188 DEGs, moderate enrichment.
+- 2016 cohort (years 6–7): smallest DEG set (**105**) but hyper-focused enrichment (**65× sHSP, 138× HSP100/ClpB, 49× GO:heat**).
+- Pattern: acute **diffuse** → peak **drift** → chronic **narrow**. GRBV 55-gene signature is the only category persistently enriched 52–100× in every cohort as the shared fingerprint.
+- No prior GRBV study has spanned a comparable infection-onset gradient; this is a genuinely new temporal axis.
+
+### 3. Disease cost is temperature-amplified 2.6× at the phenotype level (S66 panel D, S67 panel C)
+
+- RB(−) harvest °Brix: **26.7** in cool 2021, **34.4** in hot 2022.
+- RB(+) harvest °Brix: 22.8–23.4 in 2021, 23.5–25.0 in 2022.
+- Implied disease cost: **≈ 4 °Bx** cool year, **≈ 10 °Bx** hot year → **2.6× amplification**.
+- Translates the transcriptional inverted-trajectory finding directly into grower-legible yield loss.
+
+## Figures that operationalise the new dimensions
+
+| Figure | Role |
+|---|---|
+| **S66** | 4-layer disease progression cube (titer + sHSP + GRBV sig + Brix) across cohort × season × stage |
+| **S67** | RB(−) baseline cube (same grid, uninfected controls) — comparator that makes passive-failure visible |
+| **S68** | Season × stage enrichment (top 30 pathways + season-flip + trajectory) |
+| **S69** | Per-cohort Fisher enrichment against 13 curated families + per-cohort DEG counts |
+| **S70** | 90 literature-curated GRBV/Vitis-virus pathways + 8-condition NES heatmap + trajectory |
+| **S71** | PCA-based transcriptional response strength across cohort × season × stage |
+| **S72** | Per-gene variance decomposition ternary (Dev / Viral / Env) — Singh 2025 bioRxiv Fig 5 replica |
+
+Plus two new Main figures: **MoA_GRBV_mechanism** (3-zone tissue → phloem → cell schematic), **Summary_study_design** (5-roundel graphical abstract).
+
+## Singh et al. 2025 / 2026 bioRxiv papers (Ritu Singh, Kliebenstein lab, UCD)
+
+Extracted + analysed both PDFs. Vitis is **not** in their 10/15-eudicot panel, so direct Botrytis-on-Vitis comparison is not possible without Tier 2 raw-count work. However:
+
+- Paper 2's **12 core infection-responsive orthogroups** (WRKY75, CIPK11, arogenate dehydratase, endochitinase, cytochrome b561, PMI1, OPT4, SP2-chitinase, formin, UGT71E1, 2 uncharacterised) can be mapped to Vitis via the id_crosswalk (86 AT→LOC mappings already built). Analysis proposed as S73 but not yet built.
+- Paper 2's framing — *conserved physiological outcomes executed by lineage-specific regulators* — is the framework for our Discussion of the GRBV response.
+- S72's ternary analysis is the direct single-species adaptation of Paper 1's Fig 5 H² ternary.
+- Both papers' BioProject: **PRJNA1217477** (embargoed pending publication). To be added to Tier 2 meta-analysis when released.
+
+## Changes on disk since last checkpoint (not yet committed to master)
+
+- All of `figures/` — additions + updates (12 new PNG/SVG in main, 14 new in supp, 15 icons, 18 scripts updated/added, UPGRADE_NOTES.md, README-like top of notes file)
+- `docs/MANUSCRIPT_DRAFT_v1.md` — new Results subsection + new Discussion subsection + expanded Contribution (6 items) + 7 new Supp figure captions + word-count update (≈ 5,400 running total, up from 4,545)
+- `docs/INTEGRATED_ANALYSIS.md` — Thread 10 (passive failure + temporal phases + °Brix cost)
+- `docs/EXTENDED_RESULTS_REPORT.md` — claims 10–12 added
+- `docs/PLAIN_LANGUAGE_SUMMARY.md` — to be updated next session
+- `S70_top4_per_category_NES.csv` at repo root; mis-categorization of KEGG:Viral life cycle - HIV-1 was fixed (Defense regex tightened to remove |[Vv]iral|virus)
