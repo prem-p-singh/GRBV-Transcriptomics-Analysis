@@ -204,29 +204,68 @@ ord <- lbl
 d$rowv <- factor(d$rowv, levels = ord)
 d$colv <- factor(d$colv, levels = ord)
 
+# v2 fix: NA cells now show "no overlap" text so readers can tell absence
+# from uninformative silence; add a coverage side-strip showing ID-space
+# mapping quality per dataset (why some cells are NA).
 heat <- ggplot(d, aes(x = colv, y = rowv, fill = rho)) +
   geom_tile(colour = "white", linewidth = 0.4) +
-  geom_text(aes(label = ifelse(is.na(rho), "", sprintf("%.2f", rho))),
-            size = 2.8) +
+  geom_text(aes(label = ifelse(is.na(rho), "no\noverlap",
+                               sprintf("%.2f", rho)),
+                colour = is.na(rho)),
+            size = 2.3, lineheight = 0.85, family = "Arial") +
   scale_fill_gradient2(low = unname(GRBV_COLORS["down"]),
                        mid = "#F7F7F7",
                        high = unname(GRBV_COLORS["up"]),
                        midpoint = 0, limits = c(-1, 1),
-                       na.value = "#EAEAEA",
-                       name = "Spearman rho\n(log2FC)") +
+                       na.value = "#E6E6E6",
+                       name = "Spearman \u03c1\n(log2FC)") +
+  scale_colour_manual(values = c(`TRUE` = "grey45", `FALSE` = "grey10"),
+                      guide = "none") +
   coord_fixed() +
-  labs(title = "Fig. S65 \u2014 Tier 1 log2FC concordance across Vitis stress datasets",
-       subtitle = "Spearman rho on shared tested genes; NA cells indicate no ID-space overlap.",
-       x = NULL, y = NULL) +
+  labs(title = NULL, x = NULL, y = NULL) +
   theme_grbv(base_size = 9) +
-  theme(plot.title = element_text(face = "bold", size = 11),
-        plot.subtitle = element_text(size = 9, colour = "grey25"),
-        axis.text.x = element_text(angle = 40, hjust = 1, size = 8),
+  theme(axis.text.x = element_text(angle = 40, hjust = 1, size = 8),
         axis.text.y = element_text(size = 8),
         panel.border = element_blank(),
-        panel.grid = element_blank())
+        panel.grid = element_blank(),
+        plot.margin = margin(4, 4, 4, 4))
 
-save_grbv(heat, file.path(OUT_DIR, "S65_tier1_fc_concordance"),
-          width_mm = 180, height_mm = 170)
+# Coverage side strip: one horizontal bar per dataset (matched row order)
+# using tier1_coverage_report.csv coverage_pct.  GRBV itself has coverage 100 %.
+cov_df <- coverage %>% select(dataset, coverage_pct) %>%
+  bind_rows(tibble(dataset = "GRBV", coverage_pct = 100)) %>%
+  mutate(label = vapply(dataset, short_label, character(1))) %>%
+  filter(label %in% lbl) %>%
+  mutate(label = factor(label, levels = lbl))
+
+cov_bar <- ggplot(cov_df, aes(x = coverage_pct, y = label)) +
+  geom_col(fill = "#7B7B7B", width = 0.65, alpha = 0.85) +
+  geom_text(aes(label = sprintf("%.0f%%", coverage_pct)),
+            hjust = -0.25, size = 2.4, family = "Arial", colour = "grey25") +
+  scale_x_continuous(limits = c(0, 160), breaks = c(0, 50, 100),
+                     expand = c(0, 0)) +
+  labs(title = "ID-space coverage",
+       x = "% of source DEGs\nresolved to LOC", y = NULL) +
+  theme_grbv(base_size = 9) +
+  theme(plot.title  = element_text(face = "bold", size = 9),
+        axis.text.y = element_blank(),
+        axis.ticks.y= element_blank(),
+        axis.text.x = element_text(size = 7),
+        axis.title.x= element_text(size = 7.5, lineheight = 1),
+        panel.grid  = element_blank(),
+        plot.margin = margin(4, 6, 4, 2))
+
+S65 <- heat + cov_bar +
+  plot_layout(widths = c(1.0, 0.28)) +
+  plot_annotation(
+    title    = "Fig. S65 \u2014 Tier 1 log2FC concordance across Vitis stress datasets",
+    subtitle = "Spearman \u03c1 on shared genes; 'no overlap' = no ID-space intersection. Side strip shows LOC-mapping coverage.",
+    theme = theme_grbv(base_size = 10) +
+      theme(plot.title    = element_text(face = "bold", size = 11),
+            plot.subtitle = element_text(size = 9, colour = "grey25"))
+  )
+
+save_grbv(S65, file.path(OUT_DIR, "S65_tier1_fc_concordance"),
+          width_mm = 215, height_mm = 170)
 
 cat("supp_tier1.R: wrote S64 and S65 to", OUT_DIR, "\n")

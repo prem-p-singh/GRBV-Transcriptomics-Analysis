@@ -153,21 +153,19 @@ mod <- data.frame(
 ) %>% left_join(meta, by = "Sample") %>%
   mutate(Infection_Group = factor(Infection_Group, levels = c("RB(-)","RB(+)")))
 
-# Per-facet, per-group r values — placed INSIDE each panel (top-left corner)
-# so the narrow 1x4 strip only has to hold the stage name.
-cor_annot <- mod %>% group_by(Maturity_stage, Infection_Group) %>%
+# v2 fix: move per-group r values OUT of the panel and INTO the facet strip
+# so nothing overlaps the scatter data.  Strip label now reads:
+#   "Pre-véraison
+#    RB- r=0.44  ·  RB+ r=0.28"
+cor_per_stage <- mod %>% group_by(Maturity_stage, Infection_Group) %>%
   summarise(r = cor(HSF_score, sHSP_score, use = "pairwise.complete.obs"),
             .groups = "drop") %>%
-  mutate(label = sprintf("%s  r = %.2f",
-                         ifelse(Infection_Group == "RB(-)",
-                                "RB\u2212", "RB+"),
-                         r),
-         # RB- on top line, RB+ below
-         vjust_pos = ifelse(Infection_Group == "RB(-)", 1.4, 2.9))
-
-# Strip labeller: full stage names (panel B is widened below to accommodate)
-stage_names <- unique(as.character(mod$Maturity_stage))
-stage_strip_label <- setNames(GRBV_STAGE_LABEL[stage_names], stage_names)
+  pivot_wider(names_from = Infection_Group, values_from = r) %>%
+  mutate(strip = sprintf("%s\nRB\u2212 r = %.2f  \u00b7  RB+ r = %.2f",
+                         GRBV_STAGE_LABEL[as.character(Maturity_stage)],
+                         `RB(-)`, `RB(+)`))
+strip_lookup <- setNames(cor_per_stage$strip,
+                         as.character(cor_per_stage$Maturity_stage))
 
 infection_cols <- c("RB(-)" = PAL$RB_neg, "RB(+)" = PAL$RB_pos)
 
@@ -178,15 +176,10 @@ pB <- ggplot(mod, aes(x = HSF_score, y = sHSP_score,
   geom_point(alpha = 0.65, size = 1.3) +
   geom_smooth(aes(group = Infection_Group), method = "lm",
               se = FALSE, linewidth = 0.8) +
-  geom_text(data = cor_annot,
-            aes(x = -Inf, y = Inf, label = label,
-                color = Infection_Group, vjust = vjust_pos),
-            hjust = -0.08, size = 2.5, fontface = "bold",
-            show.legend = FALSE, inherit.aes = FALSE) +
   facet_wrap(~ Maturity_stage, ncol = 4,
-             labeller = as_labeller(stage_strip_label)) +
+             labeller = as_labeller(strip_lookup)) +
   scale_x_continuous(breaks = c(-1, 0, 1)) +
-  scale_y_continuous(breaks = c(-1, 0, 1, 2), expand = expansion(mult = c(0.05, 0.18))) +
+  scale_y_continuous(breaks = c(-1, 0, 1, 2)) +
   scale_color_manual(values = infection_cols, name = NULL) +
   labs(x = "HSF module z-score",
        y = "sHSP module z-score",
@@ -194,8 +187,8 @@ pB <- ggplot(mod, aes(x = HSF_score, y = sHSP_score,
        title = "HSF \u2194 sHSP coordination, split by maturity stage") +
   theme_grbv() +
   theme(plot.title  = element_text(size = 11, face = "bold"),
-        strip.text  = element_text(size = 8.5, face = "bold",
-                                   margin = margin(t = 3, b = 3)),
+        strip.text  = element_text(size = 8, face = "bold", lineheight = 1.15,
+                                   margin = margin(t = 4, b = 4)),
         legend.position = "top",
         legend.text  = element_text(size = 9),
         panel.spacing.x = unit(8, "pt"),

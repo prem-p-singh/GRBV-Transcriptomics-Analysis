@@ -145,21 +145,32 @@ pB <- ggplot(drop_df, aes(x = method, y = auc, group = method)) +
 # -----------------------------------------------------------------
 # Panel C — stability selection top host genes
 # -----------------------------------------------------------------
+# v2 fix: ellipsize long product names (22 chars + ellipsis) so left margin
+# isn't chewed up; widen plot.margin so labels don't clip; bump label font.
+ellipsize <- function(s, n = 22) {
+  s[is.na(s)] <- ""
+  out <- substr(s, 1, n)
+  truncated <- nchar(s) > n
+  out[truncated] <- paste0(substr(s, 1, n - 1), "\u2026")
+  out
+}
+
 stab_top <- stab %>%
   filter(panel == "host_only") %>%
   arrange(desc(lasso_selection_freq)) %>%
   head(20) %>%
   mutate(product = ifelse(gene %in% names(name_map),
-                           substr(name_map[gene], 1, 30), ""),
-         label = paste0(gene, " \u2014 ", product),
+                           ellipsize(name_map[gene], 22), ""),
+         label = ifelse(product == "", gene,
+                        paste0(gene, " \u00b7 ", product)),
          label = make.unique(label, sep = " #"),
          label = factor(label, levels = rev(label)))
 
 pC <- ggplot(stab_top, aes(x = lasso_selection_freq, y = label)) +
   geom_col(fill = unname(GRBV_COLORS["RB_neg"]), alpha = 0.9, width = 0.7) +
   geom_text(aes(label = sprintf("%.2f", lasso_selection_freq)),
-            hjust = -0.18, family = "Arial", size = 2.4, color = "grey20") +
-  scale_x_continuous(limits = c(0, 1.05),
+            hjust = -0.18, family = "Arial", size = 2.5, color = "grey20") +
+  scale_x_continuous(limits = c(0, 1.10),
                      breaks = seq(0, 1, 0.25),
                      expand = expansion(mult = c(0, 0.05))) +
   geom_vline(xintercept = 0.6, color = "grey50",
@@ -169,7 +180,9 @@ pC <- ggplot(stab_top, aes(x = lasso_selection_freq, y = label)) +
        title = "Stability-selected host biomarker candidates") +
   theme_grbv() +
   theme(plot.title  = element_text(size = 10, face = "bold"),
-        axis.text.y = element_text(size = 7))
+        axis.text.y = element_text(size = 7.5, hjust = 1,
+                                   margin = margin(r = 2)),
+        plot.margin = margin(4, 14, 4, 14))
 
 # -----------------------------------------------------------------
 # Panel D — feature pool composition

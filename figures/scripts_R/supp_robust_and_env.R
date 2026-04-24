@@ -170,7 +170,15 @@ save_grbv(p28, file.path(OUT_DIR, "S28_Q1Q2_vs_Q3Q4_crossreference"),
 
 # ============================================================
 # S29 — integrated summary dashboard
+#
+# 2026-04 upgrade: the S29 panel B (truncated text findings) was replaced
+# with a DE method-concordance heatmap.  The new standalone builder lives
+# in scripts_R/S29_concordance_table.R and writes
+# supp/S29_comprehensive_summary_dashboard.{png,svg} directly.  The old
+# block below is retained for historical reference but is guarded behind
+# an if(FALSE) so it no longer runs or overwrites the upgraded output.
 # ============================================================
+if (FALSE) {
 sum_df <- data.frame(
   metric = c("Samples", "Genes tested",
              "Q6 DEGs", "Q1a DEGs (union)",
@@ -234,6 +242,7 @@ p29 <- p29 + plot_annotation(
 
 save_grbv(p29, file.path(OUT_DIR, "S29_comprehensive_summary_dashboard"),
           width_mm = GRBV$W_DOUBLE_MM, height_mm = 125)
+}  # end of legacy S29 block (if (FALSE))
 
 # ============================================================
 # S32 — integrated temperature-titer-DEG per stage x season

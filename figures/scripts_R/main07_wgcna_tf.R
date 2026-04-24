@@ -45,22 +45,21 @@ mt_long$module <- factor(mt_long$module, levels = rev(ord))
 mt_long$trait  <- factor(mt_long$trait,
                          levels = c("Stage","Season","Infection","Years infected"))
 
+# v2 fix: panel A had both colour AND numeric-label encoding, which doubled
+# up information and made cells cluttered.  Keep colour only; drop numbers.
+# Strong cells remain readable by hue; exact values are in Table S<n>.
 pA <- ggplot(mt_long, aes(x = trait, y = module, fill = r)) +
-  geom_tile(color = "white", linewidth = 0.4) +
-  geom_text(aes(label = ifelse(abs(r) < 0.005, "0",
-                               formatC(r, format = "f", digits = 2,
-                                       flag = "+"))),
-            family = "Arial", size = 2.0,
-            color = ifelse(abs(mt_long$r) > 0.5, "white", "grey15")) +
+  geom_tile(color = "white", linewidth = 0.5) +
   scale_fill_gradient2(low = unname(GRBV_COLORS["down"]),
                        mid = "white",
                        high = unname(GRBV_COLORS["up"]),
                        midpoint = 0, limits = c(-1, 1),
-                       name = "Pearson r") +
+                       name = "Pearson r",
+                       breaks = c(-1, -0.5, 0, 0.5, 1)) +
   labs(x = NULL, y = NULL, tag = "A",
        title = "Module-trait correlations") +
   theme_grbv() +
-  theme(plot.title = element_text(size = 10, face = "bold"),
+  theme(plot.title  = element_text(size = 10, face = "bold"),
         axis.text.x = element_text(angle = 25, hjust = 1, size = 8),
         axis.text.y = element_text(size = 8),
         legend.key.height = unit(20, "pt"))
@@ -103,32 +102,45 @@ pB <- ggplot(tf, aes(x = stage, y = tf_family,
 # -----------------------------------------------------------------
 # Panel C — top hub genes for the most infection-correlated module
 # -----------------------------------------------------------------
-target_mod <- ord[1]  # the |r| top module on Infection
+# v2 fix: shorten product name (22 chars + ellipsis) so hub labels don't
+# clip on the left; also trim the long end-of-bar annotation to just "kME:0.94"
+# (log2FC already shown by fill colour, so redundant in the label).
+ellipsize <- function(s, n = 22) {
+  s[is.na(s)] <- ""
+  out <- substr(s, 1, n)
+  truncated <- nchar(s) > n
+  out[truncated] <- paste0(substr(s[truncated], 1, n - 1), "\u2026")
+  out
+}
+
+target_mod <- ord[1]
 hub_top <- hub %>%
   filter(module == target_mod) %>%
   arrange(desc(kME)) %>% head(10) %>%
-  mutate(label = paste0(gene, " \u2014 ", substr(gene_name, 1, 28)),
+  mutate(label = paste0(gene, " \u00b7 ", ellipsize(gene_name, 22)),
          label = make.unique(label, sep = " #"),
          label = factor(label, levels = rev(label)))
 
 pC <- ggplot(hub_top, aes(x = kME, y = label, fill = log2FC)) +
   geom_col(alpha = 0.92, width = 0.7, color = "white") +
-  geom_text(aes(label = sprintf("kME=%.2f, FC=%+.2f", kME, log2FC)),
-            hjust = -0.10, family = "Arial", size = 2.3, color = "grey15") +
+  geom_text(aes(label = sprintf("%.2f", kME)),
+            hjust = -0.18, family = "Arial", size = 2.4, color = "grey15") +
   scale_fill_gradient2(low = unname(GRBV_COLORS["down"]),
                        mid = "white",
                        high = unname(GRBV_COLORS["up"]),
                        midpoint = 0, name = "log2FC", limits = c(-3, 3),
                        oob = scales::squish) +
-  scale_x_continuous(limits = c(0, 1.05),
+  scale_x_continuous(limits = c(0, 1.15),
                      breaks = seq(0, 1, 0.25),
-                     expand = expansion(mult = c(0, 0.75))) +
+                     expand = expansion(mult = c(0, 0.02))) +
   labs(x = "Module membership (kME)", y = NULL, tag = "C",
        title = sprintf("Hub genes: '%s' module", target_mod)) +
   theme_grbv() +
-  theme(plot.title = element_text(size = 10, face = "bold"),
-        axis.text.y = element_text(size = 7),
-        legend.key.height = unit(12, "pt"))
+  theme(plot.title  = element_text(size = 10, face = "bold"),
+        axis.text.y = element_text(size = 7.5, hjust = 1,
+                                   margin = margin(r = 2)),
+        legend.key.height = unit(12, "pt"),
+        plot.margin       = margin(4, 10, 4, 12))
 
 # -----------------------------------------------------------------
 # Panel D — TF family mean log2FC per stage (line trajectories)

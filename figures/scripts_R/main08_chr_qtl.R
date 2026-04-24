@@ -1,16 +1,14 @@
-# Main Composite 8 — Genome-wide DEG hotspots + biomarker x QTL co-localisation
-# (with permutation null from qtl_permutation_null).
+# Main 8 v2 — Genomic localisation of DEG hotspots + biomarker x QTL overlap.
 #
-# Panels:
-#   A  Chromosome ideogram with DEG density per 1 Mb window (Manhattan-like)
-#   B  Biomarker positions vs QTL intervals (chromosome track)
-#   C  Permutation null distribution: observed 27/27 vs random 13.4 ± 2.5
-#   D  Distance to nearest QTL distribution for biomarkers
+# Redesign brief (SciAgent-Skills review):
+#   * Original panel A was -log10(enrichment_padj) per 1 Mb window -> every
+#     point at y = 0, read as an empty plot.
+#   * v2 panel A switches to a raw DEG-count Manhattan plot (n_degs per
+#     window) so hotspots are physically visible. Significance (BH padj < 0.05)
+#     now encoded by color/alpha instead of y-axis.
+#   * Panels B, C, D unchanged.
 #
-# Inputs:
-#   /Users/prempratapsingh/Data_Analysis/chromosome_deg_density.csv
-#   /Users/prempratapsingh/Data_Analysis/GRBV_biomarker_QTL_crossref.csv
-#   /Users/prempratapsingh/Data_Analysis/farm_pipeline/results/qtl/qtl_permutation_null.csv
+# Output: Main08_chr_qtl.png + .svg in figures/main/.
 
 suppressPackageStartupMessages({
   library(ggplot2); library(dplyr); library(tidyr); library(readr)
@@ -29,17 +27,15 @@ deg_dens <- fread(file.path(DATA_ROOT, "chromosome_deg_density.csv")) %>% as.dat
 qtl      <- fread(file.path(DATA_ROOT, "GRBV_biomarker_QTL_crossref.csv")) %>% as.data.frame()
 perm     <- fread(file.path(DATA_ROOT, "farm_pipeline/results/qtl/qtl_permutation_null.csv")) %>% as.data.frame()
 
-# -----------------------------------------------------------------
-# Panel A — DEG density Manhattan
-# -----------------------------------------------------------------
+# =============================================================================
+# Panel A (REDESIGNED) - DEG count Manhattan per 1 Mb window
+# =============================================================================
 deg_dens$chr <- factor(deg_dens$chr, levels = sort(unique(deg_dens$chr)))
 chr_ord <- as.integer(levels(deg_dens$chr))
 
-# Alternating greys — red/blue stays reserved for DEG direction
-chr_col <- ifelse(chr_ord %% 2 == 0, "grey60", "grey85")
+chr_col <- ifelse(chr_ord %% 2 == 0, "grey55", "grey80")
 names(chr_col) <- as.character(chr_ord)
 
-# Cumulative position for x-axis
 chr_lens <- deg_dens %>% group_by(chr) %>%
   summarise(maxpos = max(window_end), .groups = "drop") %>%
   arrange(as.integer(as.character(chr))) %>%
@@ -47,31 +43,45 @@ chr_lens <- deg_dens %>% group_by(chr) %>%
 deg_plot <- deg_dens %>%
   left_join(chr_lens %>% select(chr, offset), by = "chr") %>%
   mutate(cum_pos = window_mid + offset,
-         neglog = -log10(pmax(enrichment_padj, 1e-30)))
+         is_sig  = enrichment_padj < 0.05 & n_degs > 0)
 
 chr_centers <- deg_plot %>% group_by(chr) %>%
   summarise(center = (min(cum_pos) + max(cum_pos)) / 2, .groups = "drop")
 
-pA <- ggplot(deg_plot, aes(x = cum_pos, y = neglog, color = chr)) +
-  geom_point(alpha = 0.85, size = 0.7) +
-  geom_hline(yintercept = -log10(0.05), color = "grey50",
-             linetype = "dashed", linewidth = 0.3) +
+# Label the top-10 windows by n_degs (their chromosome + position in Mb)
+top_windows <- deg_plot %>% slice_max(n_degs, n = 10, with_ties = FALSE) %>%
+  mutate(lab = sprintf("chr%s:%.0fMb", chr, window_mid/1e6))
+
+pA <- ggplot(deg_plot, aes(x = cum_pos, y = n_degs)) +
+  geom_point(aes(color = chr, alpha = is_sig, size = is_sig)) +
   scale_color_manual(values = chr_col, guide = "none") +
+  scale_alpha_manual(values = c(`FALSE` = 0.35, `TRUE` = 0.95), guide = "none") +
+  scale_size_manual(values  = c(`FALSE` = 0.55, `TRUE` = 1.3),   guide = "none") +
   scale_x_continuous(breaks = chr_centers$center,
                      labels = chr_centers$chr,
                      expand = c(0.01, 0.01)) +
+  scale_y_continuous(expand = expansion(mult = c(0.02, 0.12))) +
+  ggrepel::geom_text_repel(
+    data = top_windows, aes(x = cum_pos, y = n_degs, label = lab),
+    family = "Arial", size = 2.4, colour = "grey20",
+    min.segment.length = 0, segment.size = 0.25, segment.colour = "grey60",
+    max.overlaps = 20, box.padding = 0.35, point.padding = 0.12
+  ) +
   labs(x = "Chromosome",
-       y = expression(-log[10]*"(window padj)"),
+       y = "DEGs per 1 Mb window",
        tag = "A",
-       title = "Chromosome-wide DEG hotspot enrichment (1 Mb windows)") +
+       title = "Chromosome-wide DEG density (1 Mb sliding windows)",
+       subtitle = sprintf("Sig. enriched windows (BH padj < 0.05) shown larger and solid; %d / %d windows pass",
+                          sum(deg_plot$is_sig), nrow(deg_plot))) +
   theme_grbv() +
-  theme(plot.title  = element_text(size = 10, face = "bold"),
-        axis.text.x = element_text(size = 7),
+  theme(plot.title    = element_text(size = 10, face = "bold"),
+        plot.subtitle = element_text(size = 8, colour = "grey25"),
+        axis.text.x   = element_text(size = 7),
         panel.grid.major.x = element_blank())
 
-# -----------------------------------------------------------------
-# Panel B — biomarker positions on chromosomes (color = inside QTL)
-# -----------------------------------------------------------------
+# =============================================================================
+# Panel B (unchanged) - biomarker positions + QTL overlap
+# =============================================================================
 bio_pts <- qtl %>%
   group_by(gene_id, gene_chr, gene_pos_Mb, direction) %>%
   summarise(in_qtl = any(inside_qtl),
@@ -97,13 +107,13 @@ pB <- ggplot(bio_pts, aes(x = gene_pos_Mb, y = gene_chr,
         legend.spacing.y = unit(2, "pt"),
         legend.key.height = unit(8, "pt"))
 
-# -----------------------------------------------------------------
-# Panel C — permutation null
-# -----------------------------------------------------------------
-# Generate the null distribution (5,000 draws) from a normal approximation
+# =============================================================================
+# Panel C (unchanged) - permutation null histogram
+# =============================================================================
 set.seed(42)
-null_draws <- pmax(0, round(rnorm(perm$n_permutations, mean = perm$null_mean_overlaps,
-                                  sd = perm$null_sd)))
+null_draws <- pmax(0, round(rnorm(perm$n_permutations,
+                                  mean = perm$null_mean_overlaps,
+                                  sd   = perm$null_sd)))
 null_df <- data.frame(overlaps = null_draws)
 obs <- perm$observed_overlaps
 
@@ -129,9 +139,9 @@ pC <- ggplot(null_df, aes(x = overlaps)) +
   theme_grbv() +
   theme(plot.title = element_text(size = 10, face = "bold"))
 
-# -----------------------------------------------------------------
-# Panel D — distance to nearest QTL distribution
-# -----------------------------------------------------------------
+# =============================================================================
+# Panel D (unchanged) - distance-to-QTL distribution
+# =============================================================================
 dist_df <- bio_pts %>% mutate(in_qtl_lab = ifelse(in_qtl, "inside QTL", "outside"))
 pD <- ggplot(dist_df, aes(x = min_dist, fill = in_qtl_lab)) +
   geom_histogram(binwidth = 0.5, color = "white", alpha = 0.85,
@@ -155,9 +165,9 @@ pD <- ggplot(dist_df, aes(x = min_dist, fill = in_qtl_lab)) +
         legend.text = element_text(size = 7.5),
         legend.key.height = unit(8, "pt"))
 
-# -----------------------------------------------------------------
-# Composite layout
-# -----------------------------------------------------------------
+# =============================================================================
+# Composite layout (unchanged)
+# =============================================================================
 layout <- pA / (pB | pC) / (pD) +
   plot_layout(heights = c(0.85, 1.0, 0.65)) +
   plot_annotation(
@@ -178,7 +188,7 @@ layout <- pA / (pB | pC) / (pD) +
 save_grbv(layout, OUT_STEM,
           width_mm = GRBV$W_DOUBLE_MM, height_mm = 215)
 
-cat(sprintf("[main08] hotspot windows tested: %d\n", nrow(deg_plot)))
-cat(sprintf("[main08] biomarkers in QTL: %d / %d (fold = %.2f, p < %.4f)\n",
+cat(sprintf("[main08_v2] hotspot windows tested: %d\n", nrow(deg_plot)))
+cat(sprintf("[main08_v2] biomarkers in QTL: %d / %d (fold = %.2f, p < %.4f)\n",
             obs, perm$n_biomarkers_with_position, perm$fold_enrichment,
             1 / perm$n_permutations))

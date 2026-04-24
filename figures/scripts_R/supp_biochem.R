@@ -59,23 +59,32 @@ make_valid_panel <- function(pred, bio, xlab) {
   sub <- merged %>% select(all_of(c(pred, bio)), Sampling_Season) %>%
     setNames(c("x", "y", "Season")) %>% tidyr::drop_na()
 
+  # v2 fix: rho annotations moved from subtitle into the panel top-right as
+  # a 3-line text block, and regression lines are clipped to per-season data
+  # ranges via fullrange=FALSE (default, but made explicit) + coord range
+  # control so lines don't extrapolate into empty regions.
   title <- sprintf("%s vs %s", pred, bio)
-  sub_caption <- sprintf(
-    "partial rho=%.2f, p=%s\n2021: rho=%.2f, p=%s  |  2022: rho=%.2f, p=%s",
+  ann_text <- sprintf(
+    "partial \u03c1 = %.2f, p = %s\n2021: \u03c1 = %.2f, p = %s\n2022: \u03c1 = %.2f, p = %s",
     stats_row$rho_partial_season, fmt_p(stats_row$p_partial_season),
     stats_row$rho_2021, fmt_p(stats_row$p_2021),
     stats_row$rho_2022, fmt_p(stats_row$p_2022))
 
   ggplot(sub, aes(x = x, y = y, colour = Season)) +
     geom_smooth(method = "lm", se = FALSE, linewidth = 0.6,
-                formula = y ~ x, na.rm = TRUE) +
+                formula = y ~ x, na.rm = TRUE, fullrange = FALSE) +
     geom_point(size = 1.7, alpha = 0.9, stroke = 0.3, colour = "black",
                shape = 21, aes(fill = Season)) +
+    annotate("label", x = Inf, y = Inf, label = ann_text,
+             hjust = 1.02, vjust = 1.05, family = "Arial",
+             size = 2.1, colour = "grey20", lineheight = 1.0,
+             fill = alpha("white", 0.85),
+             label.size = 0, label.padding = unit(1.5, "pt")) +
     scale_colour_manual(values = pal_season, guide = "none") +
     scale_fill_manual(values = pal_season, name = "Season") +
-    labs(title = title, subtitle = sub_caption, x = xlab, y = bio) +
+    labs(title = title, x = xlab, y = bio) +
     theme_grbv(base_size = 8) +
-    theme(plot.subtitle = element_text(size = 6, colour = "grey25", lineheight = 1.05))
+    theme(plot.title = element_text(face = "bold", size = 8.5))
 }
 
 p_list <- purrr::pmap(list(panels$predictor, panels$biochem, panels$xlab),
@@ -103,27 +112,32 @@ vars62 <- c("Brix", "pH", "TA", "Malic")
 make_traj_panel <- function(v, season) {
   rbp <- biochem %>% filter(Sampling_Season == season, Infection_Group == "RB(+)") %>%
     select(YSI_years, value = all_of(v)) %>% tidyr::drop_na()
-  rbn <- biochem %>% filter(Sampling_Season == season, Infection_Group == "RB(-)") %>%
+  rbn_vec <- biochem %>% filter(Sampling_Season == season,
+                                Infection_Group == "RB(-)") %>%
     pull(all_of(v))
-  trow <- traj %>% filter(season == !!as.integer(as.character(season)), biochem == v)
+  rbn_mean <- mean(rbn_vec, na.rm = TRUE)
+  trow <- traj %>% filter(season == !!as.integer(as.character(season)),
+                          biochem == v)
 
+  # v2 fix: the RB(-) reference line often sat far outside the RB(+) data
+  # range (e.g. 2021 Malic) and dominated the y-axis. Drop the hline and
+  # show the RB(-) mean as a small inline annotation instead, letting the
+  # y-axis auto-scale to the RB(+) cohort points where the story lives.
   title <- sprintf("%s — %s", season, v)
-  sub_c <- sprintf("slope=%+.3f/yr, r=%.2f, p=%s",
-                   trow$slope_per_year, trow$r, fmt_p(trow$p))
+  sub_c <- sprintf("slope = %+.3f/yr, r = %.2f, p = %s\nRB(\u2212) mean = %.2f",
+                   trow$slope_per_year, trow$r, fmt_p(trow$p), rbn_mean)
 
-  p <- ggplot(rbp, aes(YSI_years, value)) +
-    geom_hline(yintercept = mean(rbn, na.rm = TRUE),
-               colour = unname(pal_infection["RB(-)"]),
-               linetype = "dashed", linewidth = 0.5) +
+  ggplot(rbp, aes(YSI_years, value)) +
     geom_smooth(method = "lm", se = TRUE, colour = "black",
-                fill = "grey80", linewidth = 0.5, formula = y ~ x, alpha = 0.35) +
+                fill = "grey80", linewidth = 0.5, formula = y ~ x,
+                alpha = 0.35, fullrange = FALSE) +
     geom_point(size = 2.0, fill = unname(pal_season[as.character(season)]),
                colour = "black", shape = 21, stroke = 0.3) +
     labs(title = title, subtitle = sub_c,
          x = "Years since infection", y = v) +
     theme_grbv(base_size = 8) +
-    theme(plot.subtitle = element_text(size = 6.5, colour = "grey25"))
-  p
+    theme(plot.title    = element_text(face = "bold", size = 8.5),
+          plot.subtitle = element_text(size = 6.3, colour = "grey25"))
 }
 
 g62 <- list()
@@ -134,14 +148,14 @@ for (v in vars62) for (s in levels(biochem$Sampling_Season)) {
 S62 <- wrap_plots(g62, ncol = 4, nrow = 2, byrow = FALSE) +
   plot_annotation(
     title = "Fig. S62 — Cohort trajectory at Harvest: biochemistry vs years-since-infection",
-    subtitle = "RB(+) only; dashed horizontal line = RB(-) mean per season.",
+    subtitle = "RB(+) samples only; each panel auto-scales to RB(+) data. RB(\u2212) season mean noted in per-panel subtitle.",
     theme = theme_grbv(base_size = 9) +
-      theme(plot.title = element_text(face = "bold", size = 11),
+      theme(plot.title    = element_text(face = "bold", size = 11),
             plot.subtitle = element_text(size = 8, colour = "grey25"))
   )
 
 save_grbv(S62, file.path(OUT_DIR, "S62_biochem_cohort_trajectory"),
-          width_mm = 200, height_mm = 115)
+          width_mm = 210, height_mm = 125)
 
 # =================================================================
 # S63 — Season x Infection ANOVA on juice chemistry

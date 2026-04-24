@@ -1,35 +1,28 @@
-# Main Composite 3 — Inverted seasonal trajectory + biphasic viral titer.
-#
-# Panels:
-#   A  Stage x season DEG counts (Q2x); 2021 peak at Harvest, 2022 at Post-vér.
-#   B  Cross-season log2FC correlation per stage (scatter, r in title).
-#   C  Mean viral titer per stage x season; biphasic temperature effect.
-#
-# Inputs:
-#   farm_pipeline/results/de_extras/Q2x_*_deseq2.csv
-#   /Users/prempratapsingh/Data_Analysis/Virus titer.txt
+# Main 3 v2 — panel B switches from overplotted scatter to hexbin density.
+# Panels A and C unchanged.
 
 suppressPackageStartupMessages({
   library(ggplot2); library(dplyr); library(tidyr); library(readr)
-  library(patchwork); library(scales); library(data.table)
+  library(patchwork); library(scales); library(data.table); library(hexbin)
 })
 
 HERE <- "/Users/prempratapsingh/Data_Analysis/figures/scripts_R"
 source(file.path(HERE, "theme_grbv.R"))
 
-ROOT      <- "/Users/prempratapsingh/Data_Analysis"
-RESULTS   <- file.path(ROOT, "farm_pipeline/results/de_extras")
-TITER_F   <- file.path(ROOT, "Virus titer.txt")
-OUT_DIR   <- "/Users/prempratapsingh/Data_Analysis/figures/main"
+ROOT     <- "/Users/prempratapsingh/Data_Analysis"
+RESULTS  <- file.path(ROOT, "farm_pipeline/results/de_extras")
+TITER_F  <- file.path(ROOT, "Virus titer.txt")
+OUT_DIR  <- "/Users/prempratapsingh/Data_Analysis/figures/main"
 dir.create(OUT_DIR, recursive = TRUE, showWarnings = FALSE)
-OUT_STEM  <- file.path(OUT_DIR, "Main03_inverted_trajectory")
+OUT_STEM <- file.path(OUT_DIR, "Main03_inverted_trajectory")
 
 PADJ <- 0.05; LFC <- 1.0
 seasons <- c("2021","2022"); stages <- GRBV_STAGES
 
-# -----------------------------------------------------------------
-# Load all Q2x_*_deseq2 results into one data frame
-# -----------------------------------------------------------------
+# =============================================================================
+# Reuse original script's panels A and C by sourcing the script logic.
+# Simpler: re-implement here with the panel B change inlined.
+# =============================================================================
 load_q2x <- function() {
   rows <- list()
   for (sn in seasons) for (st in stages) {
@@ -51,9 +44,7 @@ deg_counts <- q2x %>%
   mutate(total = up + down,
          Maturity_stage = factor(Maturity_stage, levels = stages))
 
-# -----------------------------------------------------------------
-# Panel A — DEG counts per stage x season (inverted trajectory)
-# -----------------------------------------------------------------
+# -- Panel A (unchanged) ------------------------------------------------------
 deg_long <- deg_counts %>% select(Sampling_Season, Maturity_stage, up, down) %>%
   pivot_longer(c(up, down), names_to = "dir", values_to = "n")
 totals <- deg_counts %>% select(Sampling_Season, Maturity_stage, total)
@@ -84,9 +75,9 @@ pA <- ggplot(deg_long, aes(x = Maturity_stage, y = n, fill = dir)) +
         legend.text = element_text(size = 7.5),
         legend.key.height = unit(7, "pt"))
 
-# -----------------------------------------------------------------
-# Panel B — cross-season log2FC correlation per stage
-# -----------------------------------------------------------------
+# =============================================================================
+# Panel B v2 — hexbin density replacing alpha scatter
+# =============================================================================
 fc_wide <- q2x %>%
   select(gene, Sampling_Season, Maturity_stage, log2FC) %>%
   pivot_wider(names_from = Sampling_Season, values_from = log2FC,
@@ -108,28 +99,48 @@ fc_wide_lab$Maturity_stage <- factor(fc_wide_lab$Maturity_stage,
                                      levels = cor_per_stage$Maturity_stage,
                                      labels = cor_per_stage$label)
 
+# Per-facet linear fit (for an overlay regression line)
+fit_lines <- fc_wide_lab %>%
+  group_by(Maturity_stage) %>%
+  summarise(intercept = coef(lm(fc_2022 ~ fc_2021))[1],
+            slope     = coef(lm(fc_2022 ~ fc_2021))[2],
+            .groups = "drop")
+
 pB <- ggplot(fc_wide_lab, aes(x = fc_2021, y = fc_2022)) +
   geom_hline(yintercept = 0, color = "grey60", linewidth = 0.3) +
   geom_vline(xintercept = 0, color = "grey60", linewidth = 0.3) +
-  geom_abline(slope = 1, intercept = 0, color = "grey50",
+  geom_abline(slope = 1, intercept = 0, color = "grey55",
               linetype = "dashed", linewidth = 0.3) +
-  geom_point(alpha = 0.30, size = 0.45,
-             color = unname(GRBV_COLORS["RB_pos"])) +
+  geom_hex(bins = 36) +
+  geom_abline(data = fit_lines,
+              aes(intercept = intercept, slope = slope),
+              colour = unname(GRBV_COLORS["RB_pos"]),
+              linewidth = 0.55) +
+  scale_fill_gradient(low  = "#EAF0F7",
+                      high = unname(GRBV_COLORS["down"]),
+                      name = "Gene\ndensity",
+                      trans = "log10",
+                      labels = scales::label_number(
+                        scale_cut = scales::cut_short_scale())) +
   facet_wrap(~ Maturity_stage, ncol = 4) +
   coord_fixed(xlim = c(-6, 6), ylim = c(-6, 6)) +
   labs(x = "log2FC (2021)", y = "log2FC (2022)",
        tag = "B",
-       title = "Cross-season fold-change agreement") +
+       title = "Cross-season fold-change agreement (hexbin density)") +
   theme_grbv() +
   theme(plot.title  = element_text(size = 10, face = "bold"),
-        strip.text  = element_text(size = 8, face = "bold", lineheight = 1.0))
+        strip.text  = element_text(size = 8, face = "bold", lineheight = 1.0),
+        legend.position  = "right",
+        legend.key.width = unit(8, "pt"),
+        legend.key.height= unit(14, "pt"),
+        legend.title     = element_text(size = 7.5),
+        legend.text      = element_text(size = 7))
 
-# -----------------------------------------------------------------
-# Panel C — mean viral titer per stage x season
-# -----------------------------------------------------------------
+# =============================================================================
+# Panel C (unchanged) — mean viral titer per stage x season
+# =============================================================================
 titer_raw <- read.delim(TITER_F, header = TRUE, sep = "\t",
                         check.names = FALSE)
-# Long-format
 titer_long <- titer_raw %>%
   rename(Pre_veraison = `Pre_véraison`, Veraison = `Véraison`,
          Post_veraison = `Post_véraison`, Harvest = Harvest) %>%
@@ -167,9 +178,6 @@ pC <- ggplot(titer_summary, aes(x = Maturity_stage, y = mean / 1e6,
         legend.text = element_text(size = 7.5),
         legend.key.height = unit(8, "pt"))
 
-# -----------------------------------------------------------------
-# Composite layout
-# -----------------------------------------------------------------
 layout <- pA / pB / pC +
   plot_layout(heights = c(1.0, 1.05, 0.95)) +
   plot_annotation(
@@ -186,5 +194,4 @@ layout <- pA / pB / pC +
 save_grbv(layout, OUT_STEM,
           width_mm = GRBV$W_DOUBLE_MM, height_mm = 215)
 
-cat("[main03] DEG counts per stage x season:\n"); print(deg_counts)
-cat("\n[main03] cross-season FC correlation per stage:\n"); print(cor_per_stage)
+cat("[main03_v2] hexbin panel B rendered\n")
