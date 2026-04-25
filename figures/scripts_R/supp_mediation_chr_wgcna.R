@@ -118,22 +118,84 @@ med50 <- med %>%
     TRUE ~ "Not significant"))
 cat_color50 <- pal_mediation
 
+# Layered z-order: plot least-important first so titer-mediated points sit on top.
+# Also use category-specific point sizes so the 39-gene focal set is visible
+# despite the 1,441 grey background points.
+med50_ns   <- med50 %>% filter(category == "Not significant")
+med50_tonly<- med50 %>% filter(category == "Temperature-only")
+med50_tmed <- med50 %>% filter(category == "Titer-mediated")
+
+# Replace category labels with counts so the legend tells the imbalance story
+n_ns    <- nrow(med50_ns)
+n_tonly <- nrow(med50_tonly)
+n_tmed  <- nrow(med50_tmed)
+legend_labels <- c(
+  "Titer-mediated"   = sprintf("Titer-mediated  (n = %s)", scales::comma(n_tmed)),
+  "Temperature-only" = sprintf("Temperature-only  (n = %s)", scales::comma(n_tonly)),
+  "Not significant"  = sprintf("Not significant  (n = %s)", scales::comma(n_ns))
+)
+
 lab50 <- med %>% filter(sig_joint) %>% arrange(path_b_padj) %>% head(8) %>%
   mutate(label = ifelse(gene %in% names(short), short[gene], gene))
 
-pA50 <- ggplot(med50, aes(x = direct_cprime, y = indirect_ab, color = category)) +
-  geom_hline(yintercept = 0, color = "grey60", linewidth = 0.3) +
-  geom_vline(xintercept = 0, color = "grey60", linewidth = 0.3) +
-  geom_point(alpha = 0.55, size = 0.8) +
-  geom_text_repel(data = lab50, aes(label = label),
-                  color = "black", family = "Arial", fontface = "bold",
-                  size = 2.5, box.padding = 0.4, segment.size = 0.2) +
-  scale_color_manual(values = cat_color50, name = NULL) +
-  labs(x = "Direct effect c'", y = "Indirect effect a x b",
-       title = "A. Direct vs indirect temperature effects") +
+# Quadrant annotations as faint corner text — explain biology without crowding
+# the data.  Concordant = same sign on direct and indirect (titer reinforces
+# temperature effect).  Discordant = opposite signs (titer opposes it).
+xrng <- range(med50$direct_cprime, na.rm = TRUE)
+yrng <- range(med50$indirect_ab,   na.rm = TRUE)
+quad_lab <- data.frame(
+  x = c(xrng[2]*0.98, xrng[1]*0.98, xrng[1]*0.98, xrng[2]*0.98),
+  y = c(yrng[2]*0.98, yrng[2]*0.98, yrng[1]*0.98, yrng[1]*0.98),
+  hjust = c(1, 0, 0, 1), vjust = c(1, 1, 0, 0),
+  text  = c("Concordant +", "Discordant", "Concordant -", "Discordant")
+)
+
+pA50 <- ggplot() +
+  # Axes
+  geom_hline(yintercept = 0, color = "grey55", linewidth = 0.4) +
+  geom_vline(xintercept = 0, color = "grey55", linewidth = 0.4) +
+  # Layered points, smallest categories drawn last so they stay visible
+  geom_point(data = med50_ns,
+             aes(x = direct_cprime, y = indirect_ab, color = "Not significant"),
+             alpha = 0.30, size = 0.6, shape = 16) +
+  geom_point(data = med50_tonly,
+             aes(x = direct_cprime, y = indirect_ab, color = "Temperature-only"),
+             alpha = 0.55, size = 0.9, shape = 16) +
+  geom_point(data = med50_tmed,
+             aes(x = direct_cprime, y = indirect_ab, color = "Titer-mediated"),
+             alpha = 0.95, size = 1.9, shape = 16) +
+  # Labels for top mediators using filled labels (not bare text) for contrast
+  geom_label_repel(data = lab50,
+                   aes(x = direct_cprime, y = indirect_ab, label = label),
+                   color = "black", fontface = "bold", size = 2.7,
+                   label.size = 0.25, label.padding = unit(0.12, "lines"),
+                   label.r = unit(0.10, "lines"),
+                   fill = scales::alpha("white", 0.90),
+                   box.padding = 0.6, point.padding = 0.25,
+                   force = 5, force_pull = 0.5,
+                   max.overlaps = Inf, seed = 42,
+                   segment.size = 0.3, segment.color = "grey45",
+                   min.segment.length = 0) +
+  # Faint quadrant labels
+  geom_text(data = quad_lab,
+            aes(x = x, y = y, label = text, hjust = hjust, vjust = vjust),
+            size = 2.2, color = "grey55", fontface = "italic",
+            lineheight = 0.9) +
+  scale_color_manual(values = cat_color50, labels = legend_labels,
+                     name = NULL,
+                     breaks = c("Titer-mediated","Temperature-only","Not significant"),
+                     guide = guide_legend(override.aes = list(
+                       size = c(2.4, 1.2, 0.9), alpha = c(1, 0.8, 0.6)))) +
+  labs(x = "Direct effect c' (Temp -> Gene | Titer)",
+       y = "Indirect effect a x b (Temp -> Titer -> Gene)",
+       title = "A. Direct vs indirect temperature effects",
+       subtitle = "Each dot is one gene; layered z-order so the 39 titer-mediated genes stay visible.") +
   theme_grbv() +
-  theme(plot.title = element_text(size = 10, face = "bold"),
-        legend.position = c(0.02, 0.98), legend.justification = c(0, 1))
+  theme(plot.title    = element_text(size = 11, face = "bold"),
+        plot.subtitle = element_text(size = 8, color = "grey35"),
+        legend.position = "top",
+        legend.box.margin = margin(0, 0, -3, 0),
+        legend.text = element_text(size = 8))
 
 counts50 <- med50 %>% count(category) %>%
   mutate(category = factor(category,
@@ -143,7 +205,7 @@ pB50 <- ggplot(counts50, aes(x = n, y = category, fill = category)) +
   geom_text(aes(label = scales::comma(n)), hjust = -0.15,
             family = "Arial", size = 2.8) +
   scale_fill_manual(values = cat_color50, guide = "none") +
-  scale_x_continuous(expand = expansion(mult = c(0, 0.20)),
+  scale_x_continuous(expand = expansion(mult = c(0, 0.28)),
                      labels = scales::label_comma()) +
   scale_y_discrete(limits = rev) +
   labs(x = "Number of genes", y = NULL,
@@ -151,13 +213,22 @@ pB50 <- ggplot(counts50, aes(x = n, y = category, fill = category)) +
   theme_grbv() +
   theme(plot.title = element_text(size = 10, face = "bold"))
 
-S50 <- pA50 | pB50 +
+S50 <- (pA50 | pB50) +
+  plot_layout(widths = c(2.2, 1)) +
   plot_annotation(
     title = "Supplementary S50. Direct vs titer-mediated temperature effects",
-    theme = theme(plot.title = element_text(family = "Arial", face = "bold",
-                                            size = 12, hjust = 0.5)))
+    caption = paste0(
+      "Mediation: Temperature -> Viral titer -> Gene expression on the top 2,000 variable genes.\n",
+      "Concordant quadrants = titer reinforces the temperature effect on the gene; Discordant = titer opposes it.\n",
+      "Top-8 titer-mediated genes labelled by ascending p-value on path b (titer -> gene | temperature)."
+    ),
+    theme = theme(plot.title   = element_text(family = "Arial", face = "bold",
+                                              size = 12, hjust = 0.5),
+                  plot.caption = element_text(family = "Arial", size = 7.5,
+                                              color = "grey35", hjust = 0,
+                                              lineheight = 1.15)))
 save_grbv(S50, file.path(OUT_DIR, "S50_direct_vs_indirect_effects"),
-          width_mm = GRBV$W_DOUBLE_MM, height_mm = 110)
+          width_mm = GRBV$W_DOUBLE_MM, height_mm = 130)
 
 # -----------------------------------------------------------------
 # S51, S52 — chromosome DEG ideogram + Manhattan
