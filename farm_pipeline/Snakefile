@@ -31,6 +31,18 @@ rule all:
         f"{RESULTS}/09_defense/defense_heatmap.png",
         f"{RESULTS}/10_subtype_characterize/subtype_DE.csv",
         f"{RESULTS}/10_subtype_characterize/subtype_clinical.csv",
+        # Agenda-gap extensions (rules 13-19, added 2026-04-24)
+        f"{RESULTS}/13_viral_orf_ext/orf_phenotype_prediction.csv",
+        f"{RESULTS}/13_viral_orf_ext/orf_module_correlation.csv",
+        f"{RESULTS}/14_pathway_per_gene/per_gene_model_full.csv",
+        f"{RESULTS}/14_pathway_per_gene/category_summary.csv",
+        f"{RESULTS}/15_carbon_translocation/sugar_module_eigengene.csv",
+        f"{RESULTS}/15_carbon_translocation/sugar_brix_per_gene.csv",
+        f"{RESULTS}/16_vine_heterogeneity/per_vine_response_scores.csv",
+        f"{RESULTS}/16_vine_heterogeneity/vine_heterogeneity_dashboard.png",
+        f"{RESULTS}/17_tf_activity/tf_activity_de.csv",
+        f"{RESULTS}/18_segmented/segmented_summary.csv",
+        f"{RESULTS}/19_bayesian/bayes_posterior_summary.csv",
 
 # -----------------------------------------------------------------------------
 # 00. Per-sample weather aggregates (used by rules 07 + 08)
@@ -414,4 +426,173 @@ rule comparative_meta_analysis:
             --padj_thresh {config[meta_analysis][padj_thresh]} \
             --lfc_thresh  {config[meta_analysis][lfc_thresh]} \
             &> {log}
+        """
+
+# -----------------------------------------------------------------------------
+# 13. Viral ORF dissection extensions (rec #1 extensions)
+# -----------------------------------------------------------------------------
+rule viral_orf_extensions:
+    input:
+        counts  = config["inputs"]["counts"],
+        meta    = "data/sample_metadata_v2.txt",
+        titer   = config["inputs"]["titer"],
+        mes     = config["inputs"]["mes_csv"],
+        biochem = "data/biochemistry_harvest.csv",
+    output:
+        orf_pheno = f"{RESULTS}/13_viral_orf_ext/orf_phenotype_prediction.csv",
+        orf_mod   = f"{RESULTS}/13_viral_orf_ext/orf_module_correlation.csv",
+    log: "logs/13_viral_orf_ext.log"
+    resources:
+        mem_mb = 4000, runtime = 20, cpus_per_task = 1,
+    shell:
+        """
+        export GRBV_RLIBS="$HOME/grbv_extended/Rlibs"
+        PY=$HOME/.conda/envs/grbv-extended/bin/python
+        $PY scripts/13_viral_orf_extensions.py \
+            --counts {input.counts} --meta {input.meta} --titer {input.titer} \
+            --mes {input.mes} --biochem {input.biochem} \
+            --out_dir {RESULTS}/13_viral_orf_ext &> {log}
+        """
+
+# -----------------------------------------------------------------------------
+# 14. Phenylpropanoid + PR + cell wall per-gene model (rec #2)
+# -----------------------------------------------------------------------------
+rule pathway_per_gene_model:
+    input:
+        counts = config["inputs"]["counts"],
+        meta   = config["inputs"]["metadata"],
+        gff    = f"{RESOURCES}/genome/genome.gff",
+    output:
+        full    = f"{RESULTS}/14_pathway_per_gene/per_gene_model_full.csv",
+        summary = f"{RESULTS}/14_pathway_per_gene/category_summary.csv",
+    log: "logs/14_pathway_per_gene.log"
+    resources:
+        mem_mb = 8000, runtime = 60, cpus_per_task = 2,
+    shell:
+        """
+        export GRBV_RLIBS="$HOME/grbv_extended/Rlibs"
+        PY=$HOME/.conda/envs/grbv-extended/bin/python
+        $PY scripts/14_pathway_per_gene_model.py \
+            --counts {input.counts} --meta {input.meta} --gff {input.gff} \
+            --out_dir {RESULTS}/14_pathway_per_gene &> {log}
+        """
+
+# -----------------------------------------------------------------------------
+# 15. Carbon translocation / phloem-loading module (rec #3)
+# -----------------------------------------------------------------------------
+rule carbon_translocation:
+    input:
+        counts  = config["inputs"]["counts"],
+        meta    = "data/sample_metadata_v2.txt",
+        gff     = f"{RESOURCES}/genome/genome.gff",
+        titer   = config["inputs"]["titer"],
+        biochem = "data/biochemistry_harvest.csv",
+    output:
+        eig    = f"{RESULTS}/15_carbon_translocation/sugar_module_eigengene.csv",
+        brix   = f"{RESULTS}/15_carbon_translocation/sugar_brix_per_gene.csv",
+    log: "logs/15_carbon_translocation.log"
+    resources:
+        mem_mb = 4000, runtime = 20, cpus_per_task = 1,
+    shell:
+        """
+        export GRBV_RLIBS="$HOME/grbv_extended/Rlibs"
+        PY=$HOME/.conda/envs/grbv-extended/bin/python
+        $PY scripts/15_carbon_translocation_module.py \
+            --counts {input.counts} --meta {input.meta} --gff {input.gff} \
+            --titer {input.titer} --biochem {input.biochem} \
+            --out_dir {RESULTS}/15_carbon_translocation &> {log}
+        """
+
+# -----------------------------------------------------------------------------
+# 16. Vine-level heterogeneity (rec #4)
+# -----------------------------------------------------------------------------
+rule vine_heterogeneity:
+    input:
+        counts  = config["inputs"]["counts"],
+        meta    = "data/sample_metadata_v2.txt",
+        titer   = config["inputs"]["titer"],
+        biochem = "data/biochemistry_harvest.csv",
+    output:
+        scores = f"{RESULTS}/16_vine_heterogeneity/per_vine_response_scores.csv",
+        dash   = f"{RESULTS}/16_vine_heterogeneity/vine_heterogeneity_dashboard.png",
+    log: "logs/16_vine_heterogeneity.log"
+    resources:
+        mem_mb = 6000, runtime = 30, cpus_per_task = 1,
+    shell:
+        """
+        export GRBV_RLIBS="$HOME/grbv_extended/Rlibs"
+        PY=$HOME/.conda/envs/grbv-extended/bin/python
+        $PY scripts/16_vine_heterogeneity.py \
+            --counts {input.counts} --meta {input.meta} \
+            --titer {input.titer} --biochem {input.biochem} \
+            --out_dir {RESULTS}/16_vine_heterogeneity &> {log}
+        """
+
+# -----------------------------------------------------------------------------
+# 17. TF activity inference (rec #5)
+# -----------------------------------------------------------------------------
+rule tf_activity:
+    input:
+        counts    = config["inputs"]["counts"],
+        meta      = config["inputs"]["metadata"],
+        grn_edges = f"{RESULTS}/01_grn/grn_edges.tsv.gz",
+    output:
+        de = f"{RESULTS}/17_tf_activity/tf_activity_de.csv",
+    log: "logs/17_tf_activity.log"
+    resources:
+        mem_mb = 8000, runtime = 60, cpus_per_task = 2,
+    shell:
+        """
+        export GRBV_RLIBS="$HOME/grbv_extended/Rlibs"
+        RSCRIPT=/cvmfs/hpc.ucdavis.edu/sw/conda/environments/r-4.4.2/bin/Rscript
+        $RSCRIPT scripts/17_tf_activity.R \
+            --counts {input.counts} --meta {input.meta} \
+            --grn_edges {input.grn_edges} \
+            --out_dir {RESULTS}/17_tf_activity &> {log}
+        """
+
+# -----------------------------------------------------------------------------
+# 18. Segmented regression on cohort age (rec #6)
+# -----------------------------------------------------------------------------
+rule segmented_cohort:
+    input:
+        counts = config["inputs"]["counts"],
+        meta   = config["inputs"]["metadata"],
+        mes    = config["inputs"]["mes_csv"],
+    output:
+        summary = f"{RESULTS}/18_segmented/segmented_summary.csv",
+    log: "logs/18_segmented.log"
+    resources:
+        mem_mb = 4000, runtime = 20, cpus_per_task = 1,
+    shell:
+        """
+        export GRBV_RLIBS="$HOME/grbv_extended/Rlibs"
+        RSCRIPT=/cvmfs/hpc.ucdavis.edu/sw/conda/environments/r-4.4.2/bin/Rscript
+        $RSCRIPT scripts/18_segmented_cohort.R \
+            --counts {input.counts} --meta {input.meta} --mes {input.mes} \
+            --out_dir {RESULTS}/18_segmented \
+            --top_var {config[segmented][top_var]} &> {log}
+        """
+
+# -----------------------------------------------------------------------------
+# 19. Bayesian hierarchical model (rec #7)
+# -----------------------------------------------------------------------------
+rule bayesian_hierarchical:
+    input:
+        counts = config["inputs"]["counts"],
+        meta   = config["inputs"]["metadata"],
+    output:
+        summary = f"{RESULTS}/19_bayesian/bayes_posterior_summary.csv",
+    log: "logs/19_bayesian.log"
+    resources:
+        mem_mb = 8000, runtime = 120, cpus_per_task = 4,
+    shell:
+        """
+        export GRBV_RLIBS="$HOME/grbv_extended/Rlibs"
+        RSCRIPT=/cvmfs/hpc.ucdavis.edu/sw/conda/environments/r-4.4.2/bin/Rscript
+        $RSCRIPT scripts/19_bayesian_hierarchical.R \
+            --counts {input.counts} --meta {input.meta} \
+            --out_dir {RESULTS}/19_bayesian \
+            --n_iter {config[bayesian][n_iter]} \
+            --n_chains {config[bayesian][n_chains]} &> {log}
         """

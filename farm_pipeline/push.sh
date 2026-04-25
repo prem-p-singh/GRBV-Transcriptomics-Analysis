@@ -16,6 +16,9 @@ cp -f "$SRC/MEs.csv"               "$DATA_DIR/"
 cp -f "$SRC/Module_genes.xlsx"     "$DATA_DIR/"
 cp -f "$SRC/daily_2021.csv"        "$DATA_DIR/"
 cp -f "$SRC/daily_2022.csv"        "$DATA_DIR/"
+# Added 2026-04-24 for rules 13/15/16/19
+cp -f "$SRC/sample_metadata_v2.txt" "$DATA_DIR/"
+cp -f "$SRC/Biochemical_Data.xlsx"  "$DATA_DIR/"
 
 # Rsync the whole pipeline tree (exclude results/logs so we don't overwrite remote output)
 rsync -avz --progress \

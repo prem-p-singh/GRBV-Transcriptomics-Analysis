@@ -79,3 +79,11 @@ tf_db:
 
 motif_db:
   jaspar_plants_url: "https://jaspar.genereg.net/download/data/2024/CORE/JASPAR2024_CORE_plants_non-redundant_pfms_meme.txt"
+
+# Agenda-gap extensions (rules 13-19, added 2026-04-24)
+segmented:
+  top_var: 2000
+
+bayesian:
+  n_iter: 2000
+  n_chains: 4
