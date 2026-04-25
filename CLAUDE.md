@@ -701,3 +701,131 @@ Extracted + analysed both PDFs. Vitis is **not** in their 10/15-eudicot panel, s
 - `docs/EXTENDED_RESULTS_REPORT.md` — claims 10–12 added
 - `docs/PLAIN_LANGUAGE_SUMMARY.md` — to be updated next session
 - `S70_top4_per_category_NES.csv` at repo root; mis-categorization of KEGG:Viral life cycle - HIV-1 was fixed (Defense regex tightened to remove |[Vv]iral|virus)
+
+---
+
+# SESSION STATE UPDATE 2026-04-24: Agenda-gap pass (rules 13-19) + S73-S81 figures + PPT consistency / colour fixes
+
+## Why this session existed
+
+User reviewed the analysis against the project's real funding agenda (USDA-ARS / CDFA grapevine virology) and surfaced 7 gaps where the deck had not yet answered the agenda's questions:
+1. Per-ORF viral transcriptome dissection (predictor of phenotype, ORF×module coupling)
+2. Phenylpropanoid + PR + cell-wall per-gene model (deck only had GSEA-level for these three explicitly-named pathways)
+3. Carbon translocation / phloem-loading module (Martínez-Lüscher 2018 hypothesis)
+4. Vine-level heterogeneity (44 vines x ≤8 samples)
+5. TF activity inference (regulon-based, not expression-only)
+6. Change-point / segmented regression on cohort age (the deck's "3 phases" framing)
+7. Bayesian hierarchical model with vine random effect
+
+A pre-audit (Explore agent) confirmed that 1 was partially done, 4 was a partial (only repeated-measures correction, no descriptive PCA), 5 was partial (GENIE3 hubs but no activity scores), and 2/3/6/7 were genuinely not done.
+
+## FARM rules 13-19 added and run end-to-end
+
+All 7 rules implemented as `farm_pipeline/scripts/{13..19}_*.{py,R}`, registered as Snakemake rules with SLURM resources, pushed to `~/grbv_extended/`, executed via the existing profile (partition `low`, account `publicgrp`, QOS `publicgrp-low-qos`, `--requeue`), and pulled back to `farm_pipeline/results/`. Several iteration cycles needed to fix: (a) `biorep_id` not in v1 metadata → switched relevant rules to `data/sample_metadata_v2.txt`, (b) `Sampling_Season` dtype mismatch (`int64` vs `float64` → string `"2021"` vs `"2021.0"`), (c) `meta.loc[common]` strips index name → explicit `meta.index.name = "Sample"`, (d) `dplyr::select` masked by `segmented::select`, (e) GRN edges columns are `regulatoryGene`/`targetGene` not `tf`/`target`, (f) decoupleR not in Rlibs (used weighted-sum fallback). All scripts in their patched form are committed.
+
+| Rule | Script | Headline finding |
+|---|---|---|
+| 13 viral ORF extensions | `13_viral_orf_extensions.py` | V2 (N761_gp1, silencing suppressor) adds significant beyond-titer prediction for **Malic** (LRT p=1.2e-3, β=+271 mg/L per log2 CPM) and **Brix** (p=0.033, β=−0.37 °Bx). V1 similar for Malic (p=4.4e-4). Per-ORF × 13-module Spearman heatmap produced (78 cells, BH-adjusted per ORF). |
+| 14 per-gene pathway | `14_pathway_per_gene_model.py` | Phenylpropanoid 31% / Cell wall 26% / PR proteins 20% of curated genes have significant infection main effect (p<0.05). 3-way Inf×Season×Stage interaction in 45–51% of genes across all three categories. Phenylpropanoid is the most-disrupted of the three. |
+| 15 carbon translocation | `15_carbon_translocation_module.py` | 77 sugar-transport genes curated; 33 expressed. Module eigengene tracks Stage strongly (ρ=0.94, p=2e-128) but **no main season** (ρ=0.013, p=0.83) and **no main cohort** (ρ=−0.07, p=0.23) effect. Reads as a NULL counter-finding to the Martínez-Lüscher 2018 panel-level hypothesis; SPS1's mediator status remains relevant but is not module-level rate-limiting. |
+| 16 vine heterogeneity | `16_vine_heterogeneity.py` | 44 vines clustered by mean-|log2FC| response score: **13 tolerant / 18 intermediate / 13 susceptible**. Tolerant Harvest Brix 24.22 ± 1.09 (n=43 samples), susceptible 23.64 ± 0.87 (n=42). ~0.6 °Bx delta within one vineyard. Publishable on its own as a breeding lead. |
+| 17 TF activity | `17_tf_activity.R` | Per-sample TF-activity scores from GENIE3 regulons (top 200 targets per TF). 236 TFs scored. Top hits: LOC100262652 (padj=1.4e-64), LOC100246521 (padj=7.6e-26), **MYB30 down** (padj=8.9e-10) — consistent with classical PR-protein / HR-suppression pathways. Re-ranks the family vs the expression-only DE that drives slides 36–37. |
+| 18 segmented cohort | `18_segmented_cohort.R` | best_k = 0 (linear) for ALL 15 responses (PC1, PC2, 13 module eigengenes) by BIC. **The deck's "3 temporal phases" framing is descriptive simplification, not statistically supported phase transitions.** Notable null finding worth a sentence in the manuscript reframe. |
+| 19 Bayesian hierarchical | `19_bayesian_hierarchical.R` | brms y ~ Inf + Season + Stage + (1\|vine_id) on 6 high-interest genes; 4 chains × 2000 iter; rhat ≤ 1.005 throughout. Strong posteriors entirely outside ROPE [-0.1, +0.1]: RdRp1 +1.78 [+1.54, +2.02], F-box LRR +2.01 [+1.76, +2.25], glycine-rich −1.33 [-1.65, -1.01], LOC100266309 +0.80 [+0.47, +1.11], SPS1 +0.52 [+0.09, +0.95]. **MBF1c posterior softens: −0.25 [-0.81, +0.33], 19% in ROPE.** Headline mediator's effect is more uncertain than the frequentist sweep suggested. Worth flagging in Methods/Discussion. |
+
+## Supplementary figures S73-S81 (and the S80A/B/C split)
+
+Eight new R scripts in `figures/scripts_R/`, all sourcing `theme_grbv.R`, all producing PNG + SVG:
+
+- **S73** viral ORF extensions (LRT-Δ-R² heatmap + ORF×module Spearman heatmap)
+- **S74** Phenyl + PR + Cell-wall summary panel (category percentages + top-15-per-category dotplot)
+- **S75** Carbon translocation module trajectory + per-gene Brix correlation
+- **S76** Vine heterogeneity dashboard (per-vine response distribution + tolerant-vs-susceptible Brix)
+- **S77** Regulon-based TF activity DE (top-25 bar + volcano)
+- **S78** Segmented regression null (ΔBIC bar + best_k count)
+- **S79** Bayesian forest plot (6 genes with 95% CI + ROPE band)
+- **S81** Carbon-translocation full FC heatmap (33 sugar-transport genes × Season × Cohort × Stage; functional subclass faceting)
+
+The original S80 ("phenylpropanoid + PR + cell wall full FC heatmap, all 252 genes in one figure") had three crowding problems: (a) facet strip labels clipped to "mpling_Season: 2..." / "turity_stage: Pre-V..." due to overlapping ggplot strip rows, (b) 161 cell-wall labels stacked into ~70 px were unreadable, (c) one-figure layout couldn't accommodate the 3-category density spread. **Split into S80A + S80B + S80C** with the following fixes applied to all three:
+
+- **S80A — Phenylpropanoid + PR proteins**: 91 genes (51 + 40) in 2 stacked panels, 10 × 14 in @ 600 dpi. All 91 labels at 6 pt. Hierarchical clustering per panel (Euclidean / Ward.D2). `facet_nested(. ~ Season + Stage)` via ggh4x — fixes the strip clipping.
+- **S80B — Cell wall full landscape**: 161 genes split into 5 functional sub-categories via GFF regex (Pectin / Hemicellulose / Cellulose / Lignin / Expansin). 11 × 18 in @ 600 dpi. **Only the 13 genes with |log2FC| ≥ 1 in ≥ 4 of 8 outer cells get y-axis labels**; the other 148 are anonymous tile rows for the global pattern.
+- **S80C — Cell wall focused subset**: 21 genes selected from the 161 by either `|FC| ≥ 1 in ≥ 4/8 cells` (13 strict) **or** `|FC| ≥ 0.45 in ≥ 6/8 cells` (8 broad; threshold auto-tuned over [0.30, 0.95] to land in the 20–40 window because cell-wall response is muted). 10 × 9 in @ 600 dpi. Row labels are `Symbol — short_function` from `farm_pipeline/results/annotations/gene_annotations.csv` where available, `LOC###### — best NCBI description` otherwise — **no bare LOC IDs**. Sub-category rendered as a left-side **nested y-axis label** via `ggh4x::scale_y_discrete(guide = guide_axis_nested(delim = ">"))`. Cell text overlay for `|log2FC| ≥ 1.5` (white when `|log2FC| > 2`, black otherwise). Subtle cell borders (`geom_tile(color = "grey90", linewidth = 0.1)`).
+
+Common to all three: `scale_fill_gradient2(limits = c(-3, 3), oob = scales::squish)`, 2-digit cohort years on x at 90°, captions stating the cohort convention (`'16` = 5–6 yrs since infection at 2021 sampling, 9–10 yrs at 2022 sampling; `'22` = 0–1 yr).
+
+## PPT (`GRBV_Funding_Committee_Presentation.pptx`, gitignored)
+
+The deck went from **71 slides → 82 slides** over four scripted updates this session:
+
+| Step | Script | Net change |
+|---|---|---|
+| Consistency-fix pass (footers, sidebar labels, cross-refs, bridge sentence on slide 29, deliverable counts, slide 14 arithmetic, slide 64 panel callout) | `scripts/update_ppt_consistency_fixes.py` | 0 |
+| 7 agenda-gap slides (S73–S79) inserted after slide 64 | `scripts/update_ppt_agenda_gaps.py` | +7 → 78 |
+| Full-resolution heatmap slides (initial S80 + S81) | `scripts/update_ppt_full_heatmaps.py` | +2 → 80 |
+| Split S80 → S80A + S80B | `scripts/update_ppt_split_S80.py` | +1 → 81 |
+| Insert S80C after S80B | `scripts/update_ppt_S80C.py` | +1 → 82 |
+
+Sidebar labels for the agenda-gap block are `6 / Gap-fill`, distinguishing them from the 4 existing post-viral PLUS sub-categories (Biochem / Tier 1 / Cohort / Dimensions). Slide-4 roadmap auto-recomputed each step; current ranges: Section 7 Synthesis 76–77, Section 8 Reanalysis 78–82.
+
+Typography (after the consistency-fix pass + the black-on-navy title fix the user spotted):
+
+- 0 Arial runs across the 636-run deck (all body text now Cambria explicit).
+- All 18 content-slide titles that were rendering invisible BLACK on navy header bands now have explicit `#FFFFFF` white.
+- Body Cambria 13 pt navy (#0F172A) on the original slides; Cambria 10 pt navy on the 16 dense post-figure-upgrade slides (kept at 10 pt because raising to 13 pt would overflow 16 of 18 fixed-height boxes).
+- PLUS slides title Cambria 16 pt white, tag Cambria 9 pt white.
+
+## Atlas
+
+`figures/GRBV_Full_Figure_Atlas.pdf` regenerated three times this session:
+
+- After S73–S79: 89 pages (10 main + 79 supp), 62 MB.
+- After S80 + S81 added: 91 pages.
+- After S80 → S80A + S80B + S80C split + S81 retained: **93 pages (10 main + 83 supp)**.
+
+The atlas builder (`figures/scripts_R/build_full_atlas.py`) was patched so `resolve_supp(n, fname)` first tries direct `SUPP_DIR/fname` lookup (handles S80A / S80B / S80C alongside the existing prefix-glob fallback).
+
+## Notable findings to flag for the manuscript
+
+1. **Rule 18 null** kills the "3 discrete temporal phases of chronic infection" framing as a statistical claim. Reframe to **continuous gradient with descriptive cohort-bin labels** (acute / mid / chronic stay as descriptive shorthand). Notable for the reviewer-response: "We tested for break-points formally and prefer the linear model; phase labels in the figures are descriptive only."
+2. **Rule 19 MBF1c uncertainty.** The Bayesian random-intercept model is more skeptical of MBF1c's effect than the frequentist mediation sweep. Posterior straddles zero; 19% in ROPE. This needs a one-sentence caveat in Methods/Discussion before submission. Re-elevates the qPCR / VIGS validation priority.
+3. **Rule 16 tolerant-vs-susceptible.** Within the same Merlot vineyard there's a Brix-defined tolerance gradient (~0.6 °Bx delta). Publishable on its own if any of the tolerant vines have heritable differences (rootstock or transcriptional state) — direct breeding lead.
+4. **Rule 13 V2-beyond-titer for Malic.** Concrete answer to project Objective 2 ("impact of viral titer on disease outcomes"): viral mRNA load explains malic-acid variance that titer alone misses. V2 (N761_gp1) is the strongest predictor.
+5. **Rule 15 NULL on sugar module.** Martínez-Lüscher 2018's "GRBV blocks hexose translocation" hypothesis is **not** supported at the panel level in our data. SPS1's individual mediator role and per-gene Brix correlations remain valid; the panel-level framing is retracted.
+
+## Why log2 CPM is the per-gene-model y-axis (asked by user during this session)
+
+Rule 14's per-gene OLS uses `y = log2(CPM + 1)` as the response. Three reasons that scale: (a) `counts / library_size × 1e6` strips the library-size artefact; (b) `log2` stabilises the variance (raw counts are Poisson, violating OLS homoscedasticity); (c) a coefficient of `+1` = a 2-fold expression change, the same scale `limma-voom` and `DESeq2` use. The `+1` pseudo-count prevents `log(0)` on zero-count cells.
+
+## Documents in `docs/`
+
+| File | This session's update |
+|---|---|
+| `INTEGRATED_ANALYSIS.md` | Thread 11 added covering the 7 agenda-gap claims + S80A/B/C + S81 (this session). |
+| `EXTENDED_RESULTS_REPORT.md` | New section "Claims 13–19" appended (this session). |
+| `MANUSCRIPT_DRAFT_v1.md` | Not edited — too early; the Bayesian / segmented null reframes need to land here on the next pass. |
+| `HSFA2_VIGS_EXPERIMENT_PLAN.md` | Not edited — the MBF1c uncertainty (rule 19) elevates the priority but doesn't change the protocol. |
+| `PLAIN_LANGUAGE_SUMMARY.md` | Not edited this session. |
+| `figures/UPGRADE_NOTES.md` | Pending — will note S73–S81 + S80A/B/C split next session. |
+
+## Next-action priorities (post-session)
+
+1. **Reframe slide 63 ("New dimension 2: chronic infection has three temporal phases")** in light of the rule 18 null. Keep the phases as descriptive bins; add a sentence "best_k = 0 by BIC; gradient is continuous, see S78" so the figure does not over-claim discreteness.
+2. **Add an MBF1c caveat to slide 30 (Q4 mechanism)**: "Bayesian random-intercept reanalysis (S79) softens the MBF1c posterior to −0.25 [-0.81, +0.33] with 19% in ROPE. Effect direction needs qPCR / VIGS to confirm before manuscript submission."
+3. **Manuscript draft** — fold rules 14, 16, 19 into Discussion; rules 13, 18 into Methods.
+4. **PPT visual QA** still pending: LibreOffice not installed locally; `brew install --cask libreoffice` would unblock per-slide JPG rendering for clipping / overlap checks. User has not authorised the install.
+5. **Tier-2 cross-cohort meta-analysis**: bridge probe-based published datasets (Fung 2008, Polesani 2010, Liu 2012) into VIT-locus space to unlock the 0%-coverage Tier 1 papers (1–2 days; deferred from the agenda-gap pass).
+
+## Git push log this session
+
+| Commit | Subject |
+|---|---|
+| 8f4825a | PPT consistency + style fixes (71-slide deck) |
+| 0b7bc21 | FARM rules 13-19: 7 agenda-gap analyses |
+| 99e19d2 | S73-S79 + 7 PPT slides: agenda-gap supplementary figures and deck section |
+| a9da32d | S80 + S81: full-resolution log2-FC heatmaps for the agenda-named pathways |
+| 42d652a | Split S80 into S80A (Phenyl + PR) + S80B (Cell wall) with readability fixes |
+| fbb45fe | S80C — focused cell-wall heatmap with cell-text annotation |
+
+All on `master` at https://github.com/prem-p-singh/GRBV-Transcriptomics-Analysis.
+
