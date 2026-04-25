@@ -125,6 +125,8 @@ SOURCE_FIGS = [
     (77, "S77_tf_activity.png",                       "Regulon-based TF activity DE",                       "regenerated", "236 TFs scored; LOC100262652 padj=1.4e-64; MYB30 down padj=8.9e-10"),
     (78, "S78_segmented_cohort.png",                  "Segmented regression on cohort age (null result)",   "regenerated", "best_k=0 (linear) for all 15 responses; '3 phases' framing is descriptive only"),
     (79, "S79_bayesian_posterior.png",                "Bayesian posteriors on infection effect",            "regenerated", "RdRp1 +1.78, F-box +2.01, glycine-rich -1.33; MBF1c -0.25 [-0.81, +0.33], 19% in ROPE"),
+    (80, "S80_pathway_full_heatmap.png",              "Phenylpropanoid + PR + Cell-wall full FC heatmap",   "regenerated", "252 genes x (season x cohort x stage); per-cell log2 FC RB(+) vs RB(-)"),
+    (81, "S81_sugar_full_heatmap.png",                "Carbon translocation full FC heatmap",               "regenerated", "33 sugar-transport genes x (season x cohort x stage); functional subclass ordering"),
 ]
 
 PAGE_W, PAGE_H = LETTER  # 8.5 x 11 inches
