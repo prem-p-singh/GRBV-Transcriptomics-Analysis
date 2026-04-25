@@ -131,7 +131,8 @@ SOURCE_FIGS = [
     (79, "S79_bayesian_posterior.png",                "Bayesian posteriors on infection effect",            "regenerated", "RdRp1 +1.78, F-box +2.01, glycine-rich -1.33; MBF1c -0.25 [-0.81, +0.33], 19% in ROPE"),
     (80, "S80A_phenylpropanoid_PR_heatmap.png",       "S80A — Phenylpropanoid + PR proteins (91 genes)",    "regenerated", "Hierarchical clustering (Ward.D2); facet_nested season > stage; cohort years on x"),
     (81, "S80B_cell_wall_heatmap.png",                "S80B — Cell wall (161 genes, 5 sub-categories)",     "regenerated", "Pectin / Hemicellulose / Cellulose / Lignin / Expansin; only |log2FC|>=1 genes labelled"),
-    (82, "S81_sugar_full_heatmap.png",                "Carbon translocation full FC heatmap",               "regenerated", "33 sugar-transport genes x (season x cohort x stage); functional subclass ordering"),
+    (82, "S80C_cell_wall_focused.png",                "S80C — Cell wall genes with consistent GRBV response","regenerated", "21 genes (13 strict + 8 broad at |FC|>=0.45 in >=6/8); axis_nested by sub-category; cell text"),
+    (83, "S81_sugar_full_heatmap.png",                "Carbon translocation full FC heatmap",               "regenerated", "33 sugar-transport genes x (season x cohort x stage); functional subclass ordering"),
 ]
 
 PAGE_W, PAGE_H = LETTER  # 8.5 x 11 inches
