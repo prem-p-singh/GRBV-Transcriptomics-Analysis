@@ -111,6 +111,20 @@ SOURCE_FIGS = [
     (63, "S63_biochem_season_infection.png",          "Season x Infection ANOVA on juice chemistry",        "regenerated", "TA interaction \u03b7\u00b2=0.77; cool 2021 +0.62 g/L vs hot 2022 -0.79 g/L; Brix 2.6x stronger in 2022"),
     (64, "S64_tier1_overlap_summary.png",             "Tier 1 DEG overlap: size, intersections, enrichment","regenerated", "Signature sizes (log-x), GRBV intersections (35 unique / 13 Botrytis-shared / 7 multi), Fisher q=2.1e-5 vs Blanco-Ulate Zinfandel"),
     (65, "S65_tier1_fc_concordance.png",              "Tier 1 log2FC Spearman concordance heatmap",         "regenerated", "GRBV (Merlot) x Blanco-Ulate GRBV (Zinfandel) rho=0.47; Blanco-Ulate x Song GLRaV-3 rho=-0.21; other cells \u2248 0"),
+    (66, "S66_disease_progression_cube.png",          "Disease progression cube (RB+)",                     "regenerated", "Cohort x season x stage cube for titer / sHSP / GRBV signature / Brix"),
+    (67, "S67_rbminus_baseline_cube.png",             "RB(-) baseline cube",                                "regenerated", "Healthy comparator that makes the passive-failure reframe visible"),
+    (68, "S68_enrichment_season_stage.png",           "Season x stage GSEA + season-flip catalog",          "regenerated", "Top variable pathways + 20-pathway sign-flip catalog + 8-family trajectory"),
+    (69, "S69_enrichment_cohort.png",                 "Per-cohort hyper-enrichment",                        "regenerated", "65x sHSP at 2016 (chronic) vs 5x sHSP at 2022 (acute); 7-year temporal architecture"),
+    (70, "S70_literature_curated_pathways.png",       "Literature-curated 90-pathway NES heatmap",          "regenerated", "Ribosome / heat-shock / sugar / phenylpropanoid / immunity per stage x season"),
+    (71, "S71_transcriptional_response_strength.png", "PCA-based response strength per cell",               "regenerated", "Peak phase 2020 cohort reaches PC-distance 21.9 at 2021 Harvest"),
+    (72, "S72_variance_decomposition_ternary.png",    "Per-gene variance ternary (Singh 2025 framework)",   "regenerated", "Dev / Viral / Env split; sHSPs lie on Dev-Env edge with viral share \u2248 baseline"),
+    (73, "S73_viral_orf_extensions.png",              "Viral ORF extensions: phenotype + module",           "regenerated", "V2 adds Brix/Malic prediction beyond titer; per-ORF x 13-module heatmap"),
+    (74, "S74_pathway_per_gene.png",                  "Phenylpropanoid + PR + cell-wall per-gene model",    "regenerated", "31% Phenylpropanoid / 20% PR / 26% Cell-wall infection-significant; 45-51% 3-way"),
+    (75, "S75_carbon_translocation.png",              "Sugar-transport module (SWEET/SUT/STP/CWINV)",       "regenerated", "77 genes; module rho_stage=0.94 but no main season or cohort effect (null hypothesis test of Martinez-Luscher 2018)"),
+    (76, "S76_vine_heterogeneity.png",                "Vine-level tolerant vs susceptible",                 "regenerated", "44 vines: 13 tolerant (24.2 Bx) vs 13 susceptible (23.6 Bx) within one Merlot vineyard"),
+    (77, "S77_tf_activity.png",                       "Regulon-based TF activity DE",                       "regenerated", "236 TFs scored; LOC100262652 padj=1.4e-64; MYB30 down padj=8.9e-10"),
+    (78, "S78_segmented_cohort.png",                  "Segmented regression on cohort age (null result)",   "regenerated", "best_k=0 (linear) for all 15 responses; '3 phases' framing is descriptive only"),
+    (79, "S79_bayesian_posterior.png",                "Bayesian posteriors on infection effect",            "regenerated", "RdRp1 +1.78, F-box +2.01, glycine-rich -1.33; MBF1c -0.25 [-0.81, +0.33], 19% in ROPE"),
 ]
 
 PAGE_W, PAGE_H = LETTER  # 8.5 x 11 inches
