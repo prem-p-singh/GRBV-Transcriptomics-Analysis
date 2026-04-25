@@ -74,7 +74,7 @@ nodes <- data.frame(
   fill = c(unname(GRBV_COLORS["med_temp"]),
            unname(GRBV_COLORS["med_titer"]),
            unname(GRBV_COLORS["highlight"])),
-  label_top = c("Temperature", "Viral titer", "MBF1c"),
+  label_top = c("Temperature", "Viral titer", "MBF1c *"),
   label_sub = c("",            "",            "(LOC100249249)")
 )
 
@@ -133,12 +133,18 @@ pA <- ggplot() +
             aes(x = x, y = y, label = label),
             family = "Arial", fontface = "bold",
             color = arrow_labels$color, size = arrow_labels$size) +
-  annotate("text", x = 5.0, y = 2.15, label = stats_text,
+  annotate("text", x = 5.0, y = 2.20, label = stats_text,
            family = "Arial", size = 2.7, hjust = 0.5, vjust = 0.5,
            lineheight = 1.15) +
-  annotate("text", x = 5.0, y = 0.55,
+  annotate("text", x = 5.0, y = 0.95,
            label = "multiprotein-bridging factor 1c",
            family = "Arial", size = 2.7, fontface = "italic", color = "grey25") +
+  # 2026-04 reviewer-defensive caveat: random-intercept Bayesian model (S79)
+  # softens the MBF1c posterior to -0.25 [-0.81, +0.33], 19% in ROPE.  Frequentist
+  # mediation point estimate above stands; effect direction needs qPCR / VIGS.
+  annotate("text", x = 5.0, y = 0.30,
+           label = "* Bayesian (1|vine_id) softens MBF1c: -0.25 [-0.81, +0.33], 19% in ROPE; see S79.",
+           family = "Arial", size = 2.1, fontface = "italic", color = "grey45") +
   labs(tag = "A") +
   theme_void(base_family = "Arial") +
   theme(plot.tag = element_text(face = "bold", size = 13),

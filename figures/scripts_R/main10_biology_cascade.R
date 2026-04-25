@@ -115,7 +115,7 @@ nodes <- data.frame(
   body = c(
     "Geminivirus replicates in phloem;\nN761_gp1\u20133 dominate the Q6 volcano (Main 2);\nbiphasic titer dynamics across stages (Main 3, panel C)",
     "All 10 immune categories show |log2FC| < 0.08\n(NLR, PRR, PR, SA, JA, ET, WRKY, callose, ROS, R-adapters);\nWGCNA modules preserved across infected vines (Zsum 5.8\u201336.4)",
-    "29 / 36 sHSPs down-regulated in infected vines (Main 4, panel A);\nHSF \u2194 sHSP coordinated, r = 0.625 (Main 4, panel B);\nMBF1c (LOC100249249) is the cross-pipeline robust\ntemperature \u2192 titer mediator (Main 5)",
+    "29 / 36 sHSPs down-regulated in infected vines (Main 4, panel A);\nHSF \u2194 sHSP coordinated, r = 0.625 (Main 4, panel B);\nmediator panel (LOC100268011, LOC100266309, SPS1, MBF1c*)\ncouples temperature to titer (Main 5);  *MBF1c posterior\nstraddles zero in the random-intercept model (S79)",
     "DOF3.6 / DOF1.7 motifs enriched in brown + yellow modules (Main 7);\nBrix suppressed 4\u20139.8 \u00b0Bx in infected berries, with TA / Malic\ninverted between 2021 cool and 2022 hot seasons (S63);\ntop host biomarker maps to sugar-accumulation QTL on chr 1 (Main 8)",
     "Visible red blotching;  reduced \u00b0Brix and yield;\n\u22651,500 stage-specific DEGs at Harvest in cool seasons (Main 3, panel A);\nbiomarker panel co-localises with known grape QTL\n(Main 8, panel C;  2.0\u00d7 enrichment over a 5,000-permutation null)"
   ),
@@ -208,9 +208,9 @@ title_plot <- ggplot() +
 caption_plot <- ggplot() +
   coord_cartesian(xlim = c(0,1), ylim = c(0,1), expand = FALSE) +
   annotate("text", x = 0.5, y = 0.5,
-           label = paste("Robust temp \u2192 titer mediators (multi-pipeline):",
-                         "MBF1c (LOC100249249), SPS1 (LOC100232974),",
-                         "uncharacterised LOC100266309"),
+           label = paste("Robust temp \u2192 titer mediator panel (multi-pipeline):",
+                         "LOC100268011 RdRp1, LOC100266309, SPS1 (LOC100232974), MBF1c*;",
+                         "*MBF1c posterior softened by random-intercept reanalysis (S79)"),
            family = "Arial", size = 2.8, colour = "grey35", hjust = 0.5) +
   theme_void() + theme(plot.margin = margin(2, 4, 4, 4))
 
