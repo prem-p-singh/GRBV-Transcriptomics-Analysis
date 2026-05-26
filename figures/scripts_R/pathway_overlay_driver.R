@@ -146,3 +146,130 @@ write_paralog_auxiliary <- function(pathway_id, M, out_path,
   write_csv(out_df, out_path)
   nrow(out_df)
 }
+
+# -----------------------------------------------------------------
+# render_kegg_pathway(): full pipeline for one KEGG pathway.
+#   pathway_id : e.g. "vvi00940"
+#   supp_id    : e.g. 87 (becomes S87_*.png)
+#   slug       : e.g. "phenylpropanoid_kegg"
+#   M          : Q2x log2FC matrix from read_q2x_matrix()
+# Side effects:
+#   - writes figures/supp/S<supp_id>_<slug>.png
+#   - writes figures/supp/S<supp_id>_<slug>.pdf (graphviz fallback)
+#   - writes figures/supp/S<supp_id>_paralog_counts.csv
+#   - writes figures/supp/S<supp_id>_mapping_coverage.txt
+# Returns invisibly: list(png_path, pdf_path, coverage_pct, n_ec_mapped, n_ec)
+# -----------------------------------------------------------------
+render_kegg_pathway <- function(pathway_id, supp_id, slug, M) {
+  pid <- sub("^vvi", "", pathway_id)
+  dir.create(TMP_DIR,  recursive = TRUE, showWarnings = FALSE)
+  dir.create(SUPP_DIR, recursive = TRUE, showWarnings = FALSE)
+  dir.create(KGML_DIR, recursive = TRUE, showWarnings = FALSE)
+
+  # 1. Coverage report
+  cov <- compute_mapping_coverage(pathway_id, rownames(M))
+  message(sprintf("[%s] %s: %d of %d EC nodes mapped (%.1f%%)",
+                  pathway_id, slug, cov$n_ec_mapped, cov$n_ec, cov$percent))
+  if (cov$percent < COVERAGE_WARN_THRESHOLD * 100) {
+    warning(sprintf("Coverage %.1f%% below threshold %.0f%% for %s",
+                    cov$percent, COVERAGE_WARN_THRESHOLD * 100, pathway_id))
+  }
+
+  # 2. Paralog auxiliary CSV
+  aux_path <- file.path(SUPP_DIR, sprintf("S%d_paralog_counts.csv", supp_id))
+  n_rows <- write_paralog_auxiliary(pathway_id, M, aux_path)
+
+  # 3. Coverage text file
+  cov_path <- file.path(SUPP_DIR, sprintf("S%d_mapping_coverage.txt", supp_id))
+  writeLines(sprintf("%s %s: %d of %d EC nodes mapped (%.1f%%)",
+                     pathway_id, slug, cov$n_ec_mapped, cov$n_ec, cov$percent),
+             cov_path)
+
+  # 4. Native pathview render (canonical KEGG layout PNG)
+  png_native <- NULL
+  withr::with_dir(TMP_DIR, {
+    out_suffix_native <- "grbv_native"
+    pv_result <- tryCatch(
+      pathview::pathview(
+        gene.data    = M,
+        pathway.id   = pid,
+        species      = "vvi",
+        gene.idtype  = "ENTREZ",
+        multi.state  = TRUE,
+        same.layer   = FALSE,
+        node.sum     = "mean",
+        low          = list(gene = PV_LOW),
+        mid          = list(gene = PV_MID),
+        high         = list(gene = PV_HIGH),
+        limit        = list(gene = PV_LIMIT),
+        bins         = list(gene = PV_BINS),
+        kegg.native  = TRUE,
+        out.suffix   = out_suffix_native,
+        kegg.dir     = file.path("..", "..", "cache", "kegg_xml")
+      ),
+      error = function(e) { message("Native pathview render failed: ", e$message); NULL }
+    )
+    cand <- sprintf("vvi%s.%s.multi.png", pid, out_suffix_native)
+    if (file.exists(cand)) png_native <<- cand
+  })
+
+  if (is.null(png_native)) {
+    stop("Pathview native render produced no PNG for ", pathway_id)
+  }
+
+  # 5. Graphviz vector pass (PDF for paper figures)
+  pdf_graphviz <- NULL
+  withr::with_dir(TMP_DIR, {
+    out_suffix_gv <- "grbv_graphviz"
+    pv_result2 <- tryCatch(
+      pathview::pathview(
+        gene.data    = M,
+        pathway.id   = pid,
+        species      = "vvi",
+        gene.idtype  = "ENTREZ",
+        multi.state  = TRUE,
+        same.layer   = FALSE,
+        node.sum     = "mean",
+        low          = list(gene = PV_LOW),
+        mid          = list(gene = PV_MID),
+        high         = list(gene = PV_HIGH),
+        limit        = list(gene = PV_LIMIT),
+        bins         = list(gene = PV_BINS),
+        kegg.native  = FALSE,
+        out.suffix   = out_suffix_gv,
+        kegg.dir     = file.path("..", "..", "cache", "kegg_xml")
+      ),
+      error = function(e) { message("Graphviz pathview render failed: ", e$message); NULL }
+    )
+    cand <- sprintf("vvi%s.%s.multi.pdf", pid, out_suffix_gv)
+    if (file.exists(cand)) pdf_graphviz <<- cand
+  })
+
+  # 6. Move outputs to figures/supp/ with S<n>_<slug> naming
+  final_png <- file.path(SUPP_DIR, sprintf("S%d_%s.png", supp_id, slug))
+  file.rename(file.path(TMP_DIR, png_native), final_png)
+
+  final_pdf <- NULL
+  if (!is.null(pdf_graphviz)) {
+    final_pdf <- file.path(SUPP_DIR, sprintf("S%d_%s.pdf", supp_id, slug))
+    file.rename(file.path(TMP_DIR, pdf_graphviz), final_pdf)
+  }
+
+  # 7. Try to convert PDF -> SVG if pdf2svg is on PATH
+  final_svg <- NULL
+  if (!is.null(final_pdf) && nchar(Sys.which("pdf2svg")) > 0) {
+    final_svg <- sub("\\.pdf$", ".svg", final_pdf)
+    system2("pdf2svg", c(shQuote(final_pdf), shQuote(final_svg)))
+    if (!file.exists(final_svg)) final_svg <- NULL
+  }
+
+  invisible(list(
+    png_path     = final_png,
+    pdf_path     = final_pdf,
+    svg_path     = final_svg,
+    coverage_pct = cov$percent,
+    n_ec_mapped  = cov$n_ec_mapped,
+    n_ec         = cov$n_ec,
+    aux_path     = aux_path
+  ))
+}
