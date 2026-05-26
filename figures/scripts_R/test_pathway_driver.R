@@ -49,3 +49,18 @@ stopifnot("n_ec_mapped <= n_ec"     = cov$n_ec_mapped <= cov$n_ec)
 
 cat(sprintf("compute_mapping_coverage(vvi03050): PASS  (%d of %d EC nodes mapped, %.1f%%)\n",
             cov$n_ec_mapped, cov$n_ec, cov$percent))
+
+cat("\nTesting write_paralog_auxiliary() ...\n")
+aux_path <- tempfile(fileext = ".csv")
+n_rows <- write_paralog_auxiliary("vvi03050", M, aux_path)
+stopifnot("aux CSV must exist after write"  = file.exists(aux_path))
+stopifnot("aux must have >=10 rows"          = n_rows >= 10)
+
+# Read it back and check schema
+aux <- read_csv(aux_path, show_col_types = FALSE)
+required_cols <- c("pathway_id", "ec_index", "n_loci", "loci",
+                   Q2X_COLS)
+missing_cols <- setdiff(required_cols, colnames(aux))
+stopifnot("aux schema missing columns: " = length(missing_cols) == 0)
+cat(sprintf("write_paralog_auxiliary(): PASS  (%d EC rows)\n", n_rows))
+unlink(aux_path)

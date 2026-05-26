@@ -114,3 +114,35 @@ compute_mapping_coverage <- function(pathway_id, entrez_ids,
   list(n_ec = n_ec, n_ec_mapped = n_ec_mapped, percent = percent,
        per_ec_loci = ec_node_loci, per_ec_mapped = mapped)
 }
+
+# -----------------------------------------------------------------
+# write_paralog_auxiliary(): write per-EC paralog inventory CSV.
+# For each enzyme node in the KGML, lists the LOC genes mapped and
+# the mean log2FC across paralogs for each of the 8 Q2x conditions.
+# -----------------------------------------------------------------
+write_paralog_auxiliary <- function(pathway_id, M, out_path,
+                                    kgml_dir = KGML_DIR) {
+  cov <- compute_mapping_coverage(pathway_id, rownames(M), kgml_dir)
+  rows <- vector("list", cov$n_ec)
+  for (i in seq_len(cov$n_ec)) {
+    loci <- cov$per_ec_loci[[i]]
+    mapped_loci <- intersect(loci, rownames(M))
+    if (length(mapped_loci) == 0) {
+      mean_fc <- rep(NA_real_, length(Q2X_COLS))
+    } else {
+      sub_mat <- M[mapped_loci, , drop = FALSE]
+      mean_fc <- colMeans(sub_mat, na.rm = TRUE)
+      mean_fc[is.nan(mean_fc)] <- NA_real_
+    }
+    rows[[i]] <- c(
+      list(pathway_id = pathway_id,
+           ec_index   = i,
+           n_loci     = length(mapped_loci),
+           loci       = paste(paste0("LOC", mapped_loci), collapse = ";")),
+      setNames(as.list(mean_fc), Q2X_COLS)
+    )
+  }
+  out_df <- dplyr::bind_rows(rows)
+  write_csv(out_df, out_path)
+  nrow(out_df)
+}
