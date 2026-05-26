@@ -36,3 +36,16 @@ stopifnot("log2FC magnitudes look sane (|x| < 25)" = max(abs(finite_vals)) < 25)
 cat("read_q2x_matrix(): PASS\n")
 cat(sprintf("  shape: %d x %d, range: [%.2f, %.2f]\n",
             nrow(M), ncol(M), min(finite_vals), max(finite_vals)))
+
+cat("\nTesting compute_mapping_coverage() ...\n")
+cov <- compute_mapping_coverage("vvi03050", rownames(M))
+
+# Return type: named list with two scalars and one character vector
+stopifnot("coverage list missing 'percent'" = "percent" %in% names(cov))
+stopifnot("coverage list missing 'n_ec'" = "n_ec" %in% names(cov))
+stopifnot("coverage list missing 'n_ec_mapped'" = "n_ec_mapped" %in% names(cov))
+stopifnot("percent should be 0-100" = cov$percent >= 0 && cov$percent <= 100)
+stopifnot("n_ec_mapped <= n_ec"     = cov$n_ec_mapped <= cov$n_ec)
+
+cat(sprintf("compute_mapping_coverage(vvi03050): PASS  (%d of %d EC nodes mapped, %.1f%%)\n",
+            cov$n_ec_mapped, cov$n_ec, cov$percent))

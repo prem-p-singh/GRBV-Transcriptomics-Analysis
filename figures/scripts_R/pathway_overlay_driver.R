@@ -7,6 +7,7 @@ suppressPackageStartupMessages({
   library(readr)
   library(dplyr)
   library(withr)
+  library(XML)
 })
 
 # -----------------------------------------------------------------
@@ -75,4 +76,41 @@ read_q2x_matrix <- function(de_dir = "farm_pipeline/results/de_extras") {
   M <- as.matrix(M_df[, Q2X_COLS])
   rownames(M) <- sub("^LOC", "", M_df$gene)
   M
+}
+
+# -----------------------------------------------------------------
+# compute_mapping_coverage(): how many enzyme nodes have >=1 LOC mapped?
+# Returns a list: n_ec, n_ec_mapped, percent.
+# -----------------------------------------------------------------
+compute_mapping_coverage <- function(pathway_id, entrez_ids,
+                                     kgml_dir = KGML_DIR) {
+  # Strip "vvi" prefix if present for download.kegg()
+  pid <- sub("^vvi", "", pathway_id)
+
+  # Download if not cached
+  kgml_path <- file.path(kgml_dir, sprintf("vvi%s.xml", pid))
+  if (!file.exists(kgml_path)) {
+    invisible(download.kegg(pathway.id = pid, species = "vvi", kegg.dir = kgml_dir))
+  }
+  if (!file.exists(kgml_path)) {
+    stop("KGML download failed for vvi", pid)
+  }
+
+  # Parse the KGML to extract gene entries (each entry has a space-separated list of vvi:NNNN IDs)
+  kgml <- XML::xmlParse(kgml_path)
+  entries <- XML::getNodeSet(kgml, "//entry[@type='gene']")
+  ec_node_loci <- lapply(entries, function(e) {
+    name_attr <- XML::xmlGetAttr(e, "name")
+    if (is.null(name_attr)) return(character(0))
+    ids <- strsplit(name_attr, " ", fixed = TRUE)[[1]]
+    sub("^vvi:", "", ids)
+  })
+
+  n_ec <- length(ec_node_loci)
+  mapped <- vapply(ec_node_loci, function(loci) any(loci %in% entrez_ids), logical(1))
+  n_ec_mapped <- sum(mapped)
+  percent <- if (n_ec > 0) 100 * n_ec_mapped / n_ec else 0
+
+  list(n_ec = n_ec, n_ec_mapped = n_ec_mapped, percent = percent,
+       per_ec_loci = ec_node_loci, per_ec_mapped = mapped)
 }
