@@ -186,10 +186,9 @@ render_kegg_pathway <- function(pathway_id, supp_id, slug, M) {
              cov_path)
 
   # 4. Native pathview render (canonical KEGG layout PNG)
-  png_native <- NULL
+  out_suffix_native <- "grbv_native"
   withr::with_dir(TMP_DIR, {
-    out_suffix_native <- "grbv_native"
-    pv_result <- tryCatch(
+    tryCatch(
       pathview::pathview(
         gene.data    = M,
         pathway.id   = pid,
@@ -209,19 +208,18 @@ render_kegg_pathway <- function(pathway_id, supp_id, slug, M) {
       ),
       error = function(e) { message("Native pathview render failed: ", e$message); NULL }
     )
-    cand <- sprintf("vvi%s.%s.multi.png", pid, out_suffix_native)
-    if (file.exists(cand)) png_native <<- cand
   })
+  png_native_name <- sprintf("vvi%s.%s.multi.png", pid, out_suffix_native)
+  png_native <- if (file.exists(file.path(TMP_DIR, png_native_name))) png_native_name else NULL
 
   if (is.null(png_native)) {
     stop("Pathview native render produced no PNG for ", pathway_id)
   }
 
   # 5. Graphviz vector pass (PDF for paper figures)
-  pdf_graphviz <- NULL
+  out_suffix_gv <- "grbv_graphviz"
   withr::with_dir(TMP_DIR, {
-    out_suffix_gv <- "grbv_graphviz"
-    pv_result2 <- tryCatch(
+    tryCatch(
       pathview::pathview(
         gene.data    = M,
         pathway.id   = pid,
@@ -241,9 +239,9 @@ render_kegg_pathway <- function(pathway_id, supp_id, slug, M) {
       ),
       error = function(e) { message("Graphviz pathview render failed: ", e$message); NULL }
     )
-    cand <- sprintf("vvi%s.%s.multi.pdf", pid, out_suffix_gv)
-    if (file.exists(cand)) pdf_graphviz <<- cand
   })
+  pdf_graphviz_name <- sprintf("vvi%s.%s.multi.pdf", pid, out_suffix_gv)
+  pdf_graphviz <- if (file.exists(file.path(TMP_DIR, pdf_graphviz_name))) pdf_graphviz_name else NULL
 
   # 6. Move outputs to figures/supp/ with S<n>_<slug> naming
   final_png <- file.path(SUPP_DIR, sprintf("S%d_%s.png", supp_id, slug))
