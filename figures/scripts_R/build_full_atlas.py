@@ -151,6 +151,7 @@ STATUS_COLOR = {
     "DESeq2":      (0.85, 0.30, 0.20),  # red (pending)
     "regenerated": (0.10, 0.40, 0.70),  # blue (done)
     "reframed":    (0.50, 0.30, 0.65),  # purple
+    "new":         (0.10, 0.40, 0.70),  # blue (newly created under DESeq2 pipeline)
 }
 
 def render_supp_page(num: int, png_path: Path, title: str,
@@ -170,6 +171,7 @@ def render_supp_page(num: int, png_path: Path, title: str,
         "DESeq2":      "DATA UPDATE NEEDED \u2014 refit with DESeq2 (de_redo/ + de_extras)",
         "regenerated": "Regenerated under DESeq2, R/ggplot2, Arial",
         "reframed":    "Reframed in Main composite (see note)",
+        "new":         "New figure produced under DESeq2 pipeline",
     }[status]
     c.setFont("Helvetica-Bold", 9)
     r, g, b = STATUS_COLOR[status]
