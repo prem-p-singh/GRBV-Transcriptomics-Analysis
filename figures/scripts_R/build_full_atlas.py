@@ -133,6 +133,15 @@ SOURCE_FIGS = [
     (81, "S80B_cell_wall_heatmap.png",                "S80B — Cell wall (161 genes, 5 sub-categories)",     "regenerated", "Pectin / Hemicellulose / Cellulose / Lignin / Expansin; only |log2FC|>=1 genes labelled"),
     (82, "S80C_cell_wall_focused.png",                "S80C — Cell wall genes with consistent GRBV response","regenerated", "21 genes (13 strict + 8 broad at |FC|>=0.45 in >=6/8); axis_nested by sub-category; cell text"),
     (83, "S81_sugar_full_heatmap.png",                "Carbon translocation full FC heatmap",               "regenerated", "33 sugar-transport genes x (season x cohort x stage); functional subclass ordering"),
+    (87, "S87_phenylpropanoid_kegg.png",              "Phenylpropanoid biosynthesis (KEGG vvi00940)",       "regenerated", "Pathview 8-cell split-box (pure stage order: 2021 Pre/Vér/Post/Harv | 2022); paralog mean log2FC; node.sum=mean"),
+    (88, "S88_starch_sucrose_kegg.png",               "Starch and sucrose metabolism (vvi00500)",           "regenerated", "Sugar/Brix story; includes SPS1; GSEA 5/8 cond NES +0.89"),
+    (89, "S89_plant_hormone_kegg.png",                "Plant hormone signal transduction (vvi04075)",       "regenerated", "Narrative tie-in to S86 hormone landscape (ethylene cross-paper / GA-down)"),
+    (90, "S90_ribosome_kegg.png",                     "Ribosome (vvi03010)",                                "regenerated", "Translational shutdown; GSEA 6/8 cond NES -1.33 (most robust DOWN)"),
+    (91, "S91_amino_acid_biosynth_kegg.png",          "Biosynthesis of amino acids (vvi01230)",             "regenerated", "GSEA 5/8 cond NES -1.95"),
+    (92, "S92_proteasome_kegg.png",                   "Proteasome (vvi03050)",                              "regenerated", "Strongest |NES| in pathway set; GSEA 4/8 cond NES -2.43"),
+    (93, "S93_hsf_mbf1c_shsp_axis.png",               "HSF -> MBF1c -> sHSP axis (custom flow)",            "new",         "Three-column ggplot diagram; passive-failure model (Thread 10); per-node 8-cell Q2x log2FC mini-bars"),
+    (94, "S94_temp_titer_mediator_cascade.png",       "Temperature -> titer -> mediator cascade",           "new",         "MBF1c / SPS1 / LOC100266309 mediator nodes; edges from mediation_results.csv (tv=2000)"),
+    (95, "S95_viral_orf_module_rewiring.png",         "Viral ORFs -> WGCNA module rewiring",                "new",         "Bipartite: 6 ORFs x 13 modules; rule 13 Spearman; FDR<0.05 or |rho|>=0.3"),
 ]
 
 PAGE_W, PAGE_H = LETTER  # 8.5 x 11 inches
