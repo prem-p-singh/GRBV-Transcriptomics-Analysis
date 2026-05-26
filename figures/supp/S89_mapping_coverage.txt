@@ -1,0 +1,1 @@
+vvi04075 plant_hormone_kegg: 60 of 62 EC nodes mapped (96.8%)
