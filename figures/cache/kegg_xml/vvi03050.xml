@@ -1,0 +1,288 @@
+<?xml version="1.0"?>
+<!DOCTYPE pathway SYSTEM "https://www.kegg.jp/kegg/xml/KGML_v0.7.2_.dtd">
+<!-- Creation date: Oct 29, 2020 15:32:56 +0900 (GMT+9) -->
+<pathway name="path:vvi03050" org="vvi" number="03050"
+         title="Proteasome"
+         image="https://www.kegg.jp/kegg/pathway/vvi/vvi03050.png"
+         link="https://www.kegg.jp/kegg-bin/show_pathway?vvi03050">
+    <entry id="225" name="ko:K04687" type="ortholog"
+        link="https://www.kegg.jp/dbget-bin/www_bget?K04687">
+        <graphics name="K04687" fgcolor="#000000" bgcolor="#FFFFFF"
+             type="rectangle" x="416" y="804" width="46" height="17"/>
+    </entry>
+    <entry id="226" name="vvi:100255691 vvi:100264130" type="gene"
+        link="https://www.kegg.jp/dbget-bin/www_bget?vvi:100255691+vvi:100264130">
+        <graphics name="100255691..." fgcolor="#000000" bgcolor="#BFFFBF"
+             type="rectangle" x="575" y="153" width="46" height="17"/>
+    </entry>
+    <entry id="227" name="vvi:100256032" type="gene"
+        link="https://www.kegg.jp/dbget-bin/www_bget?vvi:100256032">
+        <graphics name="100256032" fgcolor="#000000" bgcolor="#BFFFBF"
+             type="rectangle" x="666" y="153" width="46" height="17"/>
+    </entry>
+    <entry id="228" name="vvi:100252303 vvi:100260524" type="gene"
+        link="https://www.kegg.jp/dbget-bin/www_bget?vvi:100252303+vvi:100260524">
+        <graphics name="100252303..." fgcolor="#000000" bgcolor="#BFFFBF"
+             type="rectangle" x="712" y="153" width="46" height="17"/>
+    </entry>
+    <entry id="229" name="vvi:100258219" type="gene"
+        link="https://www.kegg.jp/dbget-bin/www_bget?vvi:100258219">
+        <graphics name="100258219" fgcolor="#000000" bgcolor="#BFFFBF"
+             type="rectangle" x="758" y="153" width="46" height="17"/>
+    </entry>
+    <entry id="230" name="vvi:100247677 vvi:100258173" type="gene"
+        link="https://www.kegg.jp/dbget-bin/www_bget?vvi:100247677+vvi:100258173">
+        <graphics name="100247677..." fgcolor="#000000" bgcolor="#BFFFBF"
+             type="rectangle" x="575" y="170" width="46" height="17"/>
+    </entry>
+    <entry id="231" name="vvi:100252379" type="gene"
+        link="https://www.kegg.jp/dbget-bin/www_bget?vvi:100252379">
+        <graphics name="100252379" fgcolor="#000000" bgcolor="#BFFFBF"
+             type="rectangle" x="621" y="170" width="46" height="17"/>
+    </entry>
+    <entry id="232" name="vvi:100247098" type="gene"
+        link="https://www.kegg.jp/dbget-bin/www_bget?vvi:100247098">
+        <graphics name="100247098" fgcolor="#000000" bgcolor="#BFFFBF"
+             type="rectangle" x="667" y="170" width="46" height="17"/>
+    </entry>
+    <entry id="233" name="vvi:100258086" type="gene"
+        link="https://www.kegg.jp/dbget-bin/www_bget?vvi:100258086">
+        <graphics name="100258086" fgcolor="#000000" bgcolor="#BFFFBF"
+             type="rectangle" x="712" y="170" width="46" height="17"/>
+    </entry>
+    <entry id="234" name="vvi:100267214" type="gene"
+        link="https://www.kegg.jp/dbget-bin/www_bget?vvi:100267214">
+        <graphics name="100267214" fgcolor="#000000" bgcolor="#BFFFBF"
+             type="rectangle" x="758" y="170" width="46" height="17"/>
+    </entry>
+    <entry id="235" name="vvi:100257366" type="gene"
+        link="https://www.kegg.jp/dbget-bin/www_bget?vvi:100257366">
+        <graphics name="100257366" fgcolor="#000000" bgcolor="#BFFFBF"
+             type="rectangle" x="575" y="200" width="46" height="17"/>
+    </entry>
+    <entry id="236" name="vvi:100255701" type="gene"
+        link="https://www.kegg.jp/dbget-bin/www_bget?vvi:100255701">
+        <graphics name="100255701" fgcolor="#000000" bgcolor="#BFFFBF"
+             type="rectangle" x="575" y="251" width="46" height="17"/>
+    </entry>
+    <entry id="237" name="vvi:100260616 vvi:100264792" type="gene"
+        link="https://www.kegg.jp/dbget-bin/www_bget?vvi:100260616+vvi:100264792">
+        <graphics name="100260616..." fgcolor="#000000" bgcolor="#BFFFBF"
+             type="rectangle" x="621" y="251" width="46" height="17"/>
+    </entry>
+    <entry id="238" name="vvi:100250036" type="gene"
+        link="https://www.kegg.jp/dbget-bin/www_bget?vvi:100250036">
+        <graphics name="100250036" fgcolor="#000000" bgcolor="#BFFFBF"
+             type="rectangle" x="667" y="251" width="46" height="17"/>
+    </entry>
+    <entry id="239" name="vvi:100233125 vvi:100245720" type="gene"
+        link="https://www.kegg.jp/dbget-bin/www_bget?vvi:100233125+vvi:100245720">
+        <graphics name="100233125..." fgcolor="#000000" bgcolor="#BFFFBF"
+             type="rectangle" x="575" y="268" width="46" height="17"/>
+    </entry>
+    <entry id="240" name="vvi:100244194" type="gene"
+        link="https://www.kegg.jp/dbget-bin/www_bget?vvi:100244194">
+        <graphics name="100244194" fgcolor="#000000" bgcolor="#BFFFBF"
+             type="rectangle" x="621" y="268" width="46" height="17"/>
+    </entry>
+    <entry id="241" name="vvi:100246786" type="gene"
+        link="https://www.kegg.jp/dbget-bin/www_bget?vvi:100246786">
+        <graphics name="100246786" fgcolor="#000000" bgcolor="#BFFFBF"
+             type="rectangle" x="804" y="268" width="46" height="17"/>
+    </entry>
+    <entry id="242" name="vvi:100243563 vvi:100252341" type="gene"
+        link="https://www.kegg.jp/dbget-bin/www_bget?vvi:100243563+vvi:100252341">
+        <graphics name="100243563..." fgcolor="#000000" bgcolor="#BFFFBF"
+             type="rectangle" x="712" y="268" width="46" height="17"/>
+    </entry>
+    <entry id="243" name="vvi:100256329 vvi:100259757" type="gene"
+        link="https://www.kegg.jp/dbget-bin/www_bget?vvi:100256329+vvi:100259757">
+        <graphics name="100256329..." fgcolor="#000000" bgcolor="#BFFFBF"
+             type="rectangle" x="758" y="268" width="46" height="17"/>
+    </entry>
+    <entry id="244" name="vvi:100254376 vvi:100254957" type="gene"
+        link="https://www.kegg.jp/dbget-bin/www_bget?vvi:100254376+vvi:100254957">
+        <graphics name="100254376..." fgcolor="#000000" bgcolor="#BFFFBF"
+             type="rectangle" x="667" y="268" width="46" height="17"/>
+    </entry>
+    <entry id="245" name="ko:K06696" type="ortholog"
+        link="https://www.kegg.jp/dbget-bin/www_bget?K06696">
+        <graphics name="K06696" fgcolor="#000000" bgcolor="#FFFFFF"
+             type="rectangle" x="828" y="171" width="46" height="17"/>
+    </entry>
+    <entry id="246" name="ko:K06697" type="ortholog"
+        link="https://www.kegg.jp/dbget-bin/www_bget?K06697">
+        <graphics name="K06697" fgcolor="#000000" bgcolor="#FFFFFF"
+             type="rectangle" x="874" y="171" width="46" height="17"/>
+    </entry>
+    <entry id="247" name="ko:K06698" type="ortholog"
+        link="https://www.kegg.jp/dbget-bin/www_bget?K06698">
+        <graphics name="K06698" fgcolor="#000000" bgcolor="#FFFFFF"
+             type="rectangle" x="942" y="171" width="46" height="17"/>
+    </entry>
+    <entry id="248" name="vvi:100263530" type="gene"
+        link="https://www.kegg.jp/dbget-bin/www_bget?vvi:100263530">
+        <graphics name="100263530" fgcolor="#000000" bgcolor="#BFFFBF"
+             type="rectangle" x="875" y="268" width="46" height="17"/>
+    </entry>
+    <entry id="249" name="vvi:100261826" type="gene"
+        link="https://www.kegg.jp/dbget-bin/www_bget?vvi:100261826">
+        <graphics name="100261826" fgcolor="#000000" bgcolor="#BFFFBF"
+             type="rectangle" x="581" y="450" width="46" height="17"/>
+    </entry>
+    <entry id="250" name="vvi:100262851" type="gene"
+        link="https://www.kegg.jp/dbget-bin/www_bget?vvi:100262851">
+        <graphics name="100262851" fgcolor="#000000" bgcolor="#BFFFBF"
+             type="rectangle" x="627" y="450" width="46" height="17"/>
+    </entry>
+    <entry id="251" name="vvi:100251448" type="gene"
+        link="https://www.kegg.jp/dbget-bin/www_bget?vvi:100251448">
+        <graphics name="100251448" fgcolor="#000000" bgcolor="#BFFFBF"
+             type="rectangle" x="673" y="450" width="46" height="17"/>
+    </entry>
+    <entry id="252" name="vvi:100257349 vvi:100262480" type="gene"
+        link="https://www.kegg.jp/dbget-bin/www_bget?vvi:100257349+vvi:100262480">
+        <graphics name="100257349..." fgcolor="#000000" bgcolor="#BFFFBF"
+             type="rectangle" x="719" y="450" width="46" height="17"/>
+    </entry>
+    <entry id="253" name="vvi:100263432" type="gene"
+        link="https://www.kegg.jp/dbget-bin/www_bget?vvi:100263432">
+        <graphics name="100263432" fgcolor="#000000" bgcolor="#BFFFBF"
+             type="rectangle" x="765" y="450" width="46" height="17"/>
+    </entry>
+    <entry id="254" name="vvi:100257364" type="gene"
+        link="https://www.kegg.jp/dbget-bin/www_bget?vvi:100257364">
+        <graphics name="100257364" fgcolor="#000000" bgcolor="#BFFFBF"
+             type="rectangle" x="811" y="450" width="46" height="17"/>
+    </entry>
+    <entry id="255" name="vvi:100251722" type="gene"
+        link="https://www.kegg.jp/dbget-bin/www_bget?vvi:100251722">
+        <graphics name="100251722" fgcolor="#000000" bgcolor="#BFFFBF"
+             type="rectangle" x="857" y="450" width="46" height="17"/>
+    </entry>
+    <entry id="256" name="vvi:100262044 vvi:100266463" type="gene"
+        link="https://www.kegg.jp/dbget-bin/www_bget?vvi:100262044+vvi:100266463">
+        <graphics name="100262044..." fgcolor="#000000" bgcolor="#BFFFBF"
+             type="rectangle" x="581" y="467" width="46" height="17"/>
+    </entry>
+    <entry id="257" name="vvi:100249199" type="gene"
+        link="https://www.kegg.jp/dbget-bin/www_bget?vvi:100249199">
+        <graphics name="100249199" fgcolor="#000000" bgcolor="#BFFFBF"
+             type="rectangle" x="627" y="467" width="46" height="17"/>
+    </entry>
+    <entry id="258" name="vvi:100250625" type="gene"
+        link="https://www.kegg.jp/dbget-bin/www_bget?vvi:100250625">
+        <graphics name="100250625" fgcolor="#000000" bgcolor="#BFFFBF"
+             type="rectangle" x="673" y="467" width="46" height="17"/>
+    </entry>
+    <entry id="259" name="vvi:100852565" type="gene"
+        link="https://www.kegg.jp/dbget-bin/www_bget?vvi:100852565">
+        <graphics name="100852565" fgcolor="#000000" bgcolor="#BFFFBF"
+             type="rectangle" x="719" y="467" width="46" height="17"/>
+    </entry>
+    <entry id="260" name="vvi:100261458" type="gene"
+        link="https://www.kegg.jp/dbget-bin/www_bget?vvi:100261458">
+        <graphics name="100261458" fgcolor="#000000" bgcolor="#BFFFBF"
+             type="rectangle" x="765" y="467" width="46" height="17"/>
+    </entry>
+    <entry id="261" name="vvi:100247145 vvi:100266090" type="gene"
+        link="https://www.kegg.jp/dbget-bin/www_bget?vvi:100247145+vvi:100266090">
+        <graphics name="100247145..." fgcolor="#000000" bgcolor="#BFFFBF"
+             type="rectangle" x="811" y="467" width="46" height="17"/>
+    </entry>
+    <entry id="262" name="vvi:100263853" type="gene"
+        link="https://www.kegg.jp/dbget-bin/www_bget?vvi:100263853">
+        <graphics name="100263853" fgcolor="#000000" bgcolor="#BFFFBF"
+             type="rectangle" x="857" y="467" width="46" height="17"/>
+    </entry>
+    <entry id="263" name="ko:K02741" type="ortholog"
+        link="https://www.kegg.jp/dbget-bin/www_bget?K02741">
+        <graphics name="K02741" fgcolor="#000000" bgcolor="#FFFFFF"
+             type="rectangle" x="581" y="534" width="46" height="17"/>
+    </entry>
+    <entry id="264" name="ko:K02733" type="ortholog"
+        link="https://www.kegg.jp/dbget-bin/www_bget?K02733">
+        <graphics name="K02733" fgcolor="#000000" bgcolor="#FFFFFF"
+             type="rectangle" x="641" y="534" width="46" height="17"/>
+    </entry>
+    <entry id="265" name="ko:K02740" type="ortholog"
+        link="https://www.kegg.jp/dbget-bin/www_bget?K02740">
+        <graphics name="K02740" fgcolor="#000000" bgcolor="#FFFFFF"
+             type="rectangle" x="697" y="534" width="46" height="17"/>
+    </entry>
+    <entry id="266" name="ko:K11598" type="ortholog"
+        link="https://www.kegg.jp/dbget-bin/www_bget?K11598">
+        <graphics name="K11598" fgcolor="#000000" bgcolor="#FFFFFF"
+             type="rectangle" x="811" y="534" width="46" height="17"/>
+    </entry>
+    <entry id="268" name="ko:K03432" type="ortholog"
+        link="https://www.kegg.jp/dbget-bin/www_bget?K03432">
+        <graphics name="K03432" fgcolor="#000000" bgcolor="#FFFFFF"
+             type="rectangle" x="581" y="608" width="46" height="17"/>
+    </entry>
+    <entry id="269" name="ko:K03433" type="ortholog"
+        link="https://www.kegg.jp/dbget-bin/www_bget?K03433">
+        <graphics name="K03433" fgcolor="#000000" bgcolor="#FFFFFF"
+             type="rectangle" x="581" y="625" width="46" height="17"/>
+    </entry>
+    <entry id="270" name="ko:K03420" type="ortholog"
+        link="https://www.kegg.jp/dbget-bin/www_bget?K03420">
+        <graphics name="K03420" fgcolor="#000000" bgcolor="#FFFFFF"
+             type="rectangle" x="875" y="351" width="46" height="17"/>
+    </entry>
+    <entry id="271" name="path:vvi04120" type="map"
+        link="https://www.kegg.jp/dbget-bin/www_bget?vvi04120">
+        <graphics name="Ubiquitin mediated proteolysis" fgcolor="#000000" bgcolor="#FFFFFF"
+             type="roundrectangle" x="365" y="576" width="128" height="34"/>
+    </entry>
+    <entry id="272" name="path:vvi03050" type="map"
+        link="https://www.kegg.jp/dbget-bin/www_bget?vvi03050">
+        <graphics name="TITLE:Proteasome" fgcolor="#000000" bgcolor="#FFFFFF"
+             type="roundrectangle" x="102" y="58" width="124" height="25"/>
+    </entry>
+    <entry id="273" name="vvi:100263076" type="gene"
+        link="https://www.kegg.jp/dbget-bin/www_bget?vvi:100263076">
+        <graphics name="100263076" fgcolor="#000000" bgcolor="#BFFFBF"
+             type="rectangle" x="467" y="996" width="46" height="17"/>
+    </entry>
+    <entry id="274" name="vvi:100241160" type="gene"
+        link="https://www.kegg.jp/dbget-bin/www_bget?vvi:100241160">
+        <graphics name="100241160" fgcolor="#000000" bgcolor="#BFFFBF"
+             type="rectangle" x="417" y="964" width="46" height="17"/>
+    </entry>
+    <entry id="283" name="ko:K02741" type="ortholog"
+        link="https://www.kegg.jp/dbget-bin/www_bget?K02741">
+        <graphics name="K02741" fgcolor="#000000" bgcolor="#FFFFFF"
+             type="rectangle" x="367" y="844" width="46" height="17"/>
+    </entry>
+    <entry id="284" name="ko:K02733" type="ortholog"
+        link="https://www.kegg.jp/dbget-bin/www_bget?K02733">
+        <graphics name="K02733" fgcolor="#000000" bgcolor="#FFFFFF"
+             type="rectangle" x="417" y="844" width="46" height="17"/>
+    </entry>
+    <entry id="285" name="ko:K02740" type="ortholog"
+        link="https://www.kegg.jp/dbget-bin/www_bget?K02740">
+        <graphics name="K02740" fgcolor="#000000" bgcolor="#FFFFFF"
+             type="rectangle" x="467" y="844" width="46" height="17"/>
+    </entry>
+    <entry id="286" name="ko:K06696" type="ortholog"
+        link="https://www.kegg.jp/dbget-bin/www_bget?K06696">
+        <graphics name="K06696" fgcolor="#000000" bgcolor="#FFFFFF"
+             type="rectangle" x="417" y="907" width="46" height="17"/>
+    </entry>
+    <entry id="287" name="ko:K06697" type="ortholog"
+        link="https://www.kegg.jp/dbget-bin/www_bget?K06697">
+        <graphics name="K06697" fgcolor="#000000" bgcolor="#FFFFFF"
+             type="rectangle" x="417" y="924" width="46" height="17"/>
+    </entry>
+    <entry id="288" name="ko:K13527" type="ortholog"
+        link="https://www.kegg.jp/dbget-bin/www_bget?K13527">
+        <graphics name="K13527" fgcolor="#000000" bgcolor="#FFFFFF"
+             type="rectangle" x="644" y="351" width="46" height="17"/>
+    </entry>
+    <entry id="289" name="vvi:100258659" type="gene"
+        link="https://www.kegg.jp/dbget-bin/www_bget?vvi:100258659">
+        <graphics name="100258659" fgcolor="#000000" bgcolor="#BFFFBF"
+             type="rectangle" x="620" y="153" width="46" height="17"/>
+    </entry>
+</pathway>
