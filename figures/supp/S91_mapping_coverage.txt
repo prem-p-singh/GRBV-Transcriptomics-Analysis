@@ -1,0 +1,1 @@
+vvi01230 amino_acid_biosynth_kegg: 96 of 99 EC nodes mapped (97.0%)
