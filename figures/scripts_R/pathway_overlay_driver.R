@@ -71,8 +71,7 @@ read_q2x_matrix <- function(de_dir = "farm_pipeline/results/de_extras") {
   # Drop all-NA rows
   is_all_na <- apply(M_df[, Q2X_COLS], 1, function(x) all(is.na(x)))
   M_df <- M_df[!is_all_na, , drop = FALSE]
-  # Strip LOC prefix; numeric Entrez rownames
-  rownames(M_df) <- sub("^LOC", "", M_df$gene)
+  # Strip LOC prefix; numeric Entrez rownames on the matrix
   M <- as.matrix(M_df[, Q2X_COLS])
   rownames(M) <- sub("^LOC", "", M_df$gene)
   M
