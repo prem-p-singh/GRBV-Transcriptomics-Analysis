@@ -829,3 +829,71 @@ Rule 14's per-gene OLS uses `y = log2(CPM + 1)` as the response. Three reasons t
 
 All on `master` at https://github.com/prem-p-singh/GRBV-Transcriptomics-Analysis.
 
+---
+
+# SESSION STATE UPDATE 2026-05-26: Pathway figures (S87-S95)
+
+## What was added
+
+Nine new supplementary figures rendering pathway-level GRBV impact:
+
+- **S87 Phenylpropanoid biosynthesis** (KEGG vvi00940)
+- **S88 Starch and sucrose metabolism** (vvi00500)
+- **S89 Plant hormone signal transduction** (vvi04075)
+- **S90 Ribosome** (vvi03010)
+- **S91 Biosynthesis of amino acids** (vvi01230)
+- **S92 Proteasome** (vvi03050)
+- **S93 HSF -> MBF1c -> sHSP axis** (custom ggplot flow)
+- **S94 Temperature -> titer -> host mediator cascade** (custom ggplot flow)
+- **S95 Viral ORFs -> WGCNA module rewiring** (custom bipartite)
+
+All 6 KEGG pathways rendered via pathview 1.48.0 with 8-cell split-box log2FC overlay in pure stage order (2021 Pre / Ver / Post / Harv, then 2022 Pre / Ver / Post / Harv). Palette: #2166ac (down) / #f7f7f7 (neutral) / #b2182b (up). log2FC clipped at +/-3. Paralog rule: `node.sum = "mean"` (mean across all LOC genes mapped to each EC node); full paralog list per pathway in `figures/supp/S{nn}_paralog_counts.csv`.
+
+## Implementation
+
+- `figures/scripts_R/pathway_overlay_driver.R`: driver with `read_q2x_matrix()`, `compute_mapping_coverage()`, `write_paralog_auxiliary()`, `render_kegg_pathway()`
+- `figures/scripts_R/test_pathway_driver.R`: assertion-based smoke tests for driver helpers
+- 6 shim scripts (S87-S92) calling the driver
+- 3 standalone custom scripts (S93-S95)
+- `figures/cache/kegg_xml/`: KGML XML cache (6 files, ~250 KB total)
+
+## Atlas
+
+`figures/GRBV_Full_Figure_Atlas.pdf` rebuilt: **105 pages** (10 main + 95 supp).
+
+## Spec + plan
+
+- Spec: `docs/superpowers/specs/2026-05-26-pathway-figures-design.md`
+- Plan: `docs/superpowers/plans/2026-05-26-pathway-figures.md`
+
+## Accepted trade-offs
+
+- Pathview's KEGG PNG output uses KEGG default Helvetica + KEGG-style borders; does not match `theme_grbv` Source Sans Pro. Accepted: canonical KEGG layout is the value here.
+- Pathview averages paralogs at multi-LOC EC nodes via `node.sum = "mean"`. Full paralog set written to auxiliary CSV; caption must note the rule when figures land in the manuscript.
+- Plant hormone signal transduction (vvi04075) has only 2/8 GSEA-significant conditions; included for narrative consistency with S86, not for primary GSEA signal.
+- S90 Ribosome and S92 Proteasome produced no graphviz PDF (pathview rejects "parts-list" pathways with no enzyme edges); native PNGs are the canonical outputs for those two.
+- The atlas builder dict `STATUS_COLOR` + badge dict gained a `"new"` key to support S93-S95 ("new" status). Committed in `a6464be`.
+
+## Commits
+
+| SHA | Subject |
+|---|---|
+| 38272ee | verify LOC->KEGG vvi mapping; add KGML cache scaffold |
+| 54bbe3b | driver scaffold + read_q2x_matrix() with smoke test |
+| 2650e9b | remove dead-code tibble-rowname assignment |
+| 93a8cc5 | compute_mapping_coverage() + KGML parsing |
+| 280f768 | write_paralog_auxiliary() per-EC inventory |
+| 9975f4b | render_kegg_pathway() wrapper with native + graphviz passes |
+| 2f23f91 | S87 Phenylpropanoid biosynthesis (vvi00940) [includes <<- driver fix] |
+| 80bda01 | S88 Starch and sucrose metabolism (vvi00500) |
+| be5d38c | S89 Plant hormone signal transduction (vvi04075) |
+| 1bd9e6f | S90 Ribosome (vvi03010) |
+| 6211261 | S91 Biosynthesis of amino acids (vvi01230) |
+| 1004e32 | S92 Proteasome (vvi03050) |
+| 485f5fe | S93 HSF -> MBF1c -> sHSP axis (custom flow) |
+| adbbe02 | S94 Temperature -> titer -> mediator cascade (custom flow) |
+| dd18397 | S95 Viral ORF -> module rewiring (custom bipartite) |
+| 19f562c | register S87-S95 in atlas builder |
+| b894d82 | rebuild atlas to 105 pages with S87-S95 |
+| a6464be | add 'new' status key to atlas builder for S93-S95 |
+
