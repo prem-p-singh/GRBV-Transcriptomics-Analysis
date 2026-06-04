@@ -253,7 +253,9 @@ caption_block <- ggplot() +
   annotate("text", x = 0.5, y = 0.5,
            label = paste("Headline findings: inverted seasonal trajectory \u00b7",
                          "sHSP axis dampened \u00b7 MBF1c + SPS1 mediators \u00b7",
-                         "GRBV signature replicates in Zinfandel (Blanco-Ulate 2017)"),
+                         "DCL2 antiviral silencing peaks at veraison \u00b7",
+                         "GRBV signature replicates in Zinfandel (Blanco-Ulate 2017),",
+                         "Cabernet Sauvignon (Rumbaugh 2022), and Merlot (Rumbaugh 2023)"),
            family = "Arial", size = 2.7, colour = "grey35", hjust = 0.5) +
   theme_void() + theme(plot.margin = margin(2, 4, 4, 4))
 

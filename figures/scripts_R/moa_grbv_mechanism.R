@@ -187,7 +187,25 @@ p <- p +
   annotation_custom(icons$leaf_rb,
                     xmin = 25.8, xmax = 28.4, ymin = 1.2, ymax = 3.0)
 
-# Small arrows from nucleus outward to the four mechanism glyphs (dashed
+# DCL2 antiviral-silencing thread (added 2026-05-19): a labelled callout in
+# the empty space below the nucleus, with a downward curved arrow from the
+# bottom of the nucleus to the top of the callout. Represents the
+# veraison-specific antiviral RNA-silencing response confirmed by
+# cross-cultivar replication against Rumbaugh 2022 (S96) and Rumbaugh 2023
+# (S97).
+p <- p +
+  annotate("rect", xmin = 23.0, xmax = 25.7, ymin = 1.5, ymax = 2.8,
+           fill = "#E8F0E4", colour = unname(GRBV_COLORS["RB_neg"]),
+           linewidth = 0.45, alpha = 0.85) +
+  annotate("text", x = 24.35, y = 2.45,
+           label = "DCL2 ↑ at veraison",
+           family = "Arial", fontface = "bold", size = 2.6,
+           colour = "grey15") +
+  annotate("text", x = 24.35, y = 1.85,
+           label = "antiviral RNA silencing",
+           family = "Arial", size = 2.2, colour = "grey25")
+
+# Small arrows from nucleus outward to the five mechanism glyphs (dashed
 # to convey "downstream effect", not direct physical link)
 p <- p +
   geom_curve(aes(x = 24.3, y = 5.8, xend = 22.7, yend = 6.3),   # nucleus -> shield
@@ -205,6 +223,10 @@ p <- p +
   geom_curve(aes(x = 25.8, y = 5.9, xend = 27.0, yend = 6.1),   # nucleus -> sugar
              curvature = -0.08, linewidth = 0.35,
              colour = "grey45", linetype = "13",
+             arrow = arrow(length = unit(3, "pt"))) +
+  geom_curve(aes(x = 25.0, y = 4.3, xend = 24.45, yend = 2.85),  # nucleus -> DCL2
+             curvature = 0.06, linewidth = 0.4,
+             colour = unname(GRBV_COLORS["RB_neg"]), linetype = "13",
              arrow = arrow(length = unit(3, "pt")))
 
 # Small connector between zone B circle and zone C circle
@@ -251,10 +273,10 @@ title_block <- ggplot() +
 caption_block <- ggplot() +
   coord_cartesian(xlim = c(0,1), ylim = c(0,1), expand = FALSE) +
   annotate("text", x = 0.5, y = 0.5,
-           label = paste("Downstream mechanism hits: MBF1c (LOC100249249) mediator;",
-                         "SPS1 (LOC100232974) sugar-metabolism marker;",
-                         "DOF3.6 / DOF1.7 motif enrichment;",
-                         "9 of 10 defence categories remain silent."),
+           label = paste("Downstream mechanism hits: DCL2 (LOC100258190) antiviral RNA-silencing peaks at veraison",
+                         "and replicates cross-cultivar (Rumbaugh 2022, 2023);",
+                         "MBF1c (LOC100249249) candidate mediator; SPS1 (LOC100232974) sugar-metabolism marker;",
+                         "DOF3.6 / DOF1.7 motif enrichment; 9 of 10 defence categories remain silent."),
            family = "Arial", size = 2.7, colour = "grey35", hjust = 0.5) +
   theme_void() + theme(plot.margin = margin(2, 4, 4, 4))
 
