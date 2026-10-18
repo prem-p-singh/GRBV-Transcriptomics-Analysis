@@ -8,6 +8,14 @@ source /etc/profile.d/modules.sh
 module load conda/base
 set -u
 
+# Conda solves, R compiles and downloads must not run on the login node.
+# Outside a Slurm job, re-run this script inside one and wait for it.
+# `low` is preemptible; every step below skips what is already done, so just rerun.
+if [ -z "${SLURM_JOB_ID:-}" ]; then
+    exec srun -A publicgrp -p low -t "${SETUP_TIME:-4:00:00}" -c "${SETUP_CPUS:-4}" \
+        --mem="${SETUP_MEM:-16G}" bash "$0" "$@"
+fi
+
 ENV_NAME="grbv-extended"
 RES="resources"
 RLIBS="$HOME/grbv_extended/Rlibs"
