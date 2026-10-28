@@ -1289,7 +1289,7 @@ This block records work done after the 2026-05-26 block. Most of it lives in the
 | 2026-10-18 | 3-minute flash talk (slides, speech) | `manuscript/PNAS_2026-10-02_teal_burgundy/GRBV_*Flash_Talk*` |
 | 2026-10-25 | Pathogenesis schematic (association band kept separate from published virus biology) | `output/GRBV_pathogenesis_2026-10-25/` |
 | 2026-10-25 to 27 | 30-minute host-pathogen seminar (28 slides) + IPMB flash talk + 4 Illustrator figures; genome-map correction on slides 3, 5, 17, 27 | `presentations/READY_TO_USE/` (finished), `presentations/GRBV_Host_Pathogen_Story_20261025/revisions/Genome_Map_Correction_20261027` (editable) |
-| 2026-10-26/27 | Side thread: PrGVA primer design and checks (LIRgap / V3gap pairs, OligoAnalyzer) | `PrGVA_*_report.md`, `primer_map_work/` |
+| 2026-10-26/27 | Side thread: PrGVA primer design and checks (LIRgap / V3gap pairs, OligoAnalyzer) | Moved out of the project on 2026-10-28 to `~/Desktop/PrGVA_primers/` (reports + `primer_map_work/`) |
 | 2026-10-27 | Latest PNAS manuscript text | `manuscript/PNAS_2026-10-02_teal_burgundy/PNAS_Manuscript.docx` |
 
 ## Era 6 claim decisions (from `docs/ANALYSIS_ERAS.md`)
