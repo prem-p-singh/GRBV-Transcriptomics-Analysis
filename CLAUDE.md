@@ -5,13 +5,34 @@
 ## Study Overview
 - **Species**: *Vitis vinifera* cv. Merlot
 - **Pathogen**: Grapevine Red Blotch Virus (GRBV), family Geminiviridae
-- **Samples**: 327 total (264 RB+ infected, 63 RB- control)
-- **Genes**: 28,168 raw → 14,604 after filtering (≥10 counts in ≥10% samples)
-- **Seasons**: 2021 (cooler) and 2022 (hotter, +7.6°C at Harvest)
+- **Samples**: 327 libraries (264 RB+ infected, 63 RB- control) from **44 vines: 36 RB+ and 8 RB−**. Libraries are repeated observations, not independent plants; at most one library per vine per stage × season cell. There are 8 control vines, not 63 control plants.
+- **Genes**: 28,168 raw → 14,604 after filtering (≥10 counts in ≥10% samples): 14,599 host + 5 viral features
+- **Seasons**: 2021 (cooler) and 2022 (hotter, +7.6°C at Harvest). Manuscript language is "season-dependent"; causal temperature claims are prohibited (two seasons cannot identify a climate cause).
 - **Maturity Stages**: Pre-veraison, Veraison, Post-veraison, Harvest
 - **Infection Cohorts**: 7 years (2016-2022)
-- **DE Thresholds**: Welch's t-test, BH FDR, adj. p-value < 0.05, |log2FC| ≥ 1
+- **DE method (current)**: gene-wise repeated-measures models with a vine random intercept (`variancePartition::dream`, saturated stage × season × infection cells), BH FDR < 0.05. Earlier eras: Welch's t-test (Era 1, retired), covariate-adjusted DESeq2 / limma-voom (Era 4). See `docs/ANALYSIS_ERAS.md`.
+- **Sequencer**: Element AVITI (not Illumina), TAG-seq libraries
+- **Target journal (current)**: PNAS. Latest draft `manuscript/PNAS_2026-10-02_teal_burgundy/PNAS_Manuscript.docx` (27 Oct 2026). Earlier JXB draft: `manuscript/JXB_2026-09-12/`.
 - **GitHub**: https://github.com/prem-p-singh/GRBV-Transcriptomics-Analysis (private)
+
+## CURRENT STORYLINE (as of 2026-10-28) — read this first
+
+Source of truth: the PNAS draft `manuscript/PNAS_2026-10-02_teal_burgundy/PNAS_Manuscript.docx` (27 Oct 2026), backed by `docs/ANALYSIS_ERAS.md` (17 Sep 2026) and the Era 6/7 outputs (`farm_pipeline/scripts/21_*`–`26_*`, `analysis/temporal_pathway_atlas_2026-09-12/`). Where older sections of this file (Key Findings, "The corrected narrative", session blocks before Aug 2026) disagree with this section, this section wins.
+
+**Central claim.** GRBV-infected berries are not just uniformly delayed. A healthy-only developmental reference shows a common displacement toward earlier ripening states, and on top of that some programs move on their own: altered temporal coordination among ripening programs, not a single delay.
+
+1. **Common developmental displacement, season-dependent.** Healthy-only reference (1,000 background markers, 70 functional branches excluded) predicts held-out healthy vines (62/63 nearest stage, RMSE 0.201) and held-out season (58/63, RMSE 0.284). Infected-minus-healthy at harvest: **−0.804 stage units in 2021** (95% vine-bootstrap −1.023 to −0.573, FDR 0.0008) vs **−0.148 in 2022** (FDR 0.034).
+2. **Harvest chemistry (pooled, descriptive).** 11 season × group pools, triplicate measurements of one pool each (not biological replicates). Every infected pool has lower Brix and pH than its seasonal healthy pool: Brix deficit 3.37–4.03 in 2021, 8.93–10.93 in 2022. TA and malic are higher in infected pools in 2021 and lower in 2022; YAN lower in both. The larger Brix deficit (2022) coincides with the smaller transcriptional displacement, so chemistry and transcriptome capture different aspects of disease. No per-vine chemistry–transcriptome associations.
+3. **Photosystem genes carry an extra timing shift.** 44-gene photosystem / light-harvesting branch sits further toward earlier states beyond the common lag: −0.339 (2021) and −0.396 (2022), FDR 0.0016 both. Branch timing predicts held-out genes better than a shared expression-level shift. 30 of 35 branch models pass validation.
+4. **sHSPs: a level deficit, not a timing shift.** 31 of 34 tested sHSP genes significantly lower at harvest in each season (mean log2FC −2.294 in 2021, −1.581 in 2022). The sHSP branch fails the season-transfer test for a branch-specific clock, so it is an expression deficit, not a different developmental age. HSFA2e (LOC100245950) and HSP18.2 (LOC100242821) both down at harvest in both seasons (association only, no regulatory claim).
+5. **Translation splits by compartment.** Cytosolic translation-associated transcripts down (−0.205, −0.302); chloroplast-associated up (+0.400, +0.440); both pass in both seasons. Annotation-based compartments, relative RNA only.
+6. **Other programs have their own timing.** Sucrose synthesis and starch synthesis up late; aggregate sugar-transporter branch not significant (no generalized transport repression). Expansin and pectin hydrolysis up after veraison. Phenylpropanoid split by step: entry, lignin, anthocyanin, stilbene down; flavonoid hydroxylation up. ABA receptors down late; cytokinin and jasmonate responses flip between seasons.
+7. **RNA silencing comes early.** DCL2 (LOC100258190) and probable RDR1 (LOC100268011) induced at veraison in both seasons (DCL2 +1.610 / +0.933; RDR1 +4.254 / +3.045), back to control levels at harvest. No claim of sustained antiviral activity.
+8. **Interaction tests.** Infection × stage: 7,861 host genes (FDR < 0.05). Infection × stage × season: 3,236; 1,223 of these are missed by the season-averaged test.
+9. **External corroboration.** Blanco-Ulate 2017 Zinfandel: Spearman ρ rises from −0.066 (pre-veraison) to 0.412 (harvest), 64.5% sign agreement across 11,619 matched genes; photosystem, sHSP and cytosolic-translation directions agree. Rumbaugh 2023 Merlot ρ 0.72; Rumbaugh 2022 Cabernet Sauvignon ρ 0.24–0.36 (agreement decays with genetic distance). All 44 leave-one-vine-out runs keep the harvest signs of the sHSP, cytosolic-translation and photosystem branches.
+10. **Immunity not engaged (survives every era).** Canonical immune categories flat; 160 well-expressed NLRs are detected like housekeeping genes yet move little (median |log2FC| 0.19 vs sHSP 1.06). Not a detection failure.
+
+**Retired or prohibited claims (do not reintroduce):** 908 universal DEGs (ripening-confounded); 3-gene / viral-transcript diagnostic panel and AUC = 1.000 (circular; viral features fail interaction tests; host-only LOSO AUC 0.73–0.88); MBF1c as causal mediator (Bayesian posterior −0.25 [−0.81, +0.33]); "three temporal phases" (segmented regression picks 0 breakpoints); blocked sugar translocation at module level; vine tolerance gradient / 0.6 °Bx breeding lead (built on replicated chemistry rows); "early burden predicts late damage" / memory or scar language (failed both prespecified endpoints); any causal temperature or climate language; "GRBV disables the thermostat"; the old "60% QTL" figure (hash-based positions).
 
 ## Working Directory
 `/Users/prempratapsingh/Data_Analysis/`
@@ -25,12 +46,15 @@
 - Q6: Infection age trajectory
 
 ## Key Findings
+
+> Historical list (Era 1 to Era 4, Mar to Apr 2026). Several items are retired or revised (908 DEGs, 3-gene panel, AUC = 1.000, 12 universal biomarkers, QTL %). For current numbers use **CURRENT STORYLINE** above.
+
 1. **Inverted seasonal trajectory**: 2021 DEGs peak at Harvest (1,192); 2022 peaks at Post-veraison (565)
-2. **sHSP suppression**: GRBV downregulates 29/36 sHSPs, reducing module score by ~55% (healthy +1.64 → infected +0.74)
+2. **sHSP suppression**: GRBV downregulates **33/36 sHSPs** under covariate-adjusted DESeq2 (Phase 1b regen 2026-04-29; original Welch-t reported 29/36, file actually held 31/36 per pass_2 audit; DESeq2 strengthens the pattern). Module score drop ~55% (healthy +1.64 → infected +0.74) is method-independent.
 3. **HSF-sHSP axis**: r = 0.625, p = 7.2e-37
 4. **3-gene diagnostic panel**: AUC = 1.000 across 5-fold CV
-5. **12 universal biomarkers**: significant in all conditions
-6. **60% QTL co-localization**: biomarkers near known GWAS/QTL loci (1 Mb window)
+5. **Universal biomarkers** (regen 2026-04-29 under DESeq2; supersedes "12"): 5 viral transcripts (N761_gp1–N761_gp5) significant in all 20 conditions. **Zero host genes** reach strict universality under DESeq2; 8 host genes significant in ≥17/20 conditions (LOC100854143 F-box/LRR-repeat At3g48880; LOC100263041 PDR3; LOC104881857 NTM1-like 9; LOC100262652 NAC62; LOC100257913 glycine-rich cell-wall protein 2; LOC100241465 uncharacterised; LOC100268011 RdRp1; LOC100256964 E3 ubiquitin-ligase RSL1). The all-viral universal set echoes the F-26 ML caveat (host-only LOSO AUC 0.73–0.88 vs all-vars random-CV AUC 1.000). Source: `GRBV_biomarkers_top50.csv` (regen via `regen_biomarkers_from_deseq2.py`).
+6. **QTL co-localization** (re-run 2026-04-29 under Phase 1b GFF-anchored cross-ref; supersedes "60%"): 25 of 25 chromosome-positioned biomarkers fall within the QTL interval extended ±1 Mb on each boundary (100 %); 16 of 25 (64 %) are within 1 Mb of a QTL boundary itself. Chromosome-stratified permutation null (n=5,000 random 25-gene draws from 27,527 positioned genes) gives null mean 10.9 ± 2.4 overlaps and 2.29-fold enrichment at empirical one-sided p < 2 × 10⁻⁴. Computed on real `genome.gff` positions (ASM3070453v1); the original "60%" used hash-based fake positions via the legacy `chromosome_deg_hotspots.py:156-175`. Viral N761_gp* transcripts and biomarkers on unplaced scaffolds are excluded from the 25-gene denominator.
 7. **Sugar QTL link**: Top host biomarker (RNA-dep RNA polymerase 1) maps to sugar accumulation QTL on chr1
 8. **908 universal DEGs**: confirmed across pooled and stratified approaches
 9. **Cross-season FC correlation**: r = 0.33 (Pre-veraison) to r = 0.69 (Post-veraison)
@@ -43,7 +67,7 @@
 16. **90 temperature-responsive genes**: among top 500 variable genes in infected vines
 17. **13 WGCNA co-expression modules**: 10,221 genes; Stage dominates module-trait correlations (turquoise r=0.941); black module most infection-correlated (r=+0.126, p=0.022)
 18. **130 hub genes identified**: top 10 per module by kME (module eigengene correlation)
-19. **GSEA: 270 significant gene set-condition pairs** (FDR<0.05): 375 gene sets × 8 conditions, 500 permutations; down-regulation dominates (77%); KEGG:Ribosome and GO:translation initiation factor activity significant in 6/8 conditions; cross-season NES correlation mirrors inverted trajectory (Pre-vér r=0.09, Post-vér r=0.63)
+19. **GSEA: 405 significant gene set-condition pairs** under DESeq2-Wald-stat ranking, **1000 permutations** (rerun 2026-04-29 PM, FARM job 32612223, 41m44s, 8 CPU). The intermediate 500-perm run reported 415; the 500→1000 step trims 10 boundary calls (more conservative null) while preserving NES ranks (median Spearman 0.9998). FDR<0.05; 375 gene sets × 8 conditions, vectorized. KEGG:Ribosome and GO:translation initiation factor activity remain significant in **6/8** conditions across all three runs (Welch-t / 500-perm / 1000-perm; same 2 non-sig conditions: 2022_Pre_veraison, 2022_Veraison). Cross-season NES correlation: Pre 0.119, Vér 0.235, Post **0.730**, Harvest 0.601 — monotonic rise across stages preserved.
 
 ## Analysis Scripts (run in order)
 
@@ -219,11 +243,13 @@ numpy, pandas, scipy, scikit-learn, statsmodels, matplotlib, seaborn, goatools, 
 
 ## The corrected narrative (don't forget)
 
+> Superseded 2026-08/10 by **CURRENT STORYLINE** at the top of this file. Kept as the April 2026 record. Its temperature-causal titer framing and MBF1c-centred mechanism are no longer used in the manuscript.
+
 The headline "GRBV disables the plant's thermostat" framing from an earlier draft is **wrong**. The actual story that fits both the transcriptomic and raw viral-titer data is:
 
 **GRBV causes disease by three simultaneous mechanisms:**
 1. **Ignores canonical plant immunity** — all 10 defense categories (NLR, PRR, PR, SA, JA, ET, WRKY, callose, ROS, R-adapters) show |log₂FC|<0.08 in infected vs healthy. The plant is NOT fighting back with its usual weapons.
-2. **Dampens but does not destroy the HSF → sHSP thermal-defence axis** — 29/36 sHSPs suppressed, HSF-sHSP r=0.625, but all 6 WGCNA modules preserve with Zsum 5.8-36.4 (network structure intact).
+2. **Dampens but does not destroy the HSF → sHSP thermal-defence axis** — 33/36 sHSPs suppressed under DESeq2 (revised 2026-04-29 from "29/36"), HSF-sHSP r=0.625 (method-independent), all 6 WGCNA modules preserve with Zsum 5.8-36.4 (network structure intact).
 3. **Rewires sugar metabolism via DOF TFs** — motif enrichment (rule 05) finds DOF3.6/DOF1.7 are top enriched in brown and yellow modules; viral N761_gp1/3 transcripts are themselves top network rewiring hubs.
 
 **Temperature acts biphasically on viral titer:**
@@ -308,7 +334,7 @@ Season  Pre-véraison    Véraison    Post-véraison  Harvest
 | Samples | 327 (264 RB+, 63 RB−) | main |
 | Genes tested | 14,604 | main |
 | Universal DEGs | 908 | main |
-| sHSPs suppressed | 29 of 36 | main |
+| sHSPs suppressed | 33 of 36 | DESeq2-derived (Phase 1b regen 2026-04-29; pre-regen file: 31/36; original framing: 29/36) |
 | HSF–sHSP correlation | r = 0.625, p = 7.2e-37 | main |
 | Defense categories with |log₂FC|>0.5 | 0 of 10 | rule 09 |
 | WGCNA modules preserved in infected | 6 of 6 (Zsum 5.8–36.4) | rule 02 |
@@ -444,7 +470,7 @@ Script: `scripts/biomarker_loso_cv.py`.
 
 ### Fix #10 — QTL permutation null (DONE)
 
-Script: `scripts/qtl_permutation_null.py`. Observed 27/27 biomarkers within 1 Mb of a QTL (100 %). Null: 10,000 chromosome-stratified permutations from 27,527 positioned genes → 13.4 ± 2.5 overlaps. **2.01 × fold enrichment, empirical one-sided p < 0.0002.** Co-localisation claim is defensible.
+Script: `scripts/qtl_permutation_null.py`. Re-run 2026-04-29 under Phase 1b GFF-anchored cross-ref: observed 25/25 biomarkers (100 %) within QTL interval extended ±1 Mb on each boundary; 16/25 within 1 Mb of a QTL boundary itself. Null: 5,000 chromosome-stratified permutations from 27,527 positioned genes → 10.9 ± 2.4 overlaps. **2.29× fold enrichment, empirical one-sided p < 2 × 10⁻⁴.** Co-localisation claim is defensible.
 
 ### Fix #11 — NCBI gene annotations (DONE)
 
@@ -651,8 +677,8 @@ These are claims the previous manuscript draft did not articulate. Each has a pa
 ### 1. GRBV is a passive-failure pathogen, not an active-suppression pathogen (S66+S67+S72)
 
 - RB(−) vines at 2022 Harvest: sHSP module z = **+1.64** (strong natural heat upregulation).
-- RB(+) vines at same cohort × season × stage: sHSP z = **−0.67** (2.3-unit deficit).
-- S72 gene-level variance decomposition: sHSPs carry environmental variance share 0.33 (vs 0.19 baseline) but viral share **0.11 ≈ 0.12 baseline** — viral contribution indistinguishable from background noise.
+- RB(+) vines at same season × stage (pooled across all 5 onset cohorts, n=36): sHSP module z = **+0.74** (deficit 0.90 units, ≈55 % drop in module activation relative to RB(−) at the same cell). [Recount 2026-04-29: prior "−0.67 z / 2.3-unit deficit" framing was a 2021 Harvest RB(+) value mis-attributed to 2022 Harvest; corrected here to match the true 2022 Harvest cell.]
+- S72 gene-level variance decomposition (Phase D update 2026-04-29, Option B-ii inclusive membership): all 36 curated sHSPs carry environmental variance share **0.36** (vs 0.19 baseline) and viral variance share **0.13** (vs 0.12 baseline) — env share substantially elevated, viral share only marginally above baseline.
 - Reading: GRBV does not repress sHSPs; it prevents the normal HSF-driven upregulation of sHSPs under heat. Wet-lab target shifts from HSP genes themselves to **HSFA2 / MBF1c transactivation machinery**.
 
 ### 2. Three temporal phases of chronic infection (S69+S71)
@@ -829,3 +855,463 @@ Rule 14's per-gene OLS uses `y = log2(CPM + 1)` as the response. Three reasons t
 
 All on `master` at https://github.com/prem-p-singh/GRBV-Transcriptomics-Analysis.
 
+
+---
+
+# SESSION STATE UPDATE 2026-04-29: Welch-t -> DESeq2 migration of Layer-B figures + audit Pass 8/9
+
+## Scope completed this session
+
+| Phase | What | Where verified |
+|---|---|---|
+| **Pre-flight audit** | Catalogued 11 Welch-t-direct scripts, 8 Welch-t-downstream CSVs, 21 figures in Layer-B (4 Main + 17 Supplementary). Confirmed via grep + script reads (Rules.md §6). | Conversation transcript; `audit/pass_2.md`, `audit/pass_7.md` cross-references |
+| **Phase 1a — `stat` column** | Modified `de_deseq2_voom.R` + `de_deseq2_extras.R` to write `stat = res$stat` (DESeq2 Wald), `stat = tt$t` (voom), `stat = res4$stat` (Q4 LRT). FARM SLURM 32607353, 15m26s, ExitCode 0:0. All 32 contrast CSVs (15 de_redo + 17 de_extras) gain `stat` column. Pre-stat CSVs archived to `Old-Analysis/deseq2_csvs_pre_stat_2026-04-28/` (40 files). | `audit/pass_8.md` (49 PASS, 1 FAIL latent SUMMARY-glob bug, 6 NOTE) |
+| **Phase 1b — 5 regen scripts** | `regen_heat_from_deseq2.py`, `regen_tf_family_from_deseq2.py`, `regen_chromosome_from_deseq2.py`, `regen_biomarkers_from_deseq2.py`, `regen_gsea_from_deseq2.py`. The four lightweight ran locally (~30s each); GSEA on FARM (job 32607364, 10m54s, 1.5 M ES computations, vectorized). All 7 affected CSVs at repo root regenerated; old Welch-t versions archived to `Old-Analysis/welch_t_csvs_2026-04-28/`. | `audit/pass_9.md` Section A |
+| **Phase 1c — 2 figure-script edits** | `main08_chr_qtl.R` + `supp_mediation_chr_wgcna.R` filter `condition == "Q6_pooled"` for backward-compat with the new `chromosome_deg_density.csv` schema (added `condition` column). Pre-edit versions archived. | `audit/pass_9.md` Section B |
+| **Phase 2 — concordance** | `audit/phase_B_regeneration/concordance.{py,csv,md}` — per-CSV per-condition Spearman / Pearson / Jaccard / sign-flip metrics. Median Spearman 0.97 (heat / TF / GSEA NES), 0.84 (biomarkers), 0.06 (chromosome — structurally different by design). | `audit/phase_B_regeneration/concordance.csv` (48 rows) |
+| **Phase 3 — figure re-render** | 13 R scripts re-run; 4 Main + 18 Supp PNGs/SVGs regenerated; pre-rerender versions archived to `Old-Analysis/welch_t_figures_2026-04-28/{main,supp}/`. Sizes mostly within ±10%; S72 +51% (largest data shift). All 13 OK. | `audit/phase_B_regeneration/rerender_logs/rerender_*.log` |
+| **Cascade — `regen_qtl_crossref_from_deseq2.py`** | Replaces hardcoded BIOMARKER_POSITIONS dict in `gwas_qtl_crossref.py` with real GFF positions from `resources/gene_positions.tsv`. 25 of 45 host biomarkers within ±1 Mb of QTL = **55.6%** (revises original "60%"). | `audit/pass_9.md` Section A + Headlines table |
+| **Lineage update** | `audit/phase_B_regeneration/updated_lineage.md` — delta to `audit/phase_A/verified_lineage.md` for the 21 figures whose lineage moves from WELCH-T to CURRENT-DESEQ2-DERIVED. | file |
+| **Phase A re-eval note** | Appended to `audit/phase_A/phase_A_decisions.md` — flags 3 Main figures (Main 7, 8, 9) and 13 Supp figures whose default DROP/DEMOTE rationale was specifically Welch-t-driven and is now weaker. Decision still YOUR call. | file |
+| **Audit Pass 8 + Pass 9** | `audit/pass_8.md` (Phase 1a stat-column + value stability), `audit/pass_9.md` (Phase 1b/1c/2/3 outcomes). `audit/build_audit_pdf.py` updated to `range(1, 10)`; PDF rebuilt to 56 pages (was ~38). | `audit/GRBV_AUDIT_REPORT.pdf` |
+| **SUMMARY-glob bug patch** | `de_deseq2_voom.R` line 207: `pattern = "\\.csv$"` -> `"_(deseq2\|voom)\\.csv$"`. Locally + on FARM. | `audit/pass_9.md` H section |
+
+## Headline updates (manuscript-level numbers that shifted)
+
+| Old | New | Direction |
+|---|---|---|
+| 29/36 sHSPs suppressed | **33/36** | strengthens (DESeq2 finds more) |
+| 60% QTL co-localization | **55.6%** | weakens by 4.4 pp (real GFF vs hash) |
+| 270 sig GSEA pairs | **415** | strengthens (DESeq2 finds 54% more) |
+| KEGG:Ribosome 6/8 conditions | 6/8 | unchanged (same 2 non-sig conditions) |
+| GO:translation initiation factor 6/8 | 6/8 | unchanged |
+| Cross-season NES Pre→Post 0.09→0.63 | 0.119 → 0.730 | strengthens |
+| Top biomarker = LOC100854143 | LOC100854143 | unchanged |
+| Q6 pooled covariate-adjusted DEGs = 126 | 126 | unchanged (Phase 1a value-stability check) |
+| Q2 Harvest DEGs = 1,025 | 1,025 | unchanged |
+
+## NEW headlines worth recording
+
+- **Q2x_2021_Harvest = 1,567 DEGs** (single season×stage cell exceeds Q2_Harvest pooled because Q2 covaries out season; biologically expected, not previously surfaced).
+- **Q1b_cohort2022_vs_neg = 214 DEGs** (year-1 cohort, matches the agenda-gap "broad/shallow acute response" thread).
+- **Top biomarker score Spearman ρ = 0.836** between Welch-t and DESeq2 over the 27-gene shared top-50 (formerly unmeasured; bridges the methodological transition).
+
+## Repository state on disk
+
+- Old-Analysis/welch_t_csvs_2026-04-28/        — 7 files (the pre-regen Welch-t CSVs)
+- Old-Analysis/welch_t_figures_2026-04-28/     — 8 main + 36 supp PNG/SVG (pre-rerender)
+- Old-Analysis/scripts_modified_2026-04-28/    — 9 files (FARM originals, local pre-stat, pre-summary-fix, build_audit_pdf, phase_A_decisions, CLAUDE.md, pre-chr-condition figure scripts)
+- Old-Analysis/deseq2_csvs_pre_stat_2026-04-28/ — 40 files (DESeq2 outputs before stat column added)
+- audit/pass_8.md + pass_9.md created; PDF rebuilt
+- audit/phase_B_regeneration/                  — concordance.{py,csv,md}, updated_lineage.md, rerender_logs/
+- farm_pipeline/scripts/regen_*.py             — 6 new files (5 + qtl crossref cascade)
+
+## Outstanding (deferred)
+
+1. Manuscript edits: sHSP 29 -> 33; GSEA 270 -> 415; QTL 60 -> 55.6; chromosome real-position note in Methods.
+2. `phase_A_decisions.md` re-confirm: A1 (Main 7/8/9), A2 (13 supp figures) — decisions remain YOUR call.
+3. `pass_2.md` and `pass_7.md` row updates: many "WELCH-T input" or "off by 2 (29 vs 31)" findings now have closure rows (link to pass_9 Section E).
+4. The fix01b_de_repeated_measures.R also lacks a `stat` column; not needed for current Phase 1b consumers but a candidate for future-proofing if RM-based ranking is desired.
+5. Tier-2 cross-cohort meta-analysis (Affymetrix probeset bridge for Fung 2008 / Polesani 2010 / Liu 2012) — pre-existing item, unaffected by Phase 1b.
+
+---
+
+# SESSION STATE UPDATE 2026-05-01: Hormone analysis + Pinot↔Merlot synteny + biomarker mappability audit
+
+## Two new analytical threads added
+
+### Thread A — Hormone-pathway response under GRBV
+
+Curated 519 hormone-pathway genes from the Pinot Noir RefSeq annotation across seven categories (ABA / Auxin / GA / Ethylene / Cytokinin / Brassinosteroid / Strigolactone). Tight substring + canonical-symbol matching against the RefSeq `description=` / `Name=` / `gene=` GFF attributes. JA and SA were intentionally excluded (already covered as defense-flat in rule 09).
+
+Per-hormone DESeq2 stat aggregation across 18 contrasts (Q1a, Q1b cohort-by-cohort, Q2 stage cells, Q2x season×stage, Q3, Q4, Q4d, Q5, Q6 pooled). Q6 pooled headline:
+
+| Hormone | tested | sig | up | down | %sig | meanFC | enrichP |
+|---|---|---|---|---|---|---|---|
+| Brassinosteroid | 6 | 4 | 2 | 2 | 66.7% | +0.028 | 0.385 |
+| Cytokinin | 32 | 20 | 12 | 8 | 62.5% | +0.037 | 0.160 |
+| Auxin/IAA | 53 | 31 | 16 | 15 | 58.5% | -0.029 | 0.217 |
+| Ethylene | 54 | 29 | 11 | 18 | 53.7% | -0.059 | 0.466 |
+| ABA | 71 | 31 | 14 | 17 | 43.7% | -0.023 | 0.940 |
+| **GA** | **11** | **4** | **0** | **4** | **36.4%** | **-0.203** | 0.912 |
+| Strigolactone | 5 | 1 | 1 | 0 | 20.0% | +0.150 | 0.975 |
+
+**Two notable findings:**
+1. **No hormone class is over-represented in DEGs** (Fisher one-sided enrichP > 0.05 for every category in Q6 pooled). Same pattern as defense repertoire (rule 09): GRBV does not selectively dysregulate any hormone signalling family wholesale.
+2. **GA is the only hormone where every significant member moves down** (4/4 sig DOWN, mean log2FC -0.20, the strongest mean shift of any category). Directionally consistent with the °Brix-loss phenotype, since GA promotes berry expansion and sugar import. New mechanistic candidate alongside the SPS1 reframe.
+
+### Thread B — Cross-paper hormone validation (Blanco-Ulate 2017 J Exp Bot)
+
+Direct gene-level comparison against the Zinfandel/Oakville-Harvest contrast in BU 2017 supplementary Table S5 (which carries VitisNet "Hormone Signaling" sub-category tags per VIT gene). Bridged via existing `farm_pipeline/resources/id_crosswalk.tsv` (VIT → LOC).
+
+| Hormone | BU n | shared genes | Jaccard | sign-agree | Spearman ρ (lfc) | BU sig (up/dn) | OURS sig (up/dn) |
+|---|---|---|---|---|---|---|---|
+| **Ethylene** | 236 | **101** | 0.41 | **62.8%** | **+0.535** | 10/16 | 11/12 |
+| Auxin/IAA | 377 | 85 | 0.23 | 64.4% | +0.288 | 32/19 | 12/13 |
+| ABA | 157 | 24 | 0.11 | 71.4% | +0.147 | 7/6 | 4/4 |
+| Cytokinin | 109 | 35 | 0.28 | 47.6% | +0.505 | 4/3 | 8/4 |
+| Brassinosteroid | 74 | 7 | 0.12 | 50.0% | +0.400 | 2/2 | 1/1 |
+
+**Headline cross-paper validation: ethylene direction replicates (Spearman ρ = +0.54, n = 101 shared genes).** Cite BU as the cross-cultivar precedent for ethylene suppression.
+
+**What we add to BU:** GA + Strigolactone categories were NOT in BU's VitisNet hormone classification (their categories: Auxin / Ethylene / ABA / Cytokinin / JA / Brassinosteroid only). Our GA finding (4/4 down, monotonic) is potentially novel relative to their analysis.
+
+**Caveat to volunteer:** BU used per-stage two-sample tests within each vineyard cell, no covariate adjustment. Our covariate-adjusted DESeq2 design `~ Stage + Season + Infection_Group` removes the stage/season-driven variance that inflates BU's per-cell directional bias. Both report what is real; we report less stage-confounded magnitude.
+
+### Thread C — Pinot Noir ↔ Merlot cl. 343 synteny (defends our reference choice)
+
+JCVI MCScan run on FARM. Pinot Noir RefSeq (ASM3070453v1, GCF_030704535.1, our alignment reference) vs Merlot cl. 343 v1.0 phased pseudomolecule assembly (Cantu Lab grapegenomics.com, Sichel et al. 2023 BMC Genom., doi:10.1186/s12864-023-09453-8 — same INRAE-AGAP-DAAV reads at PRJEB59893 that the user originally pointed to, but as a published assembly rather than raw PacBio reads).
+
+Pipeline: CDS LAST alignment (cscore ≥ 0.7) → MCScan ortholog catalog → synteny screen (min span 30 anchors). Output: 41,248 anchor pairs in 125 synteny blocks across 20,784 Pinot genes and 40,883 Merlot genes (both haplotypes hapCF + hapMNC).
+
+**Result: chromosome-scale colinearity is preserved** across all 19 chromosomes between Pinot Noir and BOTH Merlot haplotypes (hapCF = Cabernet Franc parental, hapMNC = Magdeleine noire des Charentes parental). Merlot's two haplotypes return anchor counts within 1-2% of each other on every Pinot chromosome. This is the empirical defense for aligning Merlot reads to a Pinot Noir reference.
+
+**Multiplicity audit:** 87.5% of expressed background genes are `same_locus_2hap` (one Pinot LOC ↔ one hapCF + one hapMNC Merlot ortholog, the canonical diploid case); only **0.4%** show `hap_expansion` (real paralog-collapse risk where one haplotype carries >1 Merlot copy of the Pinot gene). DEG distribution mirrors background (0.3% of DEGs in `hap_expansion`). **Zero of 45 mappable top-50 biomarkers and zero of 160 hormone DEGs fall in `hap_expansion`** — the read-mapping ambiguity concern is essentially absent at the headline level.
+
+### Thread D — Unmapped biomarker recovery via raw LAST hits
+
+10 of 50 top biomarkers were initially flagged as MCScan-unmapped (no anchor at cscore ≥ 0.7). Re-checking the raw `pinot.merlot.last` alignment (pre-MCScan-filter) recovered **8 of 10** with overwhelming evidence (97-100% CDS identity, both haplotypes present). The 2 still missing are uncharacterized LOCs (LOC100257036, LOC100248652).
+
+**Critical recovery: LOC100268011 (RdRp1, AUC 0.82, our top sugar-QTL biomarker on chr1)** — 99.3-100% identity to genes on Merlot chr01 in BOTH haplotypes (3,330 nt aligned, bitscore ~5,200). The chr1 sugar-QTL co-localization claim transfers cleanly to Merlot.
+
+**Final manuscript-defensible statement:** 43 of 45 mappable top-50 biomarkers (96%) have unambiguous Merlot orthologs at ≥ 97% CDS identity in both haplotypes.
+
+## Files added at repo root
+
+| File | Content |
+|---|---|
+| `hormone_gene_catalog.csv` | 519 hormone-classified genes from RefSeq GFF |
+| `hormone_DE_summary.csv` | 175 rows: per-hormone × 18 contrasts |
+| `hormone_per_gene_long.csv` | 5,800 rows long-form for figures |
+| `hormone_top_hits.csv` | strongest gene per hormone × contrast |
+| `hormone_blancoulate_compare.csv` | per-hormone agreement vs BU 2017 (5 hormones × 4 contrasts) |
+| `hormone_blancoulate_shared_genes.csv` | 508 per-gene paired rows on the shared subset |
+| `deg_merlot_multiplicity.csv` | per-DEG multiplicity classification (9,701 rows) |
+| `deg_multiplicity_summary.csv` | aggregate counts |
+| `unmapped_biomarker_recovery.csv` | rescue results for the 10 originally unmapped top-50 biomarkers |
+
+## Files added in `figures/`
+
+| File | Content |
+|---|---|
+| `figures/supp/S84_synteny_pinot_merlot.{png,svg}` | 3-panel synteny figure |
+| `figures/supp/S86_hormone_landscape.{png,svg}` | 3-panel hormone landscape figure |
+| `figures/scripts_R/S84_synteny_pinot_merlot.R` | source |
+| `figures/scripts_R/S86_hormone_landscape.R` | source |
+
+## Files added in `farm_pipeline/scripts/`
+
+| File | Role |
+|---|---|
+| `hormone_gene_catalog.py` | curates 519 hormone genes from the RefSeq GFF |
+| `hormone_de_summary.py` | aggregates per-hormone × per-contrast DESeq2 stats |
+| `hormone_blancoulate_compare.py` | cross-paper comparison vs BU 2017 |
+| `deg_merlot_multiplicity.py` | classifies DEG multiplicity in Merlot |
+| `recover_unmapped_biomarkers.py` | rescues unmapped biomarkers from raw LAST hits |
+| `20a_synteny_setup.sh` | one-time JCVI install on FARM |
+| `20b_synteny_download.sh` | downloads Pinot RefSeq + Merlot Cantu files |
+| `20c_synteny_prep.py` | GFF → MCScan BED + CDS for both genomes |
+| `20d_synteny_mcscan.sh` | MCScan pipeline (LAST → anchors → synteny → karyotype) |
+| `20_synteny_slurm.sbatch` | SLURM wrapper |
+
+## FARM artefacts
+
+`~/grbv_extended/results/20_synteny/` (mirrored to `farm_pipeline/results/20_synteny/`):
+- pinot.bed (28,148 genes), merlot.bed (79,182 genes incl. both haplotypes)
+- pinot.cds (25,187 records), merlot.cds (79,182)
+- pinot.merlot.anchors (41,248 pairs in 125 blocks); pinot.merlot.anchors.simple
+- pinot.merlot.last (109 MB raw LAST hits, kept locally for biomarker rescue)
+- pinot.merlot.pdf (jcvi auto-karyotype), pinot.merlot.depth.pdf (block-depth ratio)
+- synteny_summary.tsv (per Pinot-chr × Merlot-chr anchor counts)
+- synteny_multiplicity.tsv (1-to-1 / 1-to-many counts per genome)
+- chromosome_inventory.tsv (gene counts per seqid)
+
+`~/grbv_extended/resources/synteny/` (480 MB on FARM, NOT mirrored — gitignored, rebuildable):
+- Pinot Noir GCF_030704535.1: cds.fna.gz, protein.faa.gz, genome.fna.gz, annotation.gff.gz
+- Merlot VITVvi_vMerl343_v1.0: genome.fa.gz, cds.fna.gz, protein.faa.gz, annotation.gff3.gz
+
+## SLURM jobs this session
+
+- 32676808 — first synteny dispatch, FAILED at 10 min with exit 127 (wrapper-to-20d handoff issue, both layers re-loading conda; fixed)
+- 32680696 — second dispatch, cancelled CG state at 12 min after the earlier interactive `bash 20d_synteny_mcscan.sh` debug invocation completed the entire pipeline ahead of it. Results from the interactive run (timestamps 09:23-09:50) are what we use.
+
+## What this changes downstream (this session is executing all of these)
+
+- **Atlas:** S84 + S86 entries added; will grow from 93 → 95 pages.
+- **Funding deck (`GRBV_Funding_Committee_Presentation.pptx`):** ~5 new slides (hormone landscape; BU cross-paper; synteny; biomarker mappability; RdRp1 recovery).
+- **Methodology brief (`GRBV_Methodology_Brief.pptx`):** slide 5 ("why Pinot Noir not Merlot") embeds the S84 figure as visual proof; slide 16 (QTL co-localization) gains a multiplicity-audit bullet.
+- **Manuscript (`docs/MANUSCRIPT_DRAFT_v1.md`):** Results subsection on hormone landscape + cross-paper validation; Methods paragraph on synteny defense; Discussion update on GA suppression as new mechanistic candidate.
+- **Methods Addendum (`farm_pipeline/docs/METHODS_ADDENDUM.md`):** §10b hormone curation, §11 synteny, §12 biomarker mappability audit.
+
+## Lab/colleague context (relevant for the manuscript Discussion)
+
+User asked the question that surfaced Thread D (the multiplicity audit + biomarker rescue) after telling a scientist "we found genes near QTLs" — the scientist asked for QTL specifics. The conversation forced clarity that:
+1. We do NOT have a GRBV-specific QTL (none has been published in Vitis literature).
+2. Our finding is a literature-overlap claim (25/25 biomarkers within ±1 Mb of a panel QTL, 2.29× null enrichment, p < 2e-4).
+3. The biomarker panel is enriched in regions breeders already select on — this is hypothesis-generating, not a discovery.
+The Methodology Brief deck added this session has slide 16 explicitly framing this distinction.
+
+---
+
+# SESSION STATE UPDATE 2026-05-18: Salmon reference-bias direct test + NLR audit + reference-defense deck
+
+## Why this block exists
+
+The PI flagged that the synteny / multiplicity / cscore-0.7 checks (2026-05-01 block) are
+*indirect proxies*: they show the genomes are colinear and orthologs exist, not that
+re-quantifying the reads against Merlot would reproduce the DEG calls. This session ran
+the direct read-level experiment and a targeted NLR mapability audit, then propagated the
+result into a new standalone deck and the two existing decks.
+
+## Thread A — Salmon direct reference-bias test (the decisive experiment)
+
+Built a portable pipeline (`salmon_grbv/`, shipped as `salmon_grbv.tar.gz`, 8 scripts:
+`run_all.sh` + `00_setup.sh` `01_download_refs.sh` `02_build_indices.sh`
+`03a_copy_fastq.sh` `03b_merge_fastq.sh` `03c_quant.sh` `04_compare.R`). It quantifies the
+SAME 327 sample FASTQs with salmon against BOTH the Pinot Noir RefSeq (ASM3070453v1) AND
+the Cantu Lab Merlot cl. 343 v1.0 phased assembly (`VITVvi_vMerl343_v1.0.pseudomolecules`,
+Sichel et al. 2023 BMC Genom. — the SAME Merlot used for the synteny work), then runs an
+identical covariate-adjusted DESeq2 (`~ Maturity_stage + Sampling_Season + Infection_Group`)
+on both in the same Pinot-LOC gene space (Merlot hapCF + hapMNC counts summed per locus).
+
+FASTQ source: external drive (T7 Shield then Lexar), `TAG0303P/` — 903 study FASTQ files
+across 3 sequencing runs (20250321 / 20250411 / 20250422), single-end, Element **AVITI**
+platform (not Illumina — documentation discrepancy to fix in METHODS_ADDENDUM). All 327
+study samples present. 3 `*_Redo` libraries merged with originals; S19 / PhiX / Unassigned
+/ Pilot skipped. The salmon run executed locally (Mac) against the necessary files copied
+to `salmon_grbv/quant/` + `refs/` (~3.5 GB; the 288 GB FASTQ was never copied into the repo
+per user instruction). tximport cached to `comparison/txi_cache.rds` (309 MB) for fast re-runs.
+
+Iterative fixes applied to `04_compare.R` (all in the shipped tarball): Pinot tx2gene parses
+NCBI CDS headers for `db_xref=GeneID:` → `LOC*`; `RB(+)`/`RB(-)` recoded to `RBpos`/`RBneg`
+(make.names() collapses both to `RB.`); `sfType="poscounts"` (zero-inflated matrix);
+Merlot haplotypes collapsed per Pinot LOC before DESeq2; covariate-adjusted design matching
+the manuscript; stratified concordance metric.
+
+**Headline result (final, covariate-adjusted, in `salmon_grbv/comparison/comparison_report.md`):**
+
+| Gene set | n | log2FC Spearman ρ | Sign agreement |
+|---|---|---|---|
+| All shared genes | 12,574 | 0.43 | noise-dominated — NOT the metric |
+| Union-DEG (sig in either) | 116 | 0.62 (Pearson 0.71) | 86 % |
+| **Significant in BOTH refs** | **21** | **0.95** | **100 %** |
+
+Membership: Pinot 77 / Merlot 60 sig DEGs, 21 in both, Jaccard 0.18.
+
+**Verdict (defensible claim):** strong GRBV effects are reference-robust — genes
+significant under both references agree 100 % in direction and ρ = 0.95 in magnitude.
+The reference choice perturbs only which marginal, weak-effect genes cross padj = 0.05
+(Jaccard 0.18) — boundary instability, not a biology reversal. Covariate adjustment did
+not change this. **Residual caveats (stated, bounded, not removable by this test):**
+salmon ≠ the manuscript's STAR+featureCounts (quantifier confounded with the reference
+change); ~40 % of ortholog-mappable genes get near-zero counts against Merlot transcript
+models. The headline findings are independently anchored in raw qPCR titer + harvest juice
+chemistry + an independent cultivar, so they cannot be a reference artifact.
+
+**Strategic conclusion (asked + answered this session): NO full redo needed.** A full
+re-alignment to Merlot would re-introduce the fragmented-assembly problem the Pinot choice
+solved. The load-bearing conclusions are in the reference-robust bucket and triple-anchored
+outside the transcriptomics. Worth doing: tighten Limitations §7 with the salmon numbers;
+hold a featureCounts-matched test in reserve ONLY if a reviewer demands the perfectly
+isolated comparison (~1 day, not weeks). Do not pre-emptively run it.
+
+## Thread B — NLR mapability subaudit (Step B)
+
+`farm_pipeline/scripts/nlr_mapability_audit.py` + `_v2.py`. 676 curated NLR/R-genes vs
+conserved comparators (ribosomal/histone/sHSP/tubulin). 373 NLRs (55 %) are SILENT in
+healthy berry tissue (median count 0). The 160 well-expressed NLRs (median ≥ 5) detect at
+rate 1.000 — identical to housekeeping. Median |log2FC| = 0.19 vs housekeeping 0.10–0.15
+(comparable); sHSP = 1.06 (5× higher, selective). **Verdict: mapping is NOT the bottleneck;**
+the "10 immune categories all |log2FC| < 0.08" framing was imprecise because it averaged
+across the silent-by-default majority. Reframed: NLR engagement is statistically
+indistinguishable from developmental background, while sHSP suppression is selectively
+dramatic. Outputs: `nlr_mapability_audit_v2.csv`, `nlr_mapability_summary_v2.csv`.
+
+## Figures
+
+- **S84 Panel A corrected**: was floating diagonal tiles with colliding x-labels; now a
+  full 19×19 grid (off-diagonal = 0, cream→crimson), x-labels rotated 45° on top, scale
+  anchored at 0. `figures/scripts_R/S84_synteny_pinot_merlot.R` re-rendered; atlas rebuilt
+  (95 pages).
+- **S85 NEW** `figures/supp/S85_salmon_reference_concordance.{png,svg}` +
+  `figures/scripts_R/S85_salmon_reference_concordance.R`: Panel A per-gene log2FC
+  concordance scatter (sig-in-both red, hugs diagonal); Panel B stratified-ρ bar
+  (all 0.43 greyed / union 0.62 / both 0.95). NOT wired into build_full_atlas.py
+  (scoped to the reference-defense + funding decks only).
+
+## Decks
+
+- **NEW: `GRBV_Pinot_Reference_Defense.pptx`** (28 slides, build script
+  `scripts/build_ppt_reference_defense.py`, imports helpers from build_ppt_v3.py).
+  8 sections: the question; the 6-concern table; synteny; multiplicity audit; unmapped
+  rescue; NLR Step B; **the salmon direct test (Section 7, +S85 figure)**; what the
+  reference does NOT defend; roadmap; evidence ledger; 3-sentence bottom line.
+- **Funding deck** `GRBV_Funding_Committee_Presentation.pptx` 97 → **98 slides**: +1
+  slide in Section 8 (Validation) "Direct read-level test — salmon re-quantification"
+  with the S85 figure, after the RdRp1-recovery slide.
+- **Methodology brief** `GRBV_Methodology_Brief.pptx` (24 slides, no slide added):
+  slide 5 ("why Pinot not Merlot") gained the direct-test bullet + updated trade-off /
+  implication lines (argument promoted from "genomes colinear" to "re-quantified, biology holds").
+- New native python-pptx `_build_table_slide` renderer in build_ppt_v3.py (reusable;
+  used for per-chr synteny table + concern table + salmon concordance table).
+
+## FARM cleanup (Tier 1, user-approved)
+
+Deleted from `~/grbv_extended/` on FARM (~900 MB freed, 14 GB → ~13 GB):
+LAST DB binaries in `results/20_synteny/` (merlot.suf/tis/bck/des/sds/ssp/prj) and the
+fully-rebuildable `resources/synteny/` download cache. All actual synteny OUTPUTS
+(anchors, summary.tsv, multiplicity.tsv, BEDs, PDFs, pinot.merlot.last) preserved.
+Tier 2 (gsea_env 766 MB, gsea_run 54 MB) NOT deleted — pending user confirmation.
+
+## Files added at repo root / new locations this session
+
+| Path | Content |
+|---|---|
+| `salmon_grbv/` (+ `salmon_grbv.tar.gz`) | portable reference-bias pipeline (8 scripts) |
+| `salmon_grbv/comparison/comparison_report.md` | the deliverable for the PI |
+| `salmon_grbv/comparison/{deg_overlap_pinot_vs_merlot,de_pinot,de_merlot,per_sample_concordance,per_gene_divergence}.csv` | underlying numbers |
+| `salmon_grbv/refs/pinot_merlot_ortho.tsv` | 20,784-row Pinot↔Merlot ortholog table (from MCScan anchors) |
+| `figures/supp/S85_salmon_reference_concordance.{png,svg}` | salmon concordance figure |
+| `figures/scripts_R/S85_salmon_reference_concordance.R` | source |
+| `farm_pipeline/scripts/nlr_mapability_audit{,_v2}.py` | NLR Step B |
+| `nlr_mapability_audit_v2.csv`, `nlr_mapability_summary_v2.csv` | NLR audit output |
+| `scripts/build_ppt_reference_defense.py` | reference-defense deck builder |
+| `docs/OUTCOMES_PROMPT.md` | image-gen prompt for the outcomes schematic (companion to MOA_PROMPT.md) |
+
+## Open items / pending
+
+1. **Manuscript Limitations §7**: DONE 2026-05-18. The salmon direct test is folded into
+   MANUSCRIPT_DRAFT_v1.md Limitations §7 (stratified concordance ρ=0.43 all / 0.62 union /
+   0.95 sig-both, 100 % sign-agree, Jaccard 0.18, caveats, external anchors). S85 caption
+   added to the captions block; `(Fig. S85)` cross-referenced in §7; S85 added to
+   build_full_atlas.py (atlas now 96 pages: 10 main + 86 supp).
+2. **METHODS_ADDENDUM.md**: AVITI-not-Illumina sequencer correction; add a §12c for the
+   salmon direct test.
+3. Script-location note: the ORIGINAL 20 core analysis scripts (analysis.py,
+   pathway_enrichment.py, biomarker_discovery.py, etc.) live in
+   `Old-Analysis/scripts_python/`, NOT at repo root. CLAUDE.md's "Analysis Scripts" table
+   still implies repo-root location — stale, navigation-only, not a correctness issue.
+   Authoritative current analysis = `farm_pipeline/scripts/`.
+4. FARM second-account SSH alias: requested, awaiting username/hostname/alias from user.
+   No password to be stored in repo/dotfile/chat (project rule §2).
+---
+
+# SESSION STATE UPDATE 2026-05-26: Pathway figures (S87-S95)
+
+## What was added
+
+Nine new supplementary figures rendering pathway-level GRBV impact:
+
+- **S87 Phenylpropanoid biosynthesis** (KEGG vvi00940)
+- **S88 Starch and sucrose metabolism** (vvi00500)
+- **S89 Plant hormone signal transduction** (vvi04075)
+- **S90 Ribosome** (vvi03010)
+- **S91 Biosynthesis of amino acids** (vvi01230)
+- **S92 Proteasome** (vvi03050)
+- **S93 HSF -> MBF1c -> sHSP axis** (custom ggplot flow)
+- **S94 Temperature -> titer -> host mediator cascade** (custom ggplot flow)
+- **S95 Viral ORFs -> WGCNA module rewiring** (custom bipartite)
+
+All 6 KEGG pathways rendered via pathview 1.48.0 with 8-cell split-box log2FC overlay in pure stage order (2021 Pre / Ver / Post / Harv, then 2022 Pre / Ver / Post / Harv). Palette: #2166ac (down) / #f7f7f7 (neutral) / #b2182b (up). log2FC clipped at +/-3. Paralog rule: `node.sum = "mean"` (mean across all LOC genes mapped to each EC node); full paralog list per pathway in `figures/supp/S{nn}_paralog_counts.csv`.
+
+## Implementation
+
+- `figures/scripts_R/pathway_overlay_driver.R`: driver with `read_q2x_matrix()`, `compute_mapping_coverage()`, `write_paralog_auxiliary()`, `render_kegg_pathway()`
+- `figures/scripts_R/test_pathway_driver.R`: assertion-based smoke tests for driver helpers
+- 6 shim scripts (S87-S92) calling the driver
+- 3 standalone custom scripts (S93-S95)
+- `figures/cache/kegg_xml/`: KGML XML cache (6 files, ~250 KB total)
+
+## Atlas
+
+`figures/GRBV_Full_Figure_Atlas.pdf` rebuilt: **105 pages** (10 main + 95 supp).
+
+## Spec + plan
+
+- Spec: `docs/superpowers/specs/2026-05-26-pathway-figures-design.md`
+- Plan: `docs/superpowers/plans/2026-05-26-pathway-figures.md`
+
+## Accepted trade-offs
+
+- Pathview's KEGG PNG output uses KEGG default Helvetica + KEGG-style borders; does not match `theme_grbv` Source Sans Pro. Accepted: canonical KEGG layout is the value here.
+- Pathview averages paralogs at multi-LOC EC nodes via `node.sum = "mean"`. Full paralog set written to auxiliary CSV; caption must note the rule when figures land in the manuscript.
+- Plant hormone signal transduction (vvi04075) has only 2/8 GSEA-significant conditions; included for narrative consistency with S86, not for primary GSEA signal.
+- S90 Ribosome and S92 Proteasome produced no graphviz PDF (pathview rejects "parts-list" pathways with no enzyme edges); native PNGs are the canonical outputs for those two.
+- The atlas builder dict `STATUS_COLOR` + badge dict gained a `"new"` key to support S93-S95 ("new" status). Committed in `a6464be`.
+
+## Commits
+
+| SHA | Subject |
+|---|---|
+| 38272ee | verify LOC->KEGG vvi mapping; add KGML cache scaffold |
+| 54bbe3b | driver scaffold + read_q2x_matrix() with smoke test |
+| 2650e9b | remove dead-code tibble-rowname assignment |
+| 93a8cc5 | compute_mapping_coverage() + KGML parsing |
+| 280f768 | write_paralog_auxiliary() per-EC inventory |
+| 9975f4b | render_kegg_pathway() wrapper with native + graphviz passes |
+| 2f23f91 | S87 Phenylpropanoid biosynthesis (vvi00940) [includes <<- driver fix] |
+| 80bda01 | S88 Starch and sucrose metabolism (vvi00500) |
+| be5d38c | S89 Plant hormone signal transduction (vvi04075) |
+| 1bd9e6f | S90 Ribosome (vvi03010) |
+| 6211261 | S91 Biosynthesis of amino acids (vvi01230) |
+| 1004e32 | S92 Proteasome (vvi03050) |
+| 485f5fe | S93 HSF -> MBF1c -> sHSP axis (custom flow) |
+| adbbe02 | S94 Temperature -> titer -> mediator cascade (custom flow) |
+| dd18397 | S95 Viral ORF -> module rewiring (custom bipartite) |
+| 19f562c | register S87-S95 in atlas builder |
+| b894d82 | rebuild atlas to 105 pages with S87-S95 |
+| a6464be | add 'new' status key to atlas builder for S93-S95 |
+
+
+---
+
+# SESSION STATE UPDATE 2026-10-28: catch-up for June to October 2026 work
+
+This block records work done after the 2026-05-26 block. Most of it lives in the main folder and is **not in git**: `analysis/` and the Era 6 scripts (`21_*`–`26_*`) are untracked; `docs/*.md` is gitignored (`.gitignore:14 *.md`); manuscript/, presentations/ and output/ are untracked. The storyline that came out of it is at the top of this file under **CURRENT STORYLINE**.
+
+## Timeline
+
+| Date | Work | Where |
+|---|---|---|
+| 2026-06-04 | Rumbaugh 2022 (Cabernet Sauvignon) + Rumbaugh 2023 (Merlot) concordance; S96 + S97; DCL2 callout added to MoA figure; atlas 105 → 107 pages | commit `945499f`; `farm_pipeline/scripts/rumbaugh202{2,3}_concordance.py`; `rumbaugh2023_*.csv` at root |
+| 2026-06-16/17 | HTML/PDF study report | `GRBV_study_report.html`, `report/GRBV_report.{html,pdf}`, `scripts/build_study_report.py`, `scripts/build_report_v2.py` |
+| 2026-06-18 | Merlot haplotype check (hapCF vs hapMNC): sig-in-both ρ 0.791, 95.3% sign agreement (n = 384); Mfuzz temporal clustering (6 clusters) | `haplotype_*.csv/png`, `mfuzz_*.csv/png` at root |
+| 2026-06-21 | Stage DEG Venn | `venn_DEG_stages*.{csv,png,svg}` |
+| 2026-08-19 | **Era 6**: sample-unit audit + `dream` mixed models + claim-decision gates (phases 1 to 5) | `farm_pipeline/scripts/21_*`–`26_*` (untracked); `docs/PHASE1_*`–`PHASE6_7_*.md` |
+| 2026-09-10/12 | Whole-study and hidden-interpretation audits | `audit/whole_study_2026-09-12/`, `audit/hidden_interpretations_2026-09-10/` |
+| 2026-09-12 | **Era 7**: healthy-only developmental clock + pathway rotation tests (70 branches, 4,999 vine-bootstrap draws, leave-one-vine-out) | `analysis/temporal_pathway_atlas_2026-09-12/` |
+| 2026-09-12 | JXB draft, then PNAS package | `manuscript/JXB_2026-09-12/`, `manuscript/PNAS_2026-09-12/` |
+| 2026-09-17 | Seven-era project history | `docs/ANALYSIS_ERAS.md` |
+| 2026-09-13 to 10-27 | PNAS revisions (chemistry, figures, Fig 2, audit fixes, stats, teal/burgundy palette); gap and figure/table audits | `manuscript/PNAS_2026-*`, `outputs/grbv-*-audit-20260927/` |
+| 2026-09-26 | Pathogenesis summary illustration + cellular mechanism v5 | `output/GRBV_summary_2026-09-26/` |
+| 2026-10-02 to 10-13 | Pathogen-story and disease-progression documents; n8n verification workflow; study-journey HTML | `manuscript/PNAS_2026-10-02_teal_burgundy/` |
+| 2026-10-17/18 | FARM: `setup_farm.sh` and `run_farm.sh` re-run themselves under `srun` (publicgrp, low) so nothing heavy runs on the login node | commit `9bbf5d5` |
+| 2026-10-18 | 3-minute flash talk (slides, speech) | `manuscript/PNAS_2026-10-02_teal_burgundy/GRBV_*Flash_Talk*` |
+| 2026-10-25 | Pathogenesis schematic (association band kept separate from published virus biology) | `output/GRBV_pathogenesis_2026-10-25/` |
+| 2026-10-25 to 27 | 30-minute host-pathogen seminar (28 slides) + IPMB flash talk + 4 Illustrator figures; genome-map correction on slides 3, 5, 17, 27 | `presentations/READY_TO_USE/` (finished), `presentations/GRBV_Host_Pathogen_Story_20261025/revisions/Genome_Map_Correction_20261027` (editable) |
+| 2026-10-26/27 | Side thread: PrGVA primer design and checks (LIRgap / V3gap pairs, OligoAnalyzer) | Moved out of the project on 2026-10-28 to `~/Desktop/PrGVA_primers/` (reports + `primer_map_work/`) |
+| 2026-10-27 | Latest PNAS manuscript text | `manuscript/PNAS_2026-10-02_teal_burgundy/PNAS_Manuscript.docx` |
+
+## Era 6 claim decisions (from `docs/ANALYSIS_ERAS.md`)
+
+| Claim | Verdict |
+|---|---|
+| Phenology-dependent response (7,861 genes infection × stage) | Supported |
+| Season-dependent phenology (3,236 genes, three-way) | Supported |
+| Two reciprocal ripening programmes (2,085 genes, k = 2) | Supported |
+| Convergent late-ripening core across studies (978 replicated) | Supported |
+| Translation machinery repressed in that core | Supported |
+| Early burden predicts late damage | Not supported |
+| Same genes switch in an independent study | Not supported |
+| GRBV core differs from leafroll virus | Exploratory only |
+| Temperature caused the season effect | Prohibited |
+
+Era 6 also flagged the vine tolerance gradient (rule 16) as invalid: 27 infected harvest chemistry records had been expanded to 104 rows by matching to every RNA stage. Era 7 closed data provenance: the working count matrix matches the core facility matrix exactly (28,168 × 327); STAR median unique mapping 75.63%; sample U10 is an outlier (33.78% unique mapping, reverse-stranded) that does not change results (ρ ≥ 0.9988 when excluded). The chemistry "volume" field is net mass, not litres.
+
+## Open items (from ANALYSIS_ERAS + PNAS package README)
+
+1. Author confirmations before PNAS upload: authorship, affiliations, funding, sampling and RNA protocol details, viral assay units, chemistry protocols, diagnostic provenance.
+2. Raw sequence deposition (SRA / GEO) still not done.
+3. Chemistry-to-vine pairing needs collection records; five YAN values need clarification (nothing imputed).
+4. Protocol-aware re-quantification from raw reads needs the external drives.
+5. Era 6 scripts, `analysis/`, `manuscript/`, `presentations/` and `output/` are untracked; docs/ is gitignored. Decide what to commit.

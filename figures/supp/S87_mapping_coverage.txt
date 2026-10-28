@@ -1,0 +1,1 @@
+vvi00940 phenylpropanoid_kegg: 45 of 45 EC nodes mapped (100.0%)

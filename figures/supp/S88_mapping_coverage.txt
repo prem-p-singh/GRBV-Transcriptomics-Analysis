@@ -1,0 +1,1 @@
+vvi00500 starch_sucrose_kegg: 34 of 36 EC nodes mapped (94.4%)

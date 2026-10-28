@@ -133,6 +133,20 @@ SOURCE_FIGS = [
     (81, "S80B_cell_wall_heatmap.png",                "S80B — Cell wall (161 genes, 5 sub-categories)",     "regenerated", "Pectin / Hemicellulose / Cellulose / Lignin / Expansin; only |log2FC|>=1 genes labelled"),
     (82, "S80C_cell_wall_focused.png",                "S80C — Cell wall genes with consistent GRBV response","regenerated", "21 genes (13 strict + 8 broad at |FC|>=0.45 in >=6/8); axis_nested by sub-category; cell text"),
     (83, "S81_sugar_full_heatmap.png",                "Carbon translocation full FC heatmap",               "regenerated", "33 sugar-transport genes x (season x cohort x stage); functional subclass ordering"),
+    (84, "S84_synteny_pinot_merlot.png",              "Pinot Noir <-> Merlot cl. 343 synteny",              "regenerated", "JCVI MCScan: 41,248 anchors / 125 blocks; both Merlot haplotypes preserve colinearity with Pinot"),
+    (85, "S85_salmon_reference_concordance.png",      "Direct reference-bias test: salmon re-quantification","regenerated", "Same 327 reads vs Pinot + Merlot; sig-in-both rho=0.95 / 100% sign-agree; marginal Jaccard 0.18"),
+    (86, "S86_hormone_landscape.png",                 "Hormone-pathway response (7 hormones, 519 genes)",   "regenerated", "Q6 pooled covariate-adj DESeq2; no class enrichment, GA monotonic-down; cross-paper validation vs BU 2017"),
+    (87, "S87_phenylpropanoid_kegg.png",              "Phenylpropanoid biosynthesis (KEGG vvi00940)",       "regenerated", "Pathview 8-cell split-box (pure stage order: 2021 Pre/Vér/Post/Harv | 2022); paralog mean log2FC; node.sum=mean"),
+    (88, "S88_starch_sucrose_kegg.png",               "Starch and sucrose metabolism (vvi00500)",           "regenerated", "Sugar/Brix story; includes SPS1; GSEA 5/8 cond NES +0.89"),
+    (89, "S89_plant_hormone_kegg.png",                "Plant hormone signal transduction (vvi04075)",       "regenerated", "Narrative tie-in to S86 hormone landscape (ethylene cross-paper / GA-down)"),
+    (90, "S90_ribosome_kegg.png",                     "Ribosome (vvi03010)",                                "regenerated", "Translational shutdown; GSEA 6/8 cond NES -1.33 (most robust DOWN)"),
+    (91, "S91_amino_acid_biosynth_kegg.png",          "Biosynthesis of amino acids (vvi01230)",             "regenerated", "GSEA 5/8 cond NES -1.95"),
+    (92, "S92_proteasome_kegg.png",                   "Proteasome (vvi03050)",                              "regenerated", "Strongest |NES| in pathway set; GSEA 4/8 cond NES -2.43"),
+    (93, "S93_hsf_mbf1c_shsp_axis.png",               "HSF -> MBF1c -> sHSP axis (custom flow)",            "new",         "Three-column ggplot diagram; passive-failure model (Thread 10); per-node 8-cell Q2x log2FC mini-bars"),
+    (94, "S94_temp_titer_mediator_cascade.png",       "Temperature -> titer -> mediator cascade",           "new",         "MBF1c / SPS1 / LOC100266309 mediator nodes; edges from mediation_results.csv (tv=2000)"),
+    (95, "S95_viral_orf_module_rewiring.png",         "Viral ORFs -> WGCNA module rewiring",                "new",         "Bipartite: 6 ORFs x 13 modules; rule 13 Spearman; FDR<0.05 or |rho|>=0.3"),
+    (96, "S96_rumbaugh2022_cross_cultivar.png",       "Cross-cultivar replication vs Rumbaugh 2022 CS",     "new",         "3 panels: DCL2 veraison-peak trajectory (their headline mechanism, padj 5.5e-11 in our 2021); per-network Spearman concordance (S1 Ca-binding, S2 DCL2-gain, S3 DCL2-loss; rootstocks separate); Q1b cohort gradient (peak match at cohort2020 = 1-2 y post-infection)"),
+    (97, "S97_rumbaugh2023_within_cultivar.png",      "Within-cultivar replication vs Rumbaugh 2023 Merlot","new",         "4 panels: per-gene harvest scatter (rho = 0.79 across 37 mapped genes); per-category Spearman bars (cell wall rho = 0.69 with 100% sign agreement); per-(category, stage) heatmap; Q1b cohort gradient. Cell wall + phenylpropanoid biology is broadly cohort-age-portable; PR proteins dip at cohort2020 (rho = 0.10)"),
 ]
 
 PAGE_W, PAGE_H = LETTER  # 8.5 x 11 inches
@@ -142,6 +156,7 @@ STATUS_COLOR = {
     "DESeq2":      (0.85, 0.30, 0.20),  # red (pending)
     "regenerated": (0.10, 0.40, 0.70),  # blue (done)
     "reframed":    (0.50, 0.30, 0.65),  # purple
+    "new":         (0.10, 0.40, 0.70),  # blue (newly created under DESeq2 pipeline)
 }
 
 def render_supp_page(num: int, png_path: Path, title: str,
@@ -161,6 +176,7 @@ def render_supp_page(num: int, png_path: Path, title: str,
         "DESeq2":      "DATA UPDATE NEEDED \u2014 refit with DESeq2 (de_redo/ + de_extras)",
         "regenerated": "Regenerated under DESeq2, R/ggplot2, Arial",
         "reframed":    "Reframed in Main composite (see note)",
+        "new":         "New figure produced under DESeq2 pipeline",
     }[status]
     c.setFont("Helvetica-Bold", 9)
     r, g, b = STATUS_COLOR[status]

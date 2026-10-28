@@ -1,0 +1,1 @@
+vvi03050 proteasome_kegg: 37 of 37 EC nodes mapped (100.0%)
