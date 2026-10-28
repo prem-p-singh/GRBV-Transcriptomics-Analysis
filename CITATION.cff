@@ -1,0 +1,25 @@
+cff-version: 1.2.0
+title: "GRBV Transcriptomics Analysis: grapevine red blotch disease and the timing of berry ripening programs"
+message: "If this code contributes to published work, please cite it as below."
+type: software
+authors:
+  - family-names: Singh
+    given-names: Prem Pratap
+    orcid: "https://orcid.org/0000-0001-7921-9379"
+    affiliation: "Department of Plant Pathology, University of California, Davis"
+repository-code: "https://github.com/prem-p-singh/GRBV-Transcriptomics-Analysis"
+license: MIT
+keywords:
+  - grapevine red blotch virus
+  - Vitis vinifera
+  - RNA-seq
+  - fruit ripening
+  - developmental timing
+  - Snakemake
+abstract: >-
+  Analysis code for a repeated-measures RNA-seq study of grapevine red blotch
+  virus in Merlot berries: 327 libraries from 44 vines across four ripening
+  stages and two seasons. A healthy-only developmental reference separates the
+  common ripening delay in infected fruit from program-specific timing and
+  expression changes. Network, multi-omics, pathway and cross-study analyses
+  run as a Snakemake workflow on SLURM; figures are R scripts.

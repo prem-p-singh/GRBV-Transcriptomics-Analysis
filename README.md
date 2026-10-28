@@ -1,175 +1,175 @@
-<p align="center">
-  <img src="assets/banner.png" alt="GRBV Transcriptomics Analysis" width="100%">
-</p>
-
-<p align="center">
-  <img src="https://img.shields.io/badge/Libraries-327-1E2761?style=for-the-badge" alt="327 libraries">
-  <img src="https://img.shields.io/badge/Vines-44-B2182B?style=for-the-badge" alt="44 vines">
-  <img src="https://img.shields.io/badge/Genes-14,604-009E73?style=for-the-badge" alt="14604 genes">
-  <img src="https://img.shields.io/badge/Seasons-2021%20%2B%202022-CC79A7?style=for-the-badge" alt="Two seasons">
-  <img src="https://img.shields.io/badge/Stage-PNAS%20draft-D55E00?style=for-the-badge" alt="PNAS draft">
-</p>
-
----
-
 <div align="center">
-
-*Grapevine red blotch disease alters the temporal coordination of fruit ripening programs.*
-<br/>
-*A repeated-measures RNA-Seq study of* ***Vitis vinifera*** *cv. Merlot berries across four ripening stages and two seasons.*
-
+  <img src="assets/readme-banner.svg" alt="GRBV transcriptomics: grapevine red blotch disease and the timing of berry ripening programs" width="100%" />
+  <h1>GRBV Transcriptomics Analysis</h1>
+  <p><strong>Infected berries are not simply late. Their ripening programs fall out of step.</strong></p>
+  <p>327 libraries · 44 Merlot vines · 4 stages · 2 seasons</p>
+  <a href="#what-the-study-found">Findings</a> ·
+  <a href="#how-the-analysis-runs">Workflow</a> ·
+  <a href="#quick-start">Quick start</a> ·
+  <a href="#how-the-analysis-got-here">History</a> ·
+  <a href="#license-and-citation">Cite</a>
 </div>
 
----
+<p align="center">
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-3E9C93" alt="MIT license" /></a>
+  <img src="https://img.shields.io/badge/R-4.4-5E1E31" alt="R 4.4" />
+  <img src="https://img.shields.io/badge/Python-3-5E1E31" alt="Python 3" />
+  <img src="https://img.shields.io/badge/Snakemake-SLURM_on_FARM-3E9C93" alt="Snakemake on SLURM" />
+  <img src="https://img.shields.io/badge/manuscript-PNAS_draft-C9A14A" alt="PNAS draft" />
+</p>
 
-## The story in one diagram
+Analysis code for a repeated-measures RNA-seq study of **grapevine red blotch virus (GRBV)** in *Vitis vinifera* cv. Merlot berries. A healthy-only developmental reference separates the common ripening delay in infected fruit from changes that individual programs make on top of it. Network, multi-omics, pathway and cross-study analyses run as a Snakemake workflow on the UC Davis FARM cluster; figures are R scripts.
 
-```mermaid
-flowchart TD
-    classDef ref  fill:#64748B,stroke:#333,stroke-width:1px,color:#fff
-    classDef lag  fill:#E69F00,stroke:#333,stroke-width:1px,color:#fff
-    classDef time fill:#0072B2,stroke:#333,stroke-width:1px,color:#fff
-    classDef lvl  fill:#2166AC,stroke:#333,stroke-width:1px,color:#fff
-    classDef phe  fill:#B2182B,stroke:#333,stroke-width:1px,color:#fff
-    classDef flat fill:#BDBDBD,stroke:#333,stroke-width:1px,color:#222
+> [!NOTE]
+> **The manuscript is a complete scientific draft (October 2026), not yet submitted.** Raw reads, the count matrix and the manuscript are not public yet, so this repository holds code only. See [Known limits](#known-limits).
 
-    R["Healthy-only developmental reference<br/>8 healthy vines, 4 stages"]:::ref
-    L["Common displacement toward earlier states<br/>harvest: -0.80 stage units 2021, -0.15 in 2022"]:::lag
-    P["Photosystem genes<br/>extra timing shift, both seasons"]:::time
-    H["Small HSPs<br/>31 of 34 lower at harvest<br/>level deficit, not a timing shift"]:::lvl
-    T["Translation<br/>cytosolic down, chloroplast up"]:::lvl
-    I["Canonical immunity<br/>not engaged"]:::flat
-    C["Harvest chemistry<br/>lower Brix and pH in every infected pool"]:::phe
+## What the study found
 
-    R --> L
-    L --> P
-    L --> H
-    L --> T
-    L -.-> I
-    P --> C
-    H --> C
+<img src="assets/section-findings.svg" alt="What the study found" width="100%" />
+
+| Finding | Status | Evidence |
+|---|---|---|
+| Common displacement toward earlier ripening states | 🟢 **Supported** | Harvest −0.804 stage units in 2021 (FDR 0.0008), −0.148 in 2022 (FDR 0.034) |
+| Photosystem genes carry an extra timing shift | 🟢 **Supported** | −0.339 and −0.396 beyond the common shift, FDR 0.0016 in both seasons |
+| Small heat-shock genes fall in level, not timing | 🟢 **Supported** | 31 of 34 lower at harvest in each season; branch clock fails season transfer |
+| Translation splits by compartment | 🟢 **Supported** | Cytosolic down (−0.21, −0.30), chloroplast-associated up (+0.40, +0.44) |
+| RNA-silencing genes rise early | 🟢 **Supported** | DCL2 and RDR1 up at veraison in both seasons, back to control levels at harvest |
+| Infection effect depends on stage | 🟢 **Supported** | 7,861 host genes, infection × stage, FDR < 0.05 |
+| Canonical immunity is not engaged | 🟢 **Supported** | 160 well-expressed NLRs detected like housekeeping genes; median \|log2FC\| 0.19 vs 1.06 for sHSPs |
+| Responses differ between seasons | 🟠 **Season-dependent** | 3,236 three-way genes; 1,223 missed by season averaging; cytokinin and jasmonate flip |
+| Lower Brix and pH in infected fruit | 🟠 **Descriptive** | Every infected harvest pool below its seasonal healthy pool; pooled triplicates |
+| Independent studies agree on direction | 🔵 **Corroborated** | Zinfandel ρ 0.412 at harvest; Merlot ρ 0.72; Cabernet Sauvignon ρ 0.24 to 0.36 |
+| Earlier headline claims | ⚪ **Withdrawn** | See [How the analysis got here](#how-the-analysis-got-here) |
+
+**Supported** means the result passed its prespecified test with vines modelled as repeated units. **Corroborated** means an independent dataset agrees on direction, not that it validates the full model. **Descriptive** results are reported without inference.
+
+All effects are relative RNA abundance. The study makes no claims about protein activity, hormone levels, metabolic flux or a causal role for temperature.
+
+## How the analysis runs
+
+<img src="assets/section-workflow.svg" alt="How the analysis runs" width="100%" />
+
+| | Stage | What happens | In this repo |
+|:-:|---|---|:-:|
+| **①** | **Sequence and count** | TAG-seq libraries on Element AVITI; HTStream trimming, umi_tools deduplication, STAR against Pinot Noir ASM3070453v1, featureCounts. Done by the UC Davis Bioinformatics Core. | external |
+| **②** | **Filter and audit units** | 28,168 features filtered to 14,604 (≥10 counts in ≥10% of libraries). Each analysis is checked for how many independent vines it really has. | local only |
+| **③** | **Model expression** | Covariate-adjusted DESeq2 and limma-voom, then gene-wise mixed models with a vine random intercept (`variancePartition::dream`). | partly ([`de_deseq2_voom.R`](farm_pipeline/scripts/de_deseq2_voom.R)) |
+| **④** | **Networks and multi-omics** | GENIE3, WGCNA preservation, NMF, differential co-expression, motifs, pseudotime, MOFA, mediation, defence repertoire and the agenda analyses (rules 00 to 19). | ✅ [`Snakefile`](farm_pipeline/Snakefile) |
+| **⑤** | **Developmental clock and pathway atlas** | Healthy-only reference, 70 functional branches, rotation tests, 4,999 vine-bootstrap draws, leave-one-vine-out. | local only |
+| **⑥** | **Validate and draw** | Concordance with published GRBV studies; R figure scripts and the figure atlas. | ✅ [`farm_pipeline/scripts/`](farm_pipeline/scripts/), [`figures/scripts_R/`](figures/scripts_R/) |
+
+Libraries are repeated observations: each vine contributes up to eight libraries (4 stages × 2 seasons). There are 8 control vines, not 63 control plants.
+
+## Quick start
+
+<img src="assets/section-quickstart.svg" alt="Quick start" width="100%" />
+
+**[Get the code](#1-get-the-code) → [Set up](#2-set-up-the-environments) → [Add data](#3-add-the-input-data) → [Run](#4-run-the-analysis)**
+
+<a id="1-get-the-code"></a>
+<img src="assets/step-1.svg" alt="Step 1 of 4: Get the code" width="100%" />
+
+The repository is private; you need access to clone it.
+
+```bash
+git clone https://github.com/prem-p-singh/GRBV-Transcriptomics-Analysis.git
+cd GRBV-Transcriptomics-Analysis
 ```
 
-<blockquote align="center">
-<b>Infected berries are not simply late.</b><br/>
-All infected fruit sits behind healthy fruit on a common ripening axis, and some programs move further on their own.<br/>
-Photosystem genes keep an earlier timing, small heat-shock genes drop in level, and translation splits by compartment.<br/>
-The result is altered coordination among ripening programs, not one uniform delay.
-</blockquote>
+<a id="2-set-up-the-environments"></a>
+<img src="assets/step-2.svg" alt="Step 2 of 4: Set up the environments" width="100%" />
 
----
+**Local scripts** need Python 3 and the packages in [`requirements.txt`](requirements.txt). Figure scripts need R with ggplot2 and the packages each script loads.
 
-## Study at a glance
+```bash
+pip install -r requirements.txt
+```
 
-| | |
+**FARM.** [`setup_farm.sh`](farm_pipeline/setup_farm.sh) creates the `grbv-extended` Conda environment, installs R packages for `R/4.4.2` into `~/grbv_extended/Rlibs`, and downloads the reference genome, PlantTFDB TF list and JASPAR plant motifs. Started on a login node, it re-runs itself inside an `srun` job (account `publicgrp`, partition `low`). Every step skips work already done, so rerun it if the job is preempted.
+
+<a id="3-add-the-input-data"></a>
+<img src="assets/step-3.svg" alt="Step 3 of 4: Add the input data" width="100%" />
+
+Input data are not in the repository. [`push.sh`](farm_pipeline/push.sh) copies them from `~/Data_Analysis/` into `farm_pipeline/data/` and syncs the pipeline to `farm:~/grbv_extended/`.
+
+| File | Contents |
 |---|---|
-| Species | *Vitis vinifera* cv. Merlot, one commercial vineyard |
-| Design | 327 libraries from **44 vines** (36 GRBV-positive, 8 GRBV-negative); each vine sampled repeatedly |
-| Seasons | 2021 and 2022 |
-| Stages | Pre-veraison, Veraison, Post-veraison, Harvest |
-| Infection cohorts | Onset years 2016 to 2022 |
-| Sequencing | TAG-seq (UMI), Element AVITI, STAR + featureCounts against Pinot Noir ASM3070453v1 |
-| Features | 28,168 raw, 14,604 after filtering (14,599 host + 5 viral) |
-| Primary model | Gene-wise mixed models with a vine random intercept (`variancePartition::dream`), stage x season x infection cells, BH FDR < 0.05 |
-| Chemistry | 11 pooled harvest samples, triplicate measurements (descriptive) |
-| External data | Blanco-Ulate et al. 2017 (Zinfandel), Rumbaugh et al. 2022 (Cabernet Sauvignon), Rumbaugh et al. 2023 (Merlot) |
+| `counts_matrix.txt` | Raw counts, 28,168 features × 327 libraries |
+| `sample_metadata.txt`, `sample_metadata_v2.txt` | Infection group, season, stage, infection year; v2 adds vine and biological-replicate IDs |
+| `Virus titer.txt` | Viral titer by season, year, replicate and stage (copied as `Virus_titer.txt`) |
+| `daily_2021.csv`, `daily_2022.csv` | Daily weather for each season |
+| `MEs.csv`, `Module_genes.xlsx` | WGCNA module eigengenes and module membership |
 
-> Libraries are repeated observations, not independent plants. There are 8 control vines, not 63 control plants.
+```bash
+cd farm_pipeline
+bash push.sh
+```
 
----
+<a id="4-run-the-analysis"></a>
+<img src="assets/step-4.svg" alt="Step 4 of 4: Run the analysis" width="100%" />
 
-## Main findings
+On FARM, start a `tmux` session first: the controller runs under `srun` and stops if the SSH session drops.
 
-<table>
-<tr><td align="center" width="50"><b>1</b></td><td>
+```bash
+# On FARM
+cd ~/grbv_extended
+bash setup_farm.sh
+bash run_farm.sh -n     # dry run: list the jobs Snakemake would submit
+bash run_farm.sh        # submit; rerun to resume after preemption
 
-### A healthy-only clock places every sample on a ripening axis
+# Back on the Mac, from farm_pipeline/
+bash pull.sh            # copy results/ and logs/ back
+```
 
-The reference is fitted on healthy samples only, using 1,000 background markers and excluding the 70 functional branches tested later. It predicts withheld healthy vines (62 of 63 nearest stage, RMSE 0.201) and a withheld season (58 of 63, RMSE 0.284). Infected berries sit behind healthy ones at harvest: **−0.804 stage units in 2021** (95% vine bootstrap −1.023 to −0.573, FDR 0.0008) and **−0.148 in 2022** (FDR 0.034).
+[`run_farm.sh`](farm_pipeline/run_farm.sh) passes extra arguments to Snakemake and uses the [FARM profile](farm_pipeline/profiles/farm/config.yaml): SLURM executor, 10 concurrent jobs, `low` partition with requeue. Thresholds live in [`config/config.yaml`](farm_pipeline/config/config.yaml).
 
-</td></tr>
-<tr><td align="center"><b>2</b></td><td>
+Figures are standalone R scripts that source [`theme_grbv.R`](figures/scripts_R/theme_grbv.R) and write PNG and SVG:
 
-### Harvest chemistry tells a different seasonal story
+```bash
+Rscript figures/scripts_R/S87_phenylpropanoid_kegg.R
+python figures/scripts_R/build_full_atlas.py
+```
 
-Every infected pool has lower soluble solids and pH than its seasonal healthy pool. The Brix deficit is 3.4 to 4.0 in 2021 and 8.9 to 10.9 in 2022. Titratable acidity and malic acid are higher in infected pools in 2021 and lower in 2022; YAN is lower in both. The larger Brix deficit falls in the season with the smaller transcriptional displacement, so chemistry and transcriptome capture different parts of the disease. Pools are measured in triplicate; the spread is measurement variation, not variation among vines.
+## Find and interpret results
 
-</td></tr>
-<tr><td align="center"><b>3</b></td><td>
+<img src="assets/section-results.svg" alt="Find and interpret results" width="100%" />
 
-### Photosystem genes carry an extra timing shift
+| Location | Contents |
+|---|---|
+| `farm_pipeline/results/<rule>/` | Per-rule tables and diagnostic plots (not publication figures) |
+| `farm_pipeline/results/de_redo/`, `de_extras/` | DESeq2 and voom contrasts with a `stat` column |
+| `farm_pipeline/logs/` | SLURM and rule logs |
+| `figures/supp/`, `figures/main/` | Publication figures, PNG + SVG at 600 dpi |
+| [`figures/GRBV_Full_Figure_Atlas.pdf`](figures/GRBV_Full_Figure_Atlas.pdf) | Every figure with its caption and status |
+| `figures/supp/S{nn}_paralog_counts.csv` | Genes averaged at each KEGG node in S87 to S92 |
 
-The 44-gene photosystem and light-harvesting branch sits further toward earlier states than the common reference predicts: **−0.339 (2021) and −0.396 (2022)**, FDR 0.0016 in both seasons. Branch-specific timing predicts genes held out of the fit better than a shared expression-level shift. Of 35 branch models, 30 pass validation in withheld vines and seasons.
-
-</td></tr>
-<tr><td align="center"><b>4</b></td><td>
-
-### Small heat-shock genes fall in level, not in timing
-
-**31 of 34 small HSP genes** are significantly lower at harvest in each season (mean log2FC −2.29 in 2021, −1.58 in 2022). The deficit remains after adjusting for the common developmental position. The branch fails the season-transfer test for its own clock, so this is an expression deficit, not a different developmental age. HSFA2e and HSP18.2 both fall at harvest in both seasons; no regulatory link is claimed.
-
-</td></tr>
-<tr><td align="center"><b>5</b></td><td>
-
-### Translation splits by compartment
-
-Cytosolic translation-associated transcripts go down (−0.21, −0.30) while chloroplast-associated ones go up (+0.40, +0.44). Both branch tests pass in both seasons. Compartments come from annotation, and the values are relative RNA abundance.
-
-</td></tr>
-<tr><td align="center"><b>6</b></td><td>
-
-### Other ripening programs keep their own schedules
-
-Sucrose and starch synthesis rise late; the aggregate sugar-transporter branch does not change, so there is no sign of general transport repression. Expansin and pectin-hydrolysis genes rise after veraison. In phenylpropanoid metabolism, entry, lignin, anthocyanin and stilbene steps fall while flavonoid hydroxylation rises. ABA receptors fall late; cytokinin and jasmonate responses flip between seasons. RNA-silencing genes DCL2 and RDR1 rise at veraison in both seasons and return to control levels by harvest.
-
-</td></tr>
-<tr><td align="center"><b>7</b></td><td>
-
-### Season matters, and averaging hides part of it
-
-Infection x stage: **7,861** host genes at FDR < 0.05. Infection x stage x season: **3,236**, of which **1,223** are missed by the season-averaged test. The sHSP decrease and the opposing translation responses keep their direction in both seasons. The study has two seasons, so it reports season-dependent effects and makes no causal climate claim.
-
-</td></tr>
-<tr><td align="center"><b>8</b></td><td>
-
-### Independent data agree on direction
-
-Against the Zinfandel GRBV study, rank correlation rises from −0.066 before veraison to **0.412 at harvest** (64.5% sign agreement over 11,619 matched genes). Photosystem, sHSP and cytosolic-translation directions agree. Agreement is ρ 0.72 with Merlot (Rumbaugh 2023) and 0.24 to 0.36 with Cabernet Sauvignon (Rumbaugh 2022). Removing each of the 44 vines in turn keeps the harvest signs of the three main branches.
-
-</td></tr>
-<tr><td align="center"><b>9</b></td><td>
-
-### Canonical immunity stays quiet, and it is not a detection problem
-
-Of 676 curated resistance genes, 373 are silent in berry tissue. The 160 well-expressed ones are detected as reliably as housekeeping genes and move little (median |log2FC| 0.19, against 1.06 for small HSPs). This result has held under every analysis method used in the project.
-
-</td></tr>
-</table>
-
----
+> [!TIP]
+> Diagnostic plots in `results/` show that a rule ran. Paper figures are always re-drawn in R from the result tables. Read positive log2FC as higher in infected berries than in healthy berries of the same stage and season.
 
 ## How the analysis got here
 
-The project went through seven analysis eras. Each asked a better-posed question than the last, and several early headline claims were tested and withdrawn. Counts from different eras answer different questions and should not be compared directly.
+<img src="assets/section-history.svg" alt="How the analysis got here" width="100%" />
 
-| Era | Period | Approach | Main outcome |
-|---|---|---|---|
+The project went through seven analysis eras. Each asked a better-posed question than the one before, and several early headline claims were tested and withdrawn. Counts from different eras answer different questions, so they should not be compared directly.
+
+| Era | Period | Approach | Outcome |
+|:-:|---|---|---|
 | 1 | Mar 2026 | Welch t-test per gene, no covariates | Scoped every analysis family; most headline counts later withdrawn |
-| 2 | Apr 2026 | Networks and multi-omics on FARM (Snakemake) | Modules preserved in infected vines; no severity subtypes; immunity flat |
-| 3 | Apr 2026 | Threshold sweeps + self-review | Single-mediator claim retired; ML accuracy shown to depend on viral features |
-| 4 | Apr 2026 | Covariate-adjusted DESeq2 / limma-voom | Pooled signature 908 → 126 genes; harvest 1,025 genes |
+| 2 | Apr 2026 | Networks and multi-omics on FARM | Modules preserved in infected vines; no severity subtypes; immunity flat |
+| 3 | Apr 2026 | Threshold sweeps and self-review | Single-mediator result retired; classifier accuracy traced to viral features |
+| 4 | Apr 2026 | Covariate-adjusted DESeq2 and voom | Pooled signature 908 → 126 genes; 1,025 at harvest |
 | 5 | Apr to Jun 2026 | External validation | Cross-cultivar replication; reference bias tested by re-quantification |
-| 6 | Aug 2026 | Mixed models with vine random effects + claim gates | Formal verdict on every claim |
-| 7 | Sep 2026 | Developmental clock + pathway rotation tests | Timing separated from level; data provenance closed |
+| 6 | Aug 2026 | Mixed models and claim gates | A recorded verdict for every proposed claim |
+| 7 | Sep 2026 | Developmental clock and pathway rotation tests | Timing separated from level; data provenance closed |
 
 <details>
-<summary><b>Claims withdrawn along the way</b></summary>
+<summary><strong>Claims withdrawn along the way</strong></summary>
 
 | Earlier claim | Why it was withdrawn |
 |---|---|
 | 908 universal DEGs | Confounded with ripening stage |
-| 3-gene panel, AUC = 1.000 | Depended on viral transcripts; host-only, season-held-out AUC is 0.73 to 0.88 |
-| MBF1c as the causal mediator | Bayesian vine model puts its effect at −0.25 [−0.81, +0.33] |
+| 3-gene panel with AUC = 1.000 | Depended on viral transcripts; host-only, season-held-out AUC is 0.73 to 0.88 |
+| MBF1c as the causal mediator | Bayesian vine model: −0.25 [−0.81, +0.33] |
 | Three phases of chronic infection | Segmented regression selects zero breakpoints |
 | Blocked sugar translocation | Sugar-transport module shows no infection effect |
 | Vine tolerance gradient | Built on chemistry rows duplicated across RNA stages |
@@ -179,110 +179,31 @@ The project went through seven analysis eras. Each asked a better-posed question
 
 </details>
 
----
+## Known limits
 
-## Repository layout
+<img src="assets/section-limits.svg" alt="Known limits" width="100%" />
 
-<details>
-<summary><b>Click to expand</b></summary>
-
-```
-.
-├── figures/
-│   ├── scripts_R/          R / ggplot2 figure scripts; theme_grbv.R holds the shared theme
-│   ├── supp/               KEGG and pathway-flow figures S87–S95 (tracked PNGs)
-│   ├── cache/kegg_xml/     KGML cache for the pathway overlays
-│   └── GRBV_Full_Figure_Atlas.pdf
-├── farm_pipeline/
-│   ├── Snakefile           21 analysis rules for the UC Davis FARM cluster
-│   ├── scripts/            Rules 00–19, DE (DESeq2 / voom), sensitivity, Rumbaugh concordance
-│   ├── config/, profiles/, envs/
-│   ├── setup_farm.sh, run_farm.sh, push.sh, pull.sh
-│   └── docs/LITERATURE_SCHEMA.md
-├── scripts/                Literature ingest, ID crosswalk, deck updaters
-├── Old-Analysis/           Era 1 Python scripts and builders (archived)
-├── assets/                 README images
-├── biochemistry_harvest_prep.py
-├── requirements.txt
-├── CLAUDE.md               Project memory and session history
-└── README.md
-```
-
-Large inputs (count matrix, metadata, annotation database), results, the manuscript, the reports in `docs/`, and the Era 6 and Era 7 scripts are kept locally and are not in this repository.
-
-</details>
-
----
-
-## Running it
-
-### Python environment
-
-```bash
-pip install -r requirements.txt
-```
-
-### Figures
-
-Each figure is an R script in [`figures/scripts_R/`](figures/scripts_R/) that sources [`theme_grbv.R`](figures/scripts_R/theme_grbv.R) and writes PNG and SVG.
-
-```bash
-Rscript figures/scripts_R/S87_phenylpropanoid_kegg.R
-python figures/scripts_R/build_full_atlas.py
-```
-
-### FARM pipeline
-
-The Snakemake workflow runs on the UC Davis FARM cluster. `setup_farm.sh` and `run_farm.sh` start themselves inside an `srun` job when launched from a login node, so nothing heavy runs there.
-
-```bash
-cd farm_pipeline
-bash setup_farm.sh      # conda env, R packages, annotation resources
-bash run_farm.sh        # Snakemake controller; jobs go to partition low, account publicgrp
-bash pull.sh            # copy results back to the local mirror
-```
-
----
-
-## Status
-
-| Item | State |
+| Limit | What it means |
 |---|---|
-| PNAS manuscript | Complete scientific draft (Oct 2026); author confirmations pending |
-| Raw sequence deposition (SRA / GEO) | Not yet done |
-| Chemistry-to-vine pairing | Needs collection records |
-| Wet-lab validation | Not part of the current draft |
+| 8 healthy vines | Control-side estimates rest on 8 biological units, sampled repeatedly |
+| Two seasons | Season effects are reported; their climatic cause cannot be identified |
+| Pooled harvest chemistry | One pool per season × cohort, measured in triplicate; no vine-level chemistry associations |
+| Annotation-defined branches | Compartment and pathway assignments come from annotation, not localisation |
+| Pinot Noir reference | Merlot reads mapped to Pinot Noir; genes significant under both references agree in direction 100% of the time |
+| Data not deposited | Raw reads and counts are not yet in SRA or GEO |
+| Local-only steps | The sample audit, mixed models and developmental clock (stages ②, ③, ⑤) are not yet in this repository |
 
----
+> [!CAUTION]
+> Earlier figures and decks in project history use withdrawn claims. Check a result against [What the study found](#what-the-study-found) before reusing it.
 
-## Acknowledgments
+## License and citation
 
-<table>
-<tr><td width="30%" align="right" valign="top"><b>In memoriam</b></td>
-<td><b>Dr. Anita Oberholster</b> (UC Davis Viticulture and Enology) led this project until she passed away in January 2025. Her lab designed the field sampling and ran the wet-lab work.</td></tr>
-<tr><td align="right" valign="top"><b>Mentor</b></td>
-<td><b>Dr. Mysore R. Sudarshana</b>, USDA-ARS and UC Davis Plant Pathology.</td></tr>
-<tr><td align="right" valign="top"><b>Former mentor</b></td>
-<td><b>Dr. David E. Block</b>, UC Davis Viticulture and Enology.</td></tr>
-<tr><td align="right" valign="top"><b>RNA-Seq processing</b></td>
-<td><b>Bradley N. Jenner</b>: TAG-seq QC, HTStream, umi_tools, STAR, featureCounts.</td></tr>
-<tr><td align="right" valign="top"><b>Funding</b></td>
-<td>California Department of Food and Agriculture (CDFA) and USDA.</td></tr>
-<tr><td align="right" valign="top"><b>Compute</b></td>
-<td>UC Davis FARM HPC.</td></tr>
-</table>
+<img src="assets/section-license.svg" alt="License and citation" width="100%" />
 
----
+Source is [MIT licensed](LICENSE). External tools, annotations and datasets keep their own licenses. Cite with [CITATION.cff](CITATION.cff); the manuscript is in preparation:
 
-## Citing
+> Singh, P.P., et al. *Grapevine red blotch disease alters the temporal coordination of fruit ripening programs.* In preparation.
 
-<blockquote>
-Singh, P.P., et al. (in preparation).<br/>
-<i>Grapevine red blotch disease alters the temporal coordination of fruit ripening programs.</i>
-</blockquote>
+The study began in the lab of **Dr. Anita Oberholster** (UC Davis Viticulture and Enology), who passed away in January 2025. It continued with **Dr. David E. Block** and is now carried out with **Dr. Mysore R. Sudarshana** (USDA-ARS and UC Davis Plant Pathology). RNA-seq processing by **Bradley N. Jenner**. Funded by CDFA and USDA. Computing on UC Davis FARM.
 
-Contact: [ppssingh@ucdavis.edu](mailto:ppssingh@ucdavis.edu) · ORCID [0000-0001-7921-9379](https://orcid.org/0000-0001-7921-9379) · [prempsingh.com](https://prempsingh.com)
-
----
-
-<p align="center"><sub>MIT License · see <a href="LICENSE">LICENSE</a></sub></p>
+Maintained by **Prem Pratap Singh**, Department of Plant Pathology, University of California, Davis. Header graphics are generated by [`assets/make_readme_svgs.py`](assets/make_readme_svgs.py).
