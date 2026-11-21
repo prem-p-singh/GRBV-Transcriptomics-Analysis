@@ -1,5 +1,5 @@
 cff-version: 1.2.0
-title: "GRBV Transcriptomics Analysis: grapevine red blotch disease and the timing of berry ripening programs"
+title: "Host and viral mechanisms of ripening impairment in grapevine red blotch disease across source leaves and developing berries"
 message: "If this code contributes to published work, please cite it as below."
 type: software
 authors:
@@ -12,14 +12,19 @@ license: MIT
 keywords:
   - grapevine red blotch virus
   - Vitis vinifera
-  - RNA-seq
-  - fruit ripening
-  - developmental timing
-  - Snakemake
+  - viral pathogenesis
+  - berry ripening
+  - post-transcriptional gene silencing
+  - small heat-shock proteins
+  - 3-prime TAG-seq
+  - digital PCR
 abstract: >-
-  Analysis code for a repeated-measures RNA-seq study of grapevine red blotch
-  virus in Merlot berries: 327 libraries from 44 vines across four ripening
-  stages and two seasons. A healthy-only developmental reference separates the
-  common ripening delay in infected fruit from program-specific timing and
-  expression changes. Network, multi-omics, pathway and cross-study analyses
-  run as a Snakemake workflow on SLURM; figures are R scripts.
+  Reproducible analysis and manuscript pipeline for a longitudinal cross-tissue study
+  of grapevine red blotch virus (GRBV) in field-grown Vitis vinifera L. cv. Merlot
+  (clone 12 on 1103P rootstock, Paso Robles, CA): 327 UMI-deduplicated 3' TAG-seq
+  berry pericarp libraries from 44 vines (36 GRBV-positive, 8 GRBV-negative) across
+  four phenological stages and two seasons (2021 and 2022), integrated with harvest
+  must chemistry and 267 vine-matched leaf-petiole QuantStudio 3D digital PCR viral
+  DNA assays. An uncensored healthy-vine developmental reference and external MPhS
+  projection separate delayed berry maturation from maturation-independent host and
+  viral C2 transcriptional pathology.

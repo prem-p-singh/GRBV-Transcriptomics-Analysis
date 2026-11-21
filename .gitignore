@@ -1,47 +1,81 @@
-# Only track Python scripts — ignore all outputs and data
+# Pre-publication repository policy:
+# Track ONLY Current_Analysis/ scripts, figures/readme/ overview schematics, README.md, CITATION.cff & LICENSE.
+# Unpublished Manuscript/, main figures, tables, raw data, presentations, and Era 1-7 archives stay strictly local.
 
-# Output files
+# Unpublished manuscript, main figures, raw data & historical archives (strictly local)
+Manuscript/
+Raw_Data/
+Presentations/
+InHouse_Checks/
+Reference_Resources/
+Era1_Unadjusted_Screening/
+Era2_Network_and_MultiOmics/
+Era3_Sensitivity_and_SelfCritique/
+Era4_Covariate_DESeq2/
+Era5_External_Validation/
+Era6_Longitudinal_Dream_and_JXB/
+Era7_Developmental_Clock_and_Oct_PNAS/
+Current_Analysis/prior_era_inputs/
+Current_Analysis/**/data/
+Current_Analysis/**/figures/
+Current_Analysis/**/logs/
+**/Rlib/
+**/Rlibs*/
+**/vendor/
+**/graphify-out/
+
+# Local-only root & agent notes
+CLAUDE.md
+Rules.md
+ERA_DIRECTORY_GUIDE.md
+REORGANIZATION_MANIFEST.csv
+
+# Binary / data / document formats
 *.png
-!assets/*.png
+*.tif
+*.tiff
+*.jpg
+*.jpeg
 *.csv
 *.pdf
-!farm_pipeline/docs/*.pdf
 *.pptx
-.Rhistory
-
-# Markdown (except README, CLAUDE.md, and repo docs/)
-*.md
-!README.md
-!CLAUDE.md
-!farm_pipeline/docs/*.md
-
-# Data files
+*.docx
+*.ai
+*.html
+*.rds
+*.RData
+*.Rhistory
 *.txt
-!requirements.txt
 *.db
 *.obo
 *.xlsx
+*.xls
 *.log
 *.hdf5
 *.gz
 *.tsv
+*.zip
+*.pre_*
 
-# FARM pipeline: don't track data, results, resources, logs
-farm_pipeline/data/
-farm_pipeline/results/
-farm_pipeline/resources/
-farm_pipeline/logs/
+# SVG figures: ONLY track figures/readme/*.svg overview schematics
+*.svg
+!figures/readme/*.svg
 
-# Python cache
+# Secrets & credentials
+.env
+.env.*
+*.pem
+*.key
+credentials.json
+secrets.yml
+service-account*.json
+
+# Python cache, OS & IDE files
 __pycache__/
 *.pyc
 *.pyo
-
-# OS files
 .DS_Store
 Thumbs.db
-
-# IDE
 .vscode/
 .idea/
 .claude/
