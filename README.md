@@ -11,7 +11,7 @@
 </div>
 
 <p align="center">
-  <img src="figures/readme/graphical_abstract.svg" alt="GRBV disease pathogenesis across grape berry ripening stages" width="100%" />
+  <img src="figures/readme/hero_pathogenesis.svg" alt="GRBV disease pathogenesis across grape berry ripening stages" width="100%" />
 </p>
 
 > [!NOTE]
@@ -32,7 +32,7 @@
 </p>
 
 <p align="center">
-  <img src="figures/readme/viral_host_dynamics.svg" alt="Leaf-petiole viral DNA, maturation delay vs must Brix loss, and berry viral ORF dynamics" width="100%" />
+  <img src="figures/readme/viral_dynamics.svg" alt="Leaf-petiole viral DNA, maturation delay vs must Brix loss, and berry viral ORF dynamics" width="100%" />
 </p>
 
 ---
@@ -40,7 +40,7 @@
 ## Field cohort & analytical evolution
 
 <p align="center">
-  <img src="figures/readme/study_overview.svg" alt="44 Merlot vines sampled across 4 ripening stages and 2 seasons" width="100%" />
+  <img src="figures/readme/cohort_design.svg" alt="44 Merlot vines sampled across 4 ripening stages and 2 seasons" width="100%" />
 </p>
 
 <p align="center">
